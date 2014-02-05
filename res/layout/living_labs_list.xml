@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LivingLabAppListActivity" >
+  	<ListView
+  		android:id="@+id/livingLabsListView"
+  		android:layout_width="fill_parent"
+  		android:layout_height="wrap_content"
+  		style="@style/Lists" />
+  	  		
+  	<edu.mit.mitmobile2.DividerView
+  		android:layout_width="fill_parent"
+  		android:layout_height="@dimen/dividerHeight" />
+  		
+</LinearLayout>

@@ -304,7 +304,7 @@ public class MITMapView extends MapView  {
 			
 			Map attributes = new HashMap();
 		
-			Graphic g = new Graphic(point, pms,attributes, null);
+			Graphic g = new Graphic(point, pms,attributes);
 			gl = (GraphicsLayer)this.getMapLayer(mapItem.getGraphicsLayer()); 
 			int Uid = gl.addGraphic(g);	
 	        return Uid;				

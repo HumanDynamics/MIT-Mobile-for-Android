@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>    
+    <string name="pds_client_key">22bcd4c5fe92c7875db7c5704ad21e</string>
+    <string name="pds_client_secret">a7fd607823ae57d91dd02e80a68a4b</string>
+    <string name="pds_client_basic_auth">Basic MjJiY2Q0YzVmZTkyYzc4NzVkYjdjNTcwNGFkMjFlOmE3ZmQ2MDc4MjNhZTU3ZDkxZGQwMmU4MGE2OGE0Yg==</string>
+    <string name="pds_client_scope">funf_write</string>
+    <string name="pds_prefs_file">PDSPrefs</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="problem_contacting_server">There was a problem contacting the server. Please try again later.</string>
+    <string name="default_funf_password">changeme</string>
+    <string name="login_relative_url">/account/login</string>
+    <string name="signup_relative_url">/account/signup</string>
+    <string name="registry_url">http://linkedpersonaldata.org</string>
+    <string name="clients_relative_url">/account/clients</string>
+    <string name="token_relative_url">/oauth2/token/</string>
+    <string name="userinfo_relative_url">/oauth2/userinfo</string>
+    <string name="radial_relative_url">/visualization/socialHealthRadial</string>
+    <string name="sharing_relative_url">/sharing/edit/</string>
+    <string name="activity_relative_url">/visualization/activity/</string>
+    <string name="social_relative_url">/visualization/social/</string>
+    <string name="focus_relative_url">/visualization/focus/</string>
+    <string name="notification_api_relative_url">/api/personal_data/notification/</string>
+    <string name="places_relative_url">/visualization/places/</string>
+    <string name="device_api_relative_url">/api/personal_data/device/</string>
+    <string name="living_labs_application_list">
+        "[
+        	{ 
+        		'name': 'Social Health Tracker', 
+        		'visualizations' : [ 
+        			{'title': 'My Social Health', 'key': 'socialHealthRadial' },
+        			{'title': 'Activity', 'key': 'activity' },
+        			{'title': 'Social', 'key': 'social' },
+        			{'title': 'Focus', 'key': 'focus' }
+        		] 
+        	}
+        ]"
+    </string>
+    <string name="main_pipeline_config">        {
+			"@type": "edu.mit.media.openpds.client.funf.OpenPDSPipeline",
+			"schedules": {
+				"archive": {
+					"strict": false,
+					"interval": 86405
+				},
+				"upload": {
+					"strict": true,
+					"interval": 900
+				}
+			},
+			"data": [
+				{
+					"@type": "edu.mit.media.funf.probe.builtin.ActivityProbe",
+				    "@schedule": {
+					    "strict": true,
+					    "interval": 120,
+					    "duration": 15,
+					    "opportunistic": true
+					}
+				},
+				{
+					"@type": "edu.mit.media.funf.probe.builtin.ScreenProbe",
+					"@schedule": {
+						"strict": true,
+						"opportunistic": true
+					}
+				},
+				{
+					"@type": "edu.mit.media.funf.probe.builtin.CallLogProbe",
+					"afterDate": 1365822705,
+					"@schedule": {
+						"strict": false,
+						"interval": 3600, 
+						"opportunistic": true
+					}
+				},				
+				{
+					"@type": "edu.mit.media.funf.probe.builtin.SimpleLocationProbe",
+				    "maxWaitTime": 30,
+				    "goodEnoughAccuracy": 10,
+				    "useCache": false,
+				    "@schedule": {
+					    "strict": true,
+					    "interval": 900,
+					    "opportunistic": true
+					}
+				},
+				{
+					"@type": "edu.mit.media.funf.probe.builtin.SmsProbe",
+					"afterDate": 1365822705,
+					"@schedule": {
+						"strict": false,
+						"interval": 3600, 
+						"opportunistic": true
+					}
+				},
+				{
+					"@type": "edu.mit.media.funf.probe.builtin.BluetoothProbe",
+					"maxScanTime": 40, 
+					"@schedule": {
+						"strict": false,
+						"interval": 900, 
+						"opportunistic": true
+					}
+				},
+				{
+					"@type": "edu.mit.media.funf.probe.builtin.WifiProbe",
+					"@schedule": {
+						"strict": false,
+						"interval": 900, 
+						"opportunistic": true
+					}
+				}
+			]
+		}</string>
+</resources>

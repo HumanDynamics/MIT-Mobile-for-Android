@@ -7,8 +7,12 @@ import java.util.Map;
 
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.DefaultHeaderTransformer;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.EnvironmentDelegate;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.OnRefreshListener;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.Options;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -101,7 +105,14 @@ public class DiningHomeActivity extends NewModuleActivity implements OnRefreshLi
 	    ScrollView scrollView = (ScrollView) findViewById(R.id.diningHomeMainScrollView);
 
         // Create new PullToRefreshAttacher
-        mPullToRefreshAttacher = new PullToRefreshAttacher(this);
+	    PullToRefreshAttacher.Options options = new Options();
+	    options.environmentDelegate = new EnvironmentDelegate() {
+	    	@Override
+	    	public Context getContextForInflater(Activity activity) {
+	    		return activity;
+	    	}
+	    };
+        mPullToRefreshAttacher = new PullToRefreshAttacher(this, options);
         mPullToRefreshAttacher.setRefreshableView(scrollView, this);
         DefaultHeaderTransformer ht = (DefaultHeaderTransformer) mPullToRefreshAttacher
                 .getHeaderTransformer();

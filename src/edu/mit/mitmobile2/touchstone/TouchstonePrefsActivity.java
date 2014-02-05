@@ -26,6 +26,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import edu.mit.media.openpds.client.PreferencesWrapper;
+import edu.mit.media.openpds.client.RegistryClient;
+import edu.mit.media.openpds.client.UserLoginTask;
+import edu.mit.media.openpds.client.UserRegistrationTask;
 import edu.mit.mitmobile2.FullScreenLoader;
 import edu.mit.mitmobile2.MITClient;
 import edu.mit.mitmobile2.MobileWebApi;
@@ -137,6 +141,26 @@ public class TouchstonePrefsActivity extends NewModuleActivity implements OnShar
 					prefsEditor.putString("PREF_TOUCHSTONE_USERNAME", touchstoneUsername.getEditableText().toString());
 					prefsEditor.putString("PREF_TOUCHSTONE_PASSWORD", touchstonePassword.getEditableText().toString());
 					prefsEditor.commit();
+					final String username = touchstoneUsername.getEditableText().toString();
+					final String password = touchstonePassword.getEditableText().toString();
+					// HACK - assume the user has given their username, add @mit.edu to the end
+					// For the simple case where everyone's email address is simply their username@mit.edu, this should work
+					// Still, not the prettiest thing
+					final String email = username + (username.contains("@") ? "":"@mit.edu");
+					
+					final RegistryClient registry = new RegistryClient(getString(R.string.registry_url), getString(R.string.pds_client_key), getString(R.string.pds_client_secret), getString(R.string.pds_client_scope),getString(R.string.pds_client_basic_auth));
+					UserLoginTask userLoginTask = new UserLoginTask(TouchstonePrefsActivity.this, new PreferencesWrapper(TouchstonePrefsActivity.this), registry) {
+						@Override
+						protected void onError() {
+							// We're assuming if there's an error, that the user doesn't have an account yet, so create one...
+							// This is not necessarily the case. For example, if they put the wrong password, or the server is down, this would break
+							UserRegistrationTask userRegistrationTask = new UserRegistrationTask(TouchstonePrefsActivity.this, new PreferencesWrapper(TouchstonePrefsActivity.this), registry);
+							userRegistrationTask.execute(username, email, password);
+						}
+					};
+					
+					userLoginTask.execute(email, password);					
+					
 					if (credentialsChanged) {
 						MITClient.cookieStore = null;
 					}
