@@ -32,6 +32,12 @@
         			{'title': 'Social', 'key': 'social' },
         			{'title': 'Focus', 'key': 'focus' }
         		] 
+        	},
+        	{
+        		'name': 'My Places', 
+        		'visualizations': [
+        			{'title': 'Home / Work', 'key': 'places' }        			
+        		]
         	}
         ]"
     </string>

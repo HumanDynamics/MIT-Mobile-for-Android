@@ -11,11 +11,12 @@ import edu.mit.mitmobile2.touchstone.TouchstonePrefsActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 public class LivingLabActivity extends NewModuleFragmentActivity {
 	private ViewPager mViewPager;
 	private WebViewFragmentPagerAdapter mFragmentAdapter;	
-
+	private WebViewFragment mWebViewFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +24,7 @@ public class LivingLabActivity extends NewModuleFragmentActivity {
 		setContentView(R.layout.living_lab_container);
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
 		
-		if (mFragmentAdapter == null) {
+		if (mFragmentAdapter == null && mWebViewFragment == null) {
 			PersonalDataStore pds;
 			try {
 				pds = new PersonalDataStore(this);
@@ -33,12 +34,19 @@ public class LivingLabActivity extends NewModuleFragmentActivity {
 				finish();
 				return;
 			}
-			mFragmentAdapter = new WebViewFragmentPagerAdapter(getSupportFragmentManager());
-			
 			LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
-						
-			for (LivingLabVisualizationItem visualizationItem : labItem.getVisualizations()) {
-				mFragmentAdapter.addItem(WebViewFragment.Create(pds.buildAbsoluteUrl("/visualization/" + visualizationItem.getKey()), visualizationItem.getTitle(), this, mViewPager));
+			
+			if (labItem.getVisualizations().size() > 1) {
+				mViewPager.setVisibility(View.VISIBLE);
+				mFragmentAdapter = new WebViewFragmentPagerAdapter(getSupportFragmentManager());			
+							
+				for (LivingLabVisualizationItem visualizationItem : labItem.getVisualizations()) {
+					mFragmentAdapter.addItem(WebViewFragment.Create(pds.buildAbsoluteUrl("/visualization/" + visualizationItem.getKey()), visualizationItem.getTitle(), this, mViewPager));
+				}
+			} else if (labItem.getVisualizations().size() == 1) {
+				LivingLabVisualizationItem visualizationItem = labItem.getVisualizations().get(0);
+				WebViewFragment visualizationWebView = WebViewFragment.Create(pds.buildAbsoluteUrl("/visualization/" + visualizationItem.getKey()), visualizationItem.getTitle(), this, mViewPager);
+				getSupportFragmentManager().beginTransaction().add(R.id.livingLabContainerLinearLayout, visualizationWebView, "visualizationWebView").commit();
 			}
 					
 			mViewPager.setAdapter(mFragmentAdapter);

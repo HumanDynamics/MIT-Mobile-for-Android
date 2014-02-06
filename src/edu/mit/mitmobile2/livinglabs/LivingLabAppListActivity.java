@@ -26,8 +26,6 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 		List<LivingLabItem> labs = new ArrayList<LivingLabItem>();
 		try {
 			String labsString = getString(R.string.living_labs_application_list);
-			//StringReader stringReader = new StringReader(labsString);
-			//stringReader.
 			JSONArray labsJson = new JSONArray(labsString);
 			for (int i = 0; i < labsJson.length(); i++) {
 				labs.add(new LivingLabItem(labsJson.optJSONObject(i)));

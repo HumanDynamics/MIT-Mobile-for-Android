@@ -65,7 +65,7 @@ public class WebViewFragment extends Fragment {
 		//mWebView.setVisibility(View.VISIBLE);
 		//mWebView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		mWebView.getSettings().setJavaScriptEnabled(true);
-		mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 		mWebView.setWebViewClient(new WebViewClient() {			
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
