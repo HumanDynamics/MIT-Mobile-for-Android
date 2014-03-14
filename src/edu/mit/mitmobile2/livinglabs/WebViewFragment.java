@@ -8,7 +8,11 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
@@ -19,6 +23,7 @@ import android.widget.FrameLayout;
 @SuppressLint("ValidFragment")
 public class WebViewFragment extends Fragment {
 
+	private static final String TAG = "LivingLabActivity";
 	private String mUrl;
 	private FrameLayout mView;
 	private WebView mWebView;
@@ -101,4 +106,5 @@ public class WebViewFragment extends Fragment {
 	public String getTitle() {
 		return mTitle;
 	}		
+	
 }

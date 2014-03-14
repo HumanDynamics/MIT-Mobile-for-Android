@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LivingLabItem implements Serializable {
@@ -11,13 +12,13 @@ public class LivingLabItem implements Serializable {
 	private String mName;
 	private ArrayList<LivingLabVisualizationItem> mVisualizations;
 	
-	public LivingLabItem(JSONObject labJson) {
+	public LivingLabItem(JSONObject labJson) throws JSONException {
 		assert(labJson != null && labJson.has("name") && labJson.has("visualizations"));
 		mName = labJson.optString("name");
 		mVisualizations = new ArrayList<LivingLabVisualizationItem>();
-		JSONArray viewsJson = labJson.optJSONArray("visualizations");
-		for (int i = 0; i < viewsJson.length(); i++) {
-			mVisualizations.add(new LivingLabVisualizationItem(viewsJson.optJSONObject(i)));
+		JSONArray viewsJsonVisualization = labJson.optJSONArray("visualizations");
+		for (int i = 0; i < viewsJsonVisualization.length(); i++) {
+			mVisualizations.add(new LivingLabVisualizationItem(viewsJsonVisualization.optJSONObject(i)));
 		}
 	}
 

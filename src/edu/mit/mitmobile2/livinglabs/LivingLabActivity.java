@@ -11,6 +11,8 @@ import edu.mit.mitmobile2.touchstone.TouchstonePrefsActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
 public class LivingLabActivity extends NewModuleFragmentActivity {
@@ -23,6 +25,7 @@ public class LivingLabActivity extends NewModuleFragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.living_lab_container);
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
+		
 		
 		if (mFragmentAdapter == null && mWebViewFragment == null) {
 			PersonalDataStore pds;
@@ -51,6 +54,7 @@ public class LivingLabActivity extends NewModuleFragmentActivity {
 					
 			mViewPager.setAdapter(mFragmentAdapter);
 		}
+		
 	}
 
 
@@ -73,4 +77,5 @@ public class LivingLabActivity extends NewModuleFragmentActivity {
 	protected boolean isModuleHomeActivity() {
 		return false;
 	}
+
 }

@@ -27,22 +27,36 @@
         	{ 
         		'name': 'Social Health Tracker', 
         		'visualizations' : [ 
-        			{'title': 'My Social Health', 'key': 'socialHealthRadial' },
-        			{'title': 'Activity', 'key': 'activity' },
-        			{'title': 'Social', 'key': 'social' },
-        			{'title': 'Focus', 'key': 'focus' }
+        			{'title': 'My Social Health', 'key': 'socialHealthRadial', 
+        							'data': ['Activity Probe', 'Bluetooth Probe', 'Call Log Probe', 'Screen Probe'] },
+        			{'title': 'Activity', 'key': 'activity', 'data': ['Activity Probe'] },
+        			{'title': 'Social', 'key': 'social', 'data': ['Bluetooth Probe', 'Call Log Probe'] },
+        			{'title': 'Focus', 'key': 'focus', 'data': ['Screen Probe'] }
         		] 
         	},
         	{
         		'name': 'My Places', 
         		'visualizations': [
-        			{'title': 'Home / Work', 'key': 'places' }        			
+        			{'title': 'Home / Work', 'key': 'places', 'data': ['Simple Location Probe'] }        			
         		]
-        	}
+        	},
+        	{
+        		'name': 'Settings', 
+        		'visualizations': [
+        			{'title': 'Settings', 'key': 'settings', 'data': []  }		
+        		]
+        	},
+        	{
+        		'name': 'Meetup',
+        		'visualizations': [
+        			{'title': 'Meetup Home', 'key': 'meetup_home', 'data': []  }
+        		]
+        	}        	
         ]"
     </string>
     <string name="main_pipeline_config">        {
-			"@type": "edu.mit.media.openpds.client.funf.OpenPDSPipeline",
+			<!--  "@type": "edu.mit.media.openpds.client.funf.OpenPDSPipeline", -->
+			"@type": "edu.mit.mitmobile2.livinglabs.LivingLabOpenPDSPipeline",
 			"schedules": {
 				"archive": {
 					"strict": false,
@@ -51,7 +65,11 @@
 				"upload": {
 					"strict": true,
 					"interval": 900
-				}
+				},
+				"save": {
+					"strict": true,
+					"interval": 900
+				}				
 			},
 			"data": [
 				{
@@ -118,4 +136,5 @@
 				}
 			]
 		}</string>
+		<string name="living_lab_settings">Settings</string>
 </resources>

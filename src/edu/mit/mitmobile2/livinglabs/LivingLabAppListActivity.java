@@ -11,12 +11,14 @@ import edu.mit.mitmobile2.objs.LivingLabItem;
 import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 public class LivingLabAppListActivity extends NewModuleActivity {
+	private static final String TAG = "LivingLabAppListActivity";
 	private ListView mLivingLabsListView;
 	
 	@Override
@@ -41,10 +43,22 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 			@Override
 			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
 				LivingLabItem labItem = (LivingLabItem) listView.getItemAtPosition(position);
+				
+				Log.v(TAG,"position is: " + position);
+				
+				if(position == 2){
+					labItem = (LivingLabItem) listView.getItemAtPosition(0);
+					Intent labIntent = new Intent(LivingLabAppListActivity.this, LivingLabSettingsActivity.class);
+					labIntent.putExtra("lab", labItem);
+					startActivity(labIntent);
+				} else {
 
-				Intent labIntent = new Intent(LivingLabAppListActivity.this, LivingLabActivity.class);
-				labIntent.putExtra("lab", labItem);
-				startActivity(labIntent);
+				
+					Intent labIntent = new Intent(LivingLabAppListActivity.this, LivingLabActivity.class);
+					labIntent.putExtra("lab", labItem);
+					startActivity(labIntent);
+				
+				}
 			}
 		});
 
@@ -69,6 +83,15 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.layout.living_lab_menu, menu);
+		return true;
+	}
 
+	public void livingLabSettings(){
+		Log.v(TAG, "LivingLabSettings");
+	}
 
 }

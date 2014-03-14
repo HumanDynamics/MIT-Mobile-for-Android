@@ -355,7 +355,8 @@
         <!-- Living Labs -->
         <activity android:name=".livinglabs.LivingLabAppListActivity"></activity>
         <activity android:name=".livinglabs.LivingLabActivity" android:screenOrientation="portrait"></activity>
-		
+        <activity android:name=".livinglabs.LivingLabSettingsActivity"></activity>		
+        
 		<!--  Living Labs Services / Receiver -->
 		<service
             android:name="edu.mit.media.funf.storage.NameValueDatabaseService"

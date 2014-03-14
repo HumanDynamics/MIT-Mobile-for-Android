@@ -15,6 +15,7 @@ import android.webkit.WebChromeClient;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JsResult;
@@ -97,8 +98,8 @@ public class NewsDetailsView extends WebView {
 		getSettings().setSupportZoom(false);
 		setWebChromeClient(new MyWebChromeClient());			
 		addJavascriptInterface(new JavaScriptInterface(), "newsDetail");
-		getSettings().setPluginsEnabled(true);
-		//getSettings().setPluginState(PluginState.ON);
+		//getSettings().setPluginsEnabled(true);
+		getSettings().setPluginState(PluginState.ON);
 
 		loadDataWithBaseURL( "file:///android_asset/", templateHtml, "text/html", "UTF-8", null);
 
