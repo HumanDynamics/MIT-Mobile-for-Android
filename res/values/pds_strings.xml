@@ -28,28 +28,62 @@
         		'name': 'Social Health Tracker', 
         		'visualizations' : [ 
         			{'title': 'My Social Health', 'key': 'socialHealthRadial', 
-        							'data': ['Activity Probe', 'Bluetooth Probe', 'Call Log Probe', 'Screen Probe'] },
-        			{'title': 'Activity', 'key': 'activity', 'data': ['Activity Probe'] },
-        			{'title': 'Social', 'key': 'social', 'data': ['Bluetooth Probe', 'Call Log Probe'] },
-        			{'title': 'Focus', 'key': 'focus', 'data': ['Screen Probe'] }
+        							'data': { 
+        								'required': ['Activity Probe', 'Bluetooth Probe', 'Call Log Probe', 'Screen Probe'],
+        								'non-required': ['Simple Location Probe']
+        							}
+        			},
+        			{'title': 'Activity', 'key': 'activity', 
+        							'data': {
+        								'required': ['Activity Probe'], 
+        								'non-required': ['Simple Location Probe'] 
+        							}
+        			},
+        			{'title': 'Social', 'key': 'social', 
+        							'data': {
+        								'required': ['Bluetooth Probe', 'Call Log Probe'], 
+        								'non-required': ['Simple Location Probe'] 
+        							}
+        			},
+        			{'title': 'Focus', 'key': 'focus', 
+        							'data': {
+        								'required': ['Screen Probe'], 
+        								'non-required': ['Simple Location Probe'] 
+        							}
+        			}
         		] 
         	},
         	{
         		'name': 'My Places', 
         		'visualizations': [
-        			{'title': 'Home / Work', 'key': 'places', 'data': ['Simple Location Probe'] }        			
+        			{'title': 'Home / Work', 'key': 'places', 
+        							'data' : {
+        								'required': ['Simple Location Probe'], 
+        								'non-required': []
+        							} 
+        			}        			
         		]
         	},
         	{
         		'name': 'Settings', 
         		'visualizations': [
-        			{'title': 'Settings', 'key': 'settings', 'data': []  }		
+        			{'title': 'Settings', 'key': 'settings', 
+        							'data': {
+        								'required': [],  
+        								'non-required': []
+        							}
+        			}		
         		]
         	},
         	{
         		'name': 'Meetup',
         		'visualizations': [
-        			{'title': 'Meetup Home', 'key': 'meetup_home', 'data': []  }
+        			{'title': 'Meetup Home', 'key': 'meetup_home', 
+        							'data': {
+        								'required': [],  
+        								'non-required': []
+        							}
+        			}		
         		]
         	}        	
         ]"

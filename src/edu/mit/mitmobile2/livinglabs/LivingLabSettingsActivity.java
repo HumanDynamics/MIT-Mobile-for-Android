@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -35,12 +36,12 @@ import android.widget.TextView;
  
 public class LivingLabSettingsActivity extends Activity implements OnClickListener {
 	private static final String TAG = "LLSettingsActivity";
-    private Map<CheckBox, ArrayList<CheckBox>> checkBoxes = new HashMap<CheckBox, ArrayList<CheckBox>>();
+    private Map<CheckBox, ArrayList<ArrayList<CheckBox>>> checkBoxes = new HashMap<CheckBox, ArrayList<ArrayList<CheckBox>>>();
     private int[] buttonIds = new int[2];
     private JSONObject llsiJson;
     
     private LivingLabsSettingsDB mLivingLabSettingsDB;
-    Map<String, ArrayList<String>> checkBoxCollection = new HashMap<String, ArrayList<String>>();
+    Map<String, ArrayList<ArrayList<String>>> checkBoxCollection = new HashMap<String, ArrayList<ArrayList<String>>>();
     
     String app_id, lab_id;
     
@@ -70,15 +71,29 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         for(int i=0; i<visualization.size(); i++){
         	LivingLabVisualizationItem visualizationItem = visualization.get(i);
 			String title = visualizationItem.getTitle();
-			ArrayList<String> probes = new ArrayList<String>();
+			ArrayList<ArrayList<String>> probes = new ArrayList<ArrayList<String>>();
 			try {
-				JSONArray dataArr = new JSONArray(visualizationItem.getData());
-				for(int j=0; j<dataArr.length(); j++){
-					String tempData = dataArr.getString(j);
+				JSONObject dataObject = new JSONObject(visualizationItem.getData());
+				JSONArray requiredProbesArray = dataObject.getJSONArray("required");
+				JSONArray nonRequiredProbesArray = dataObject.getJSONArray("non-required");
+				
+				ArrayList<String> requiredProbes = new ArrayList<String>();
+				ArrayList<String> nonRequiredProbes = new ArrayList<String>();
+				for(int j=0; j<requiredProbesArray.length(); j++){
+					String tempData = requiredProbesArray.getString(j);
 					if(tempData.contains("Probe")){
-						probes.add(tempData);
+						requiredProbes.add(tempData);
 					}						
 				}
+				for(int k=0; k<nonRequiredProbesArray.length(); k++){
+					String tempData = nonRequiredProbesArray.getString(k);
+					if(tempData.contains("Probe")){
+						nonRequiredProbes.add(tempData);
+					}						
+				}
+				
+				probes.add(requiredProbes);
+				probes.add(nonRequiredProbes);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -87,9 +102,9 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         }
         
         int checkBoxId = 0;
-
-        for(Map.Entry<String, ArrayList<String>> entry : checkBoxCollection.entrySet()) {
-            TableRow serviceRow =new TableRow(this);
+        
+        for(Map.Entry<String, ArrayList<ArrayList<String>>> entry : checkBoxCollection.entrySet()) {
+        	TableRow serviceRow =new TableRow(this);
             serviceRow.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
             CheckBox serviceCheckBox = new CheckBox(this);
             
@@ -98,11 +113,11 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
             searchDataInput.add(lab_id);
             searchDataInput.add(entry.getKey());
             LivingLabSettingItem llsiFetched = mLivingLabSettingsDB.retrieveLivingLabSettingItem(searchDataInput);
-            		
+            
             serviceCheckBox.setOnClickListener(this);
             serviceCheckBox.setId(checkBoxId);
             serviceCheckBox.setText(entry.getKey());
-
+            
             boolean serviceChecked = false;
             if(llsiFetched != null)
             	serviceChecked = llsiFetched.getEnabled() == 1 ? true : false;
@@ -113,56 +128,66 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
             
             checkBoxId++;
             
-            ArrayList<String> probesCollection = entry.getValue();
-            ArrayList<CheckBox> probeCheckBoxes = new ArrayList<CheckBox>();
-            for(int i=0; i<probesCollection.size(); i++){
-                TableRow probeRow = new TableRow(this);
-                probeRow.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
-                CheckBox probeCheckBox = new CheckBox(this);
-                probeCheckBox.setId(checkBoxId);
-                probeCheckBox.setText(probesCollection.get(i));
-                probeCheckBox.setOnClickListener(this);
-                
-                boolean probeChecked = false;
-                
-                if(llsiFetched != null){
-                	int probeValue = 0;
-                	if(probesCollection.get(i).equalsIgnoreCase("Activity Probe"))
-                		probeValue = llsiFetched.getActivityProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("Sms Probe"))
-                		probeValue = llsiFetched.getSMSProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("Call Log Probe"))
-                		probeValue = llsiFetched.getCallLogProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("Bluetooth Probe"))
-                		probeValue = llsiFetched.getBluetoothProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("Wifi Probe"))
-                		probeValue = llsiFetched.getWifiProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("Simple Location Probe"))
-                		probeValue = llsiFetched.getSimpleLocationProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("Screen Probe"))
-                		probeValue = llsiFetched.getScreenProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("Running Applications Probe"))
-                		probeValue = llsiFetched.getRunningApplicationsProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("Hardware Info Probe"))
-                		probeValue = llsiFetched.getHardwareInfoProbe();
-                	else if(probesCollection.get(i).equalsIgnoreCase("App Usage Probe"))
-                		probeValue = llsiFetched.getAppUsageProbe();
-                	probeChecked = probeValue == 1 ? true : false;
-                }
-                
-                probeCheckBox.setChecked(probeChecked);
-                
-                probeCheckBoxes.add(probeCheckBox);
-                
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.leftMargin = 75;
-                
-                probeRow.addView(probeCheckBox);  
-                ll.addView(probeRow, params);
-                checkBoxId++;
-            }
+            ArrayList<ArrayList<String>> probesCollection = entry.getValue();
+            ArrayList<ArrayList<CheckBox>> probeCheckBoxes = new ArrayList<ArrayList<CheckBox>>();
             
+            for(int i=0; i<probesCollection.size(); i++){
+            	ArrayList<String> specializedProbesCollection = probesCollection.get(i); //required and non-required
+            	ArrayList<CheckBox> specializedProbeCheckBoxes = new ArrayList<CheckBox>();
+            	for(int j=0; j<specializedProbesCollection.size(); j++){
+            		TableRow probeRow = new TableRow(this);
+                    probeRow.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
+                    CheckBox probeCheckBox = new CheckBox(this);
+                    probeCheckBox.setId(checkBoxId);
+                    if(i == 0)
+                    	probeCheckBox.setText(specializedProbesCollection.get(j) + " (Required)");
+                    else
+                    	probeCheckBox.setText(specializedProbesCollection.get(j));
+                    probeCheckBox.setOnClickListener(this);
+                    
+                    boolean probeChecked = false;
+                    
+                    if(llsiFetched != null){
+                    	int probeValue = 0;
+                    	if(specializedProbesCollection.get(j).equalsIgnoreCase("Activity Probe"))
+                    		probeValue = llsiFetched.getActivityProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("Sms Probe"))
+                    		probeValue = llsiFetched.getSMSProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("Call Log Probe"))
+                    		probeValue = llsiFetched.getCallLogProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("Bluetooth Probe"))
+                    		probeValue = llsiFetched.getBluetoothProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("Wifi Probe"))
+                    		probeValue = llsiFetched.getWifiProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("Simple Location Probe"))
+                    		probeValue = llsiFetched.getSimpleLocationProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("Screen Probe"))
+                    		probeValue = llsiFetched.getScreenProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("Running Applications Probe"))
+                    		probeValue = llsiFetched.getRunningApplicationsProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("Hardware Info Probe"))
+                    		probeValue = llsiFetched.getHardwareInfoProbe();
+                    	else if(specializedProbesCollection.get(j).equalsIgnoreCase("App Usage Probe"))
+                    		probeValue = llsiFetched.getAppUsageProbe();
+                    	probeChecked = probeValue == 1 ? true : false;
+                    }
+                    
+                    probeCheckBox.setChecked(probeChecked);
+                    
+                    specializedProbeCheckBoxes.add(probeCheckBox);
+                    
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.leftMargin = 75;
+                    
+                    probeRow.addView(probeCheckBox);  
+                    ll.addView(probeRow, params);
+                    checkBoxId++;
+            	}
+            	
+            	probeCheckBoxes.add(specializedProbeCheckBoxes);
+            }
             checkBoxes.put(serviceCheckBox, probeCheckBoxes);
+            
         }
         
         int saveButtonId = checkBoxId;
@@ -191,65 +216,85 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 	    buttonsLayout.addView(buttonsRow);
 	    ll.addView(buttonsLayout);
         
-        setContentView(ll);        
+	    ScrollView sv = new ScrollView(this);
+	    sv.addView(ll);
+	    setContentView(sv);
+
         
     }
 
+	//3/14 7:15pm Service checkbox clicking is working! TODO: onClick::: required vs non-required checking
 	@Override
 	public void onClick(View v) {
 		try{	
 			boolean isServiceCheckBoxId = false;		
 			CheckBox serviceCheckBox = null;
-			for(Map.Entry<CheckBox, ArrayList<CheckBox>> entry : checkBoxes.entrySet()){
+			for(Map.Entry<CheckBox, ArrayList<ArrayList<CheckBox>>> entry : checkBoxes.entrySet()){
 				CheckBox tempServiceCheckBox = entry.getKey();
 				if(v.getId() == tempServiceCheckBox.getId()){
 					isServiceCheckBoxId = true;
 					serviceCheckBox = tempServiceCheckBox;
 				}
 			}
-		
+			
 			boolean isButton = false;
 			if(v.getId() == buttonIds[0] || v.getId() == buttonIds[1])
 				isButton = true;
-		
+
 			if(isServiceCheckBoxId){			
-				ArrayList<CheckBox> probeCheckBoxes = checkBoxes.get(serviceCheckBox);
+				ArrayList<ArrayList<CheckBox>> probeCheckBoxes = checkBoxes.get(serviceCheckBox);
 				boolean checked = serviceCheckBox.isChecked();
 		
 				for(int i=0; i<probeCheckBoxes.size(); i++){
-					CheckBox probeCheckBox = probeCheckBoxes.get(i);
-					if(checked){
-						serviceCheckBox.setChecked(true);
-						probeCheckBox.setChecked(true);
+					ArrayList<CheckBox> specializedProbeCheckBoxes = probeCheckBoxes.get(i); //required and non-required
+					
+					for(int j=0; j<specializedProbeCheckBoxes.size(); j++){
+						CheckBox probeCheckBox = specializedProbeCheckBoxes.get(j);
+						if(checked){
+							serviceCheckBox.setChecked(true);
+							probeCheckBox.setChecked(true);
+						}
+						else{
+							serviceCheckBox.setChecked(false);
+							probeCheckBox.setChecked(false);
+						}
 					}
-					else{
-						serviceCheckBox.setChecked(false);
-						probeCheckBox.setChecked(false);
-					}
-				}
+					
+				}//forloop - probeCheckBoxes
 			
 			} else if(!isButton){
 				
-				int otherProbeCount = 0;
+				int otherRequiredProbeCount = 0;
 				CheckBox probeCheckBox = null;
-				outer: for(Map.Entry<CheckBox, ArrayList<CheckBox>> entry : checkBoxes.entrySet()){
+				boolean requiredFlag = false;
+				outer: for(Map.Entry<CheckBox, ArrayList<ArrayList<CheckBox>>> entry : checkBoxes.entrySet()){
 					CheckBox tempServiceCheckBox = entry.getKey();
-					ArrayList<CheckBox> probeCheckBoxList = entry.getValue();
+					ArrayList<ArrayList<CheckBox>> probeCheckBoxList = entry.getValue();
 					for(int i=0; i<probeCheckBoxList.size(); i++){
-						if(v.getId() == probeCheckBoxList.get(i).getId()){
-							serviceCheckBox = tempServiceCheckBox;
-							otherProbeCount = checkBoxes.get(tempServiceCheckBox).size();
-							probeCheckBox = probeCheckBoxList.get(i);
-							probeCheckBox.setChecked(probeCheckBox.isChecked());
-							checkBoxes.get(entry.getKey()).get(i).setChecked(probeCheckBox.isChecked());
-							break outer;
+						ArrayList<CheckBox> specializedProbeCheckBoxList = probeCheckBoxList.get(i);
+						for(int j=0; j<specializedProbeCheckBoxList.size(); j++){
+							if(v.getId() == specializedProbeCheckBoxList.get(j).getId()){
+								serviceCheckBox = tempServiceCheckBox;
+								otherRequiredProbeCount = checkBoxes.get(tempServiceCheckBox).get(0).size();
+								probeCheckBox = specializedProbeCheckBoxList.get(j);
+								if(probeCheckBox.getText().toString().toLowerCase().contains("required")){
+									requiredFlag = true;
+								}
+								
+								probeCheckBox.setChecked(probeCheckBox.isChecked());
+								checkBoxes.get(entry.getKey()).get(i).get(j).setChecked(probeCheckBox.isChecked());
+								break outer;
+							}
 						}
-					}
+						
+					}//forloop - probeCheckBoxList
 				}
-			
-				boolean allOtherProbesChecked = checkAllOtherProbes(serviceCheckBox, v.getId(), probeCheckBox.isChecked());
-				if((probeCheckBox.isChecked() != serviceCheckBox.isChecked()) && (allOtherProbesChecked || otherProbeCount == 1)){
-					serviceCheckBox.setChecked(!serviceCheckBox.isChecked());
+				
+				if(requiredFlag){
+					boolean allOtherRequiredProbesChecked = checkAllOtherRequiredProbes(serviceCheckBox, v.getId(), probeCheckBox.isChecked());
+					if((probeCheckBox.isChecked() != serviceCheckBox.isChecked()) && (allOtherRequiredProbesChecked || otherRequiredProbeCount == 1)){
+						serviceCheckBox.setChecked(!serviceCheckBox.isChecked());
+					} 
 				}
 
 			} else { //save,cancel buttons
@@ -258,7 +303,7 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 					LivingLabSettingItem llsi = null;
 					
 					
-					for(Entry<CheckBox, ArrayList<CheckBox>> entry : checkBoxes.entrySet()) {
+					for(Entry<CheckBox, ArrayList<ArrayList<CheckBox>>> entry : checkBoxes.entrySet()) {
 						llsiJson = new JSONObject();
 						service_id = (String) entry.getKey().getText();
 					
@@ -269,21 +314,29 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 						int enabled = entry.getKey().isChecked() ? 1 : 0;
 						llsiJson.put("enabled", enabled);
 					
-						ArrayList<CheckBox> tempProbeCheckBoxes = entry.getValue();
+						ArrayList<ArrayList<CheckBox>> tempProbeCheckBoxes = entry.getValue();
 						String probe_id_raw = "", probe_id = "";
 						for(int i=0; i<tempProbeCheckBoxes.size(); i++){
-							probe_id_raw = (String) tempProbeCheckBoxes.get(i).getText();
-							probe_id = "";
-							String[] tokens = probe_id_raw.split(" ");
-						
-							for(int j = 0; j<tokens.length; j++){
-								char firstLetter = Character.toLowerCase(tokens[j].charAt(0));
-								probe_id += firstLetter + tokens[j].substring(1, tokens[j].length()) + "_";
+							
+							ArrayList<CheckBox> specializedTempProbeCheckBoxes = tempProbeCheckBoxes.get(i);
+							for(int j=0; j<specializedTempProbeCheckBoxes.size(); j++){
+								probe_id_raw = (String) specializedTempProbeCheckBoxes.get(j).getText();
+								probe_id = "";
+								String[] tokens = probe_id_raw.split(" ");
+							
+								for(int k = 0; k<tokens.length; k++){
+									if(tokens[k].contains("Required"))
+										continue;
+									char firstLetter = Character.toLowerCase(tokens[k].charAt(0));
+									probe_id += firstLetter + tokens[k].substring(1, tokens[k].length()) + "_";
+								}
+								probe_id = probe_id.substring(0, probe_id.length()-1);
+								
+							
+								int checked = specializedTempProbeCheckBoxes.get(j).isChecked() ? 1 : 0;
+								llsiJson.put(probe_id, checked);
 							}
-							probe_id = probe_id.substring(0, probe_id.length()-1);
-						
-							int checked = tempProbeCheckBoxes.get(i).isChecked() ? 1 : 0;
-							llsiJson.put(probe_id, checked);
+							
 						}
 				
 						llsi = new LivingLabSettingItem(llsiJson);
@@ -296,30 +349,33 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 					finish();
 				}
 			
-			}
+			} //if/elseif/else - service/probe chekboxes and buttons
+			
 		} catch(Exception e){
 			e.printStackTrace();
 		}
 	}
 	
-	public boolean checkAllOtherProbes(CheckBox serviceCheckBox, int viewId, boolean checked){
-		boolean result = checked;
-		ArrayList<CheckBox> probeCheckBoxes = checkBoxes.get(serviceCheckBox);
+	public boolean checkAllOtherRequiredProbes(CheckBox serviceCheckBox, int viewId, boolean checked){
+		boolean result = true;
+		ArrayList<ArrayList<CheckBox>> probeCheckBoxes = checkBoxes.get(serviceCheckBox);
 		for(int i=0; i<probeCheckBoxes.size(); i++){
-			CheckBox otherProbeCheckBox = probeCheckBoxes.get(i);
-			if(otherProbeCheckBox.getId() != viewId){
-				if(checked){
-					if(!otherProbeCheckBox.isChecked()){
-						result = false;
-						break;
-					}
-				} else {
-					if(otherProbeCheckBox.isChecked()){
-						result = true;
-						break;
+			
+			ArrayList<CheckBox> specializedProbeCheckBoxes = probeCheckBoxes.get(i);
+			for(int j=0; j<specializedProbeCheckBoxes.size(); j++){
+				CheckBox otherProbeCheckBox = specializedProbeCheckBoxes.get(j);
+				
+				if(otherProbeCheckBox.getText().toString().toLowerCase().contains("required")){
+					if(otherProbeCheckBox.getId() != viewId){
+						if(!otherProbeCheckBox.isChecked()){
+							result = false;
+							break;
+						}
 					}
 				}
-			}
+				
+			}//inner for loop
+			
 		}
 		return result;
 	}
@@ -352,5 +408,6 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         }
  
     }
+
 	
 }

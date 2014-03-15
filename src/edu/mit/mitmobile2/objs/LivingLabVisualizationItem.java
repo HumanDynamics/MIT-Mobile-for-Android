@@ -10,8 +10,12 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 
+import android.util.Log;
+
 public class LivingLabVisualizationItem implements Serializable {
 
+	private static final String TAG = "LLVisualizationctivity";
+	
 	private String mTitle;
 	private String mKey;
 	private String mData;
@@ -24,7 +28,7 @@ public class LivingLabVisualizationItem implements Serializable {
 	}
 	
 	public LivingLabVisualizationItem(JSONObject viewJson) throws JSONException {
-		this(viewJson.optString("title"), viewJson.optString("key"), viewJson.optJSONArray("data").toString());		
+		this(viewJson.optString("title"), viewJson.optString("key"), viewJson.optJSONObject("data").toString());	
 	}
 	
 	public LivingLabVisualizationItem(Bundle bundle) {
