@@ -355,6 +355,7 @@
         <!-- Living Labs -->
         <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabAppListActivity"></activity>
         <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabSettingsActivity" android:screenOrientation="portrait"></activity>
 		
 		<!--  Living Labs Services / Receiver -->
 		<service

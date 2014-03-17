@@ -286,7 +286,7 @@ public class LivingLabsSettingsDB {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			
-			db.execSQL("CREATE TABLE IF NOT EXISTS" + LIVINGLABS_SETTINGS_TABLE + " ("
+			db.execSQL("CREATE TABLE IF NOT EXISTS " + LIVINGLABS_SETTINGS_TABLE + " ("
 					+ APP_ID + " TEXT, "
 					+ LAB_ID + " TEXT, "
 					+ SERVICE_ID + " TEXT, "
