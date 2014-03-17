@@ -27,7 +27,7 @@ import edu.mit.mitmobile2.CommonActions;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.PrefsActivity;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class AboutActivity extends NewModuleActivity implements OnGesturePerformedListener {
 

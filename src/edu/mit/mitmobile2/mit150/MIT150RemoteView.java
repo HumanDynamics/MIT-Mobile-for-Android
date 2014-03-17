@@ -6,7 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.TextView;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.RemoteImageView;
 
 public class MIT150RemoteView extends RemoteImageView {

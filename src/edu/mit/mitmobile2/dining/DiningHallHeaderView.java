@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.RemoteImageView;
 import edu.mit.mitmobile2.dining.DiningModel.DiningHall;
 

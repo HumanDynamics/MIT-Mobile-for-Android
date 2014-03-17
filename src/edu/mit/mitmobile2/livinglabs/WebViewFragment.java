@@ -1,10 +1,13 @@
 package edu.mit.mitmobile2.livinglabs;
 
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -70,7 +73,7 @@ public class WebViewFragment extends Fragment {
 		//mWebView.setVisibility(View.VISIBLE);
 		//mWebView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		mWebView.getSettings().setJavaScriptEnabled(true);
-		mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+		mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		mWebView.setWebViewClient(new WebViewClient() {			
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -89,10 +92,24 @@ public class WebViewFragment extends Fragment {
 					String description, String failingUrl) {
 				view.loadData(getString(R.string.problem_contacting_server), "text/html", "UTF-8");
 			}		
+			
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				if (url != null && url.contains("maps.google.com")) {
+		            view.getContext().startActivity(
+		                    new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+		            return true;
+				}
+				return super.shouldOverrideUrlLoading(view, url);
+			}
 		});
 					
 		mWebView.addJavascriptInterface(mJavascriptInterface, "android");
 		
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+		    //WebView.setWebContentsDebuggingEnabled(true);
+		}
+	
 		if (savedInstanceState != null) {
 			mWebView.restoreState(savedInstanceState);
 		} else {

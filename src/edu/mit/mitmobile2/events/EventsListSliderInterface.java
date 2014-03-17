@@ -14,7 +14,7 @@ import android.widget.TextView;
 import edu.mit.mitmobile2.FullScreenLoader;
 import edu.mit.mitmobile2.LockingScrollView;
 import edu.mit.mitmobile2.MobileWebApi;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.SliderInterface;
 import edu.mit.mitmobile2.events.EventsModel.EventType;
 import edu.mit.mitmobile2.objs.EventDetailsItem;

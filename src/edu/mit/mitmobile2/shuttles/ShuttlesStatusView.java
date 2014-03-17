@@ -1,6 +1,6 @@
 package edu.mit.mitmobile2.shuttles;
 
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;

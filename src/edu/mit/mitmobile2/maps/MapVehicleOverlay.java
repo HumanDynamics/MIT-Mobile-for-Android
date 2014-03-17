@@ -11,7 +11,7 @@ import android.util.Log;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class MapVehicleOverlay extends ItemizedOverlay {
 

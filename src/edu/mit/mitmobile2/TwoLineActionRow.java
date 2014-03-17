@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.TextView;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class TwoLineActionRow extends ActionRow {
 	private TextView mTitleView;

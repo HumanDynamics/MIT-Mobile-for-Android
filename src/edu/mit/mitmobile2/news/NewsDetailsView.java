@@ -29,7 +29,7 @@ import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.NewModuleActivity.OnBackPressedListener;
 import edu.mit.mitmobile2.NewModuleActivity.OnPausedListener;
 
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.SliderActivity;
 import edu.mit.mitmobile2.objs.NewsItem;
 

@@ -6,7 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import android.os.Bundle;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 public class LivingLabAppListActivity extends NewModuleActivity {
@@ -36,6 +38,8 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 			Log.e("LivingLabAppListActivity", "Error Constructing Labs List", e);
 			return;
 		}
+		
+		LinearLayout layout = new LinearLayout(this);
 		
 		mLivingLabsListView = (ListView) findViewById(R.id.livingLabsListView);
 		mLivingLabsListView.setAdapter(new LivingLabArrayAdapter(this, 0, labs));		

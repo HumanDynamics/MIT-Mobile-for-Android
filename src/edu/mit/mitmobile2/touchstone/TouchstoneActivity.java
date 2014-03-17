@@ -30,7 +30,7 @@ import edu.mit.mitmobile2.MITClientData;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.libraries.LibraryModel.UserIdentity;
 
 public class TouchstoneActivity extends NewModuleActivity implements OnSharedPreferenceChangeListener {

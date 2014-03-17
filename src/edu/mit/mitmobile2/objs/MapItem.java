@@ -17,7 +17,7 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.maps.MITMapView;
 import edu.mit.mitmobile2.maps.MapAbstractionObject;
 import edu.mit.mitmobile2.maps.MITMapActivity;

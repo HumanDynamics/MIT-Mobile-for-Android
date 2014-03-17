@@ -1,6 +1,6 @@
 package edu.mit.mitmobile2.facilities;
 
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;

@@ -1,6 +1,6 @@
 package edu.mit.mitmobile2.emergency;
 
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.emergency.EmergencyDB.ContactsTable;
 import edu.mit.mitmobile2.objs.EmergencyItem.Contact;
 

@@ -28,12 +28,12 @@
     	<!-- ################################### -->
     	<!-- ################################### -->
         <!-- Get Git describe on WINDOWS machines -->
-        <exec executable="git.cmd" osfamily="windows" outputproperty="git.revision" failifexecutionfails="false" errorproperty="git.error">
+        <exec executable="git" osfamily="windows" outputproperty="git.revision" failifexecutionfails="false" errorproperty="git.error">
         	<arg value="describe" />
     	</exec>
 
         <!-- Get Git SHA1 on WINDOWS machines -->
-        <exec executable="git.cmd" osfamily="windows" outputproperty="git.hash" failifexecutionfails="false" errorproperty="git.error">
+        <exec executable="git" osfamily="windows" outputproperty="git.hash" failifexecutionfails="false" errorproperty="git.error">
         	<!-- <arg value="log -1 -pretty=format:%H" /> -->
         	<arg value="log" />
         	<arg value="-1" />

@@ -3,7 +3,7 @@ package edu.mit.mitmobile2.events;
 import java.util.List;
 
 
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.objs.EventDetailsItem;
 import edu.mit.mitmobile2.objs.EventDetailsItem.TimeSummaryMode;
 

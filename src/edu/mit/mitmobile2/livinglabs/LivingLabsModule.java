@@ -7,7 +7,7 @@ import android.app.Activity;
 import edu.mit.mitmobile2.livinglabs.LivingLabAppListActivity;
 import edu.mit.mitmobile2.MITMenuItem;
 import edu.mit.mitmobile2.NewModule;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class LivingLabsModule extends NewModule {
 

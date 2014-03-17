@@ -20,7 +20,7 @@ import edu.mit.mitmobile2.HighlightEffects;
 import edu.mit.mitmobile2.LoaderBar;
 import edu.mit.mitmobile2.LockingScrollView;
 import edu.mit.mitmobile2.NewModule;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.SliderInterface;
 import edu.mit.mitmobile2.TwoLineActionRow;
 import edu.mit.mitmobile2.objs.NewsItem;

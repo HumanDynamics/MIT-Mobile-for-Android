@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import edu.mit.mitmobile2.livinglabs.R;
 
 abstract public class MITSecondaryTitleBar extends LinearLayout {
 

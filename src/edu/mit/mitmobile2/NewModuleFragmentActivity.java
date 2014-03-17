@@ -6,6 +6,7 @@ import java.util.List;
 import edu.mit.mitmobile2.MITTitleBar.OnMITTitleBarListener;
 import edu.mit.mitmobile2.NewModuleActivity.OnBackPressedListener;
 import edu.mit.mitmobile2.NewModuleActivity.OnPausedListener;
+import edu.mit.mitmobile2.livinglabs.R;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;

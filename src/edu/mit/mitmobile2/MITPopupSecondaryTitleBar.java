@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import edu.mit.mitmobile2.OnMITMenuItemListener;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class MITPopupSecondaryTitleBar extends MITSecondaryTitleBar implements OnMITMenuItemListener {
 

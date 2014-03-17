@@ -18,7 +18,7 @@ import edu.mit.mitmobile2.DividerView;
 import edu.mit.mitmobile2.FullScreenLoader;
 import edu.mit.mitmobile2.LockingScrollView;
 import edu.mit.mitmobile2.MobileWebApi;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.SliderInterface;
 import edu.mit.mitmobile2.StyledContentHTML;
 import edu.mit.mitmobile2.TwoLineActionRow;

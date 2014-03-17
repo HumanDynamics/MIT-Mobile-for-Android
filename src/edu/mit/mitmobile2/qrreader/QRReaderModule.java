@@ -10,7 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import edu.mit.mitmobile2.MITMenuItem;
 import edu.mit.mitmobile2.NewModule;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class QRReaderModule extends NewModule {
 

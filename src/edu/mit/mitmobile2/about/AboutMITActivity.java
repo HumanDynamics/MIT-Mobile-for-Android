@@ -3,7 +3,7 @@ package edu.mit.mitmobile2.about;
 import edu.mit.mitmobile2.HomeScreenActivity;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 
 import android.content.Intent;
 import android.os.Bundle;

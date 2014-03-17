@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class TitleBarSwitch extends LinearLayout {
 

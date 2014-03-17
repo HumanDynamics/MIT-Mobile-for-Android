@@ -35,7 +35,7 @@ import edu.mit.mitmobile2.MITClient;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.libraries.LibraryModel.UserIdentity;
 import edu.mit.mitmobile2.settings.SettingsModule;
 

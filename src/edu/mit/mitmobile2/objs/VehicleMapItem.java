@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import edu.mit.mitmobile2.CommonActions;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.maps.MITMapBrowseCatsActivity;
 import edu.mit.mitmobile2.maps.MITMapBrowseResultsActivity;
 import edu.mit.mitmobile2.maps.MITMapDetailsSliderActivity;

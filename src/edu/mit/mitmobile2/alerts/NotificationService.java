@@ -20,7 +20,7 @@ import android.text.Spanned;
 import android.util.Log;
 
 import edu.mit.mitmobile2.Global;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.emergency.EmergencyActivity;
 import edu.mit.mitmobile2.emergency.EmergencyParser;
 import edu.mit.mitmobile2.objs.EmergencyItem;

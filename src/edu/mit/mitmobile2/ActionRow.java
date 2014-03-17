@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public abstract class ActionRow extends FrameLayout {	
 	private OnClickListener mOnClickListener;

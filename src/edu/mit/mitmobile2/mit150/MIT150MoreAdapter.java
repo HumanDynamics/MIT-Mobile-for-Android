@@ -2,7 +2,7 @@ package edu.mit.mitmobile2.mit150;
 
 import java.util.ArrayList;
 
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 
 import android.content.Context;
 import android.os.Handler;

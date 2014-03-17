@@ -3,6 +3,7 @@ package edu.mit.mitmobile2;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class MITPlainSecondaryTitleBar extends MITSecondaryTitleBar {
 

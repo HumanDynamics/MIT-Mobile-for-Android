@@ -30,7 +30,7 @@ import edu.mit.mitmobile2.AttributesParser;
 import edu.mit.mitmobile2.AudioPlayer;
 import edu.mit.mitmobile2.CommonActions;
 import edu.mit.mitmobile2.LockingScrollView;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.RemoteImageView;
 import edu.mit.mitmobile2.ResizableImageView;
 import edu.mit.mitmobile2.SliderInterface;

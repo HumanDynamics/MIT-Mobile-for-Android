@@ -12,7 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.MediaController;
 import android.widget.VideoView;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.about.Config;
 
 public class MIT150VideoActivity extends Activity {

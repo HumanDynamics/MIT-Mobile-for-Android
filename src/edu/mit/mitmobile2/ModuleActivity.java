@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public abstract class ModuleActivity extends Activity {
 	

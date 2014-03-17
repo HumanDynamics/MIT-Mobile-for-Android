@@ -29,7 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TextView;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.CommonActions;
 import edu.mit.mitmobile2.DividerView;
 import edu.mit.mitmobile2.FullScreenLoader;

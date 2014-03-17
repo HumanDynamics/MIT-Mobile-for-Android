@@ -2,6 +2,7 @@ package edu.mit.mitmobile2;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class PrefsActivity extends PreferenceActivity {
 

@@ -9,7 +9,7 @@ import edu.mit.mitmobile2.MITMenuItem;
 import edu.mit.mitmobile2.MITPlainSecondaryTitleBar;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.RemoteImageView;
 import edu.mit.mitmobile2.TitleBarSwitch;
 import edu.mit.mitmobile2.TitleBarSwitch.OnToggledListener;

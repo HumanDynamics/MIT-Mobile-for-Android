@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import edu.mit.mitmobile2.events.EventsModule;
 import edu.mit.mitmobile2.links.LinksModule;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.maps.MITMapActivity;
 import edu.mit.mitmobile2.maps.MapsModule;
 import edu.mit.mitmobile2.mit150.MIT150Module;

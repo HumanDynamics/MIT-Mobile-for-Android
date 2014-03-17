@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import edu.mit.mitmobile2.livinglabs.R;
 
 
 public class TitleBar extends LinearLayout {

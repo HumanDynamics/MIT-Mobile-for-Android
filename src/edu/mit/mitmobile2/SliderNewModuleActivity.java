@@ -8,6 +8,7 @@ import android.view.View;
 import edu.mit.mitmobile2.MITSliderTitleBar.OnPreviousNextListener;
 import edu.mit.mitmobile2.SliderView.Adapter;
 import edu.mit.mitmobile2.SliderView.OnSeekListener;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public abstract class SliderNewModuleActivity extends NewModuleActivity {	
 	protected Context ctx;

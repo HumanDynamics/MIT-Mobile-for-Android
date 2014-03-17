@@ -12,7 +12,7 @@ import android.widget.TextView;
 import edu.mit.mitmobile2.DateStrings;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.SimpleArrayAdapter;
 
 public class QRReaderHistoryActivity extends NewModuleActivity {

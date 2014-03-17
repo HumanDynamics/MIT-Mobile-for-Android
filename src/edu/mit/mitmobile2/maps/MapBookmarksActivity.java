@@ -23,7 +23,7 @@ import edu.mit.mitmobile2.MITPlainSecondaryTitleBar;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.TitleBar;
 import edu.mit.mitmobile2.TitleBarSwitch;
 import edu.mit.mitmobile2.TitleBarSwitch.OnToggledListener;

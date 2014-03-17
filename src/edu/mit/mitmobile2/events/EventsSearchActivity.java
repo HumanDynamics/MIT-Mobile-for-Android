@@ -3,7 +3,7 @@ package edu.mit.mitmobile2.events;
 import android.os.Handler;
 import android.widget.ArrayAdapter;
 import edu.mit.mitmobile2.NewModule;
-import edu.mit.mitmobile2.R;
+import edu.mit.mitmobile2.livinglabs.R;
 import edu.mit.mitmobile2.SearchActivity;
 import edu.mit.mitmobile2.objs.EventDetailsItem;
 import edu.mit.mitmobile2.objs.SearchResults;

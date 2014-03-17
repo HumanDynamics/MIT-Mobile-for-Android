@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import edu.mit.mitmobile2.livinglabs.R;
 
 public class FullScreenLoader extends FrameLayout {
 
