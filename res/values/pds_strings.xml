@@ -23,44 +23,44 @@
     <string name="places_relative_url">/visualization/places/</string>
     <string name="device_api_relative_url">/api/personal_data/device/</string>
     <string name="living_labs_application_list">
-        "[
-        	{ 
-        		'name': 'Social Health Tracker', 
-        		'visualizations' : [ 
-        			{'title': 'My Social Health', 'key': 'socialHealthRadial', 'answers': ['socialhealth'] },
-        			{'title': 'Activity', 'key': 'activity', 'answers': ['recentActivityByHour'] },
-        			{'title': 'Social', 'key': 'social', 'answers': ['recentSocialByHour'] },
-        			{'title': 'Focus', 'key': 'focus', 'answers': ['recentFocusByHour'] }
-        		],
-        		'answers': [ 
-        			{ 'key': 'socialhealth', 'data': ['recentActivityByHour', 'recentSocialByHour'] }, 
-        			{ 'key': 'recentActivityByHour', 'data': ['Activity Probe', { 'key': 'Simple Location Probe', 'required': false }] },
-        			{ 'key': 'recentSocialByHour', 'data': ['Sms Probe', 'Call Log Probe', 'Bluetooth Probe'] },
-                    { 'key': 'recentFocusByHour', 'data': ['Screen Probe'] }
-        		]
-        	},
-        	{
-        		'name': 'My Places', 
-        		'visualizations': [
-        			{'title': 'Home / Work', 'key': 'places', 'answers': ['recentPlaces'] }
-        		],
-                'answers': [
-                    { 'key': 'recentPlaces', 'data': [ 'Simple Location Probe' ] }
-                ]
-        	},
-        	{
-        		'name': 'Meetup',
-        		'visualizations': [
-        			{'title': 'Meetup Home', 'key': 'meetup_home', 'answers': ['recentPlaces'] }
-        		]
-        	},
-        	{
-        		'name': 'Settings', 
-        		'visualizations': [
-        			{'title': 'Settings', 'key': 'settings', 'answers': [] }		
-        		]
-        	}  	
-        ]"
+		"[
+			{
+				'name': 'Social Health Tracker', 
+				'visualizations' : [ 
+					{'title': 'My Social Health', 'key': 'socialHealthRadial', 'answers': ['socialhealth'] },
+					{'title': 'Activity', 'key': 'activity', 'answers': ['recentActivityByHour'] },
+					{'title': 'Social', 'key': 'social', 'answers': ['recentSocialByHour'] },
+					{'title': 'Focus', 'key': 'focus', 'answers': ['recentFocusByHour'] }
+				],
+				'answers': [ 
+					{ 'key': 'socialhealth', 'data': ['recentActivityByHour', 'recentSocialByHour'] }, 
+					{ 'key': 'recentActivityByHour', 'data': ['Activity Probe', { 'key': 'Simple Location Probe', 'required': false }] },
+					{ 'key': 'recentSocialByHour', 'data': ['Sms Probe', 'Call Log Probe', 'Bluetooth Probe'] },
+					{ 'key': 'recentFocusByHour', 'data': ['Screen Probe'] }
+				]
+			},
+			{
+				'name': 'My Places', 
+				'visualizations': [
+					{'title': 'Home / Work', 'key': 'places', 'answers': ['recentPlaces'] }
+				],
+				'answers': [
+					{ 'key': 'recentPlaces', 'data': [ 'Simple Location Probe' ] }
+				]
+			},
+			{
+				'name': 'Meetup',
+				'visualizations': [
+					{'title': 'Meetup Home', 'key': 'meetup_home', 'answers': ['recentPlaces'] }
+				]
+			},
+			{
+				'name': 'Settings', 
+				'visualizations': [
+					{'title': 'Settings', 'key': 'settings', 'answers': [] }        
+				]
+			}   
+		]"
     </string>
     <string name="main_pipeline_config">        {
 			<!--  "@type": "edu.mit.media.openpds.client.funf.OpenPDSPipeline", -->
