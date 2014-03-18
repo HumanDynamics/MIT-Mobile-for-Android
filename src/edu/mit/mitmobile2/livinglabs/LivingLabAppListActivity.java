@@ -50,7 +50,7 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 				
 				Log.v(TAG,"position is: " + position);
 				
-				if(position == 2){
+				if(labItem.getName().equalsIgnoreCase("settings")){
 					labItem = (LivingLabItem) listView.getItemAtPosition(0);
 					Intent labIntent = new Intent(LivingLabAppListActivity.this, LivingLabSettingsActivity.class);
 					labIntent.putExtra("lab", labItem);

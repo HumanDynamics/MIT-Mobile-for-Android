@@ -73,7 +73,7 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 			String title = visualizationItem.getTitle();
 			ArrayList<ArrayList<String>> probes = new ArrayList<ArrayList<String>>();
 			try {
-				JSONObject dataObject = new JSONObject(visualizationItem.getData());
+				JSONObject dataObject = visualizationItem.getData();
 				JSONArray requiredProbesArray = dataObject.getJSONArray("required");
 				JSONArray nonRequiredProbesArray = dataObject.getJSONArray("non-required");
 				

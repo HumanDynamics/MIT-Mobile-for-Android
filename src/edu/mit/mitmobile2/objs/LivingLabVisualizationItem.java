@@ -2,37 +2,35 @@ package edu.mit.mitmobile2.objs;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.os.Bundle;
-
-import android.util.Log;
-
 public class LivingLabVisualizationItem implements Serializable {
 
-	private static final String TAG = "LLVisualizationctivity";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9008681946449251965L;
 	
 	private String mTitle;
 	private String mKey;
-	private String mData;
+	private List<LivingLabDataItem> mAnswerItems;
 	
-	public LivingLabVisualizationItem(String title, String key, String data) {
-		assert(title != null && key != null && data != null);
+	public LivingLabVisualizationItem(String title, String key, JSONArray answers) {
+		assert(title != null && key != null && answers != null);
 		setTitle(title);
 		setKey(key);
-		setData(data);
+		mAnswerItems = new ArrayList<LivingLabDataItem>();
+		setAnswerItems(answers);
 	}
 	
-	public LivingLabVisualizationItem(JSONObject viewJson) throws JSONException {
-		this(viewJson.optString("title"), viewJson.optString("key"), viewJson.optJSONObject("data").toString());	
-	}
-	
-	public LivingLabVisualizationItem(Bundle bundle) {
-		this(bundle.getString("title"), bundle.getString("key"), bundle.getString("data"));
+	public LivingLabVisualizationItem(JSONObject viewJson) {
+		this(viewJson.optString("title"), viewJson.optString("key"), viewJson.optJSONArray("answers"));	
 	}
 
 	public String getTitle() {
@@ -51,19 +49,57 @@ public class LivingLabVisualizationItem implements Serializable {
 		this.mKey = key;
 	}
 	
-	public String getData(){
-		return mData;
+	public JSONObject getData() {
+		JSONObject dataJson = new JSONObject();
+		Set<LivingLabDataItem> probes = new HashSet<LivingLabDataItem>();
+		
+		for (LivingLabDataItem dataItem : getAnswerItems()) {
+			probes.addAll(dataItem.getProbes());
+		}
+		
+		try {
+			dataJson.put("required", new JSONArray());
+			dataJson.put("non-required", new JSONArray());
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		for (LivingLabDataItem dataItem : probes) {
+			if (dataItem.isRequired()) {
+				// NOTE: The key is either human readable, or must be mapped to work with the current system
+				try {
+					dataJson.accumulate("required", dataItem.getKey());
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					dataJson.accumulate("non-required", dataItem.getKey());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return dataJson;
 	}
 	
-	public void setData(String data){
-		this.mData = data;
+	public List<LivingLabDataItem> getAnswerItems() {
+		return mAnswerItems;
 	}
 
-	public Bundle getAsBundle() {
-		Bundle bundle = new Bundle();
-		bundle.putString("title", getTitle());
-		bundle.putString("key", getKey());
-		bundle.putString("data", getData());
-		return bundle;
+	public void setAnswerItems(JSONArray answersJson) {
+		mAnswerItems.clear();
+		
+		for (int i = 0; i < answersJson.length(); i++) {
+			JSONObject answerJson = answersJson.optJSONObject(i);
+			if (answerJson != null) {
+				mAnswerItems.add(LivingLabDataItemFactory.INSTANCE.getDataItem(answerJson));
+			} else {
+				mAnswerItems.add(LivingLabDataItemFactory.INSTANCE.getDataItem(answersJson.optString(i)));
+			}
+		}
 	}
 }

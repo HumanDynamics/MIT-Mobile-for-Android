@@ -4,21 +4,29 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LivingLabItem implements Serializable {
 	private static final long serialVersionUID = -7377069315139664175L;
 	private String mName;
 	private ArrayList<LivingLabVisualizationItem> mVisualizations;
+	private ArrayList<LivingLabDataItem> mAnswerItems;
 	
-	public LivingLabItem(JSONObject labJson) throws JSONException {
+	public LivingLabItem(JSONObject labJson) {
 		assert(labJson != null && labJson.has("name") && labJson.has("visualizations"));
 		mName = labJson.optString("name");
 		mVisualizations = new ArrayList<LivingLabVisualizationItem>();
-		JSONArray viewsJsonVisualization = labJson.optJSONArray("visualizations");
-		for (int i = 0; i < viewsJsonVisualization.length(); i++) {
-			mVisualizations.add(new LivingLabVisualizationItem(viewsJsonVisualization.optJSONObject(i)));
+		mAnswerItems = new ArrayList<LivingLabDataItem>();
+		JSONArray answersJson = labJson.optJSONArray("answers");
+		mAnswerItems = new ArrayList<LivingLabDataItem>(); 
+		
+		if (answersJson != null) {
+			mAnswerItems.addAll(LivingLabDataItemFactory.INSTANCE.getDataItems(answersJson));
+		}
+		
+		JSONArray viewsJson = labJson.optJSONArray("visualizations");
+		for (int i = 0; i < viewsJson.length(); i++) {
+			mVisualizations.add(new LivingLabVisualizationItem(viewsJson.optJSONObject(i)));
 		}
 	}
 
@@ -37,5 +45,13 @@ public class LivingLabItem implements Serializable {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	public ArrayList<LivingLabDataItem> getAnswerItems() {
+		return mAnswerItems;
+	}
+
+	public void setAnswerItems(ArrayList<LivingLabDataItem> answerItems) {
+		this.mAnswerItems = answerItems;
 	}
 }
