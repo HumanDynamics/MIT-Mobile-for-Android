@@ -13,10 +13,10 @@ public class LivingLabDataItemFactory {
 	
 	public static LivingLabDataItemFactory INSTANCE = new LivingLabDataItemFactory();
 	
-	private Map<String, LivingLabDataItem> mCachedItems;
+	private Map<String, List<LivingLabDataItem>> mCachedDependencies;
 	
 	private LivingLabDataItemFactory() {
-		mCachedItems = new HashMap<String, LivingLabDataItem>();
+		mCachedDependencies = new HashMap<String, List<LivingLabDataItem>>();
 	}
 	
 	public List<LivingLabDataItem> getDataItems(JSONArray itemsJson) {
@@ -36,24 +36,28 @@ public class LivingLabDataItemFactory {
 	
 	public LivingLabDataItem getDataItem(JSONObject dataJson) {
 		String key = dataJson.optString("key");
-		LivingLabDataItem dataItem = null;
-		if (key.length() > 0 && mCachedItems.containsKey(key)) {
-			dataItem = mCachedItems.get(key);
-		} 
 		
-		if (dataItem == null) {
-			// Warning: a hack, but maybe there isn't a better way to check for if something's a probe?
-			dataItem = key.endsWith("Probe")? new LivingLabDataItem(dataJson) : new LivingLabAnswerItem(dataJson);
-			mCachedItems.put(key, dataItem);
+		if (!mCachedDependencies.containsKey(key)) {
+			mCachedDependencies.put(key, new ArrayList<LivingLabDataItem>());			
 		}
+
+		List<LivingLabDataItem> dependencies = mCachedDependencies.get(key);
+		// Warning: a hack, but maybe there isn't a better way to check for if something's a probe?
+
+		LivingLabDataItem dataItem = key.endsWith("Probe")? new LivingLabDataItem(dataJson) : new LivingLabAnswerItem(dataJson);
+		//mCachedItems.put(key, dataItem);
+		
 		
 		JSONArray dependenciesJson = dataJson.optJSONArray("data");
 		
-		if (dependenciesJson != null && dependenciesJson.length() != dataItem.getDependencies().size()) {
+		if (dependenciesJson != null && dependenciesJson.length() != dependencies.size()) {
 			// Implies we've loaded up an answer that has been previously instantiated (as a dependency), but not fully declared
 			// Maybe we should be adding the dependencies, rather than clearing out the old ones?
-			dataItem.setDependencies(getDataItems(dependenciesJson));
+			dependencies.clear();
+			dependencies.addAll(getDataItems(dependenciesJson));
 		}
+		
+		dataItem.setDependencies(dependencies);
 		
 		return dataItem;
 	}

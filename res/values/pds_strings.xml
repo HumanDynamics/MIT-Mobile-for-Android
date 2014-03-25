@@ -33,7 +33,7 @@
 					{'title': 'Focus', 'key': 'focus', 'answers': ['recentFocusByHour'] }
 				],
 				'answers': [ 
-					{ 'key': 'socialhealth', 'data': ['recentActivityByHour', 'recentSocialByHour'] }, 
+					{ 'key': 'socialhealth', 'data': ['recentActivityByHour', 'recentSocialByHour', 'recentFocusByHour'] }, 
 					{ 'key': 'recentActivityByHour', 'data': ['Activity Probe', { 'key': 'Simple Location Probe', 'required': false }] },
 					{ 'key': 'recentSocialByHour', 'data': ['Sms Probe', 'Call Log Probe', 'Bluetooth Probe'] },
 					{ 'key': 'recentFocusByHour', 'data': ['Screen Probe'] }
@@ -53,13 +53,7 @@
 				'visualizations': [
 					{'title': 'Meetup Home', 'key': 'meetup_home', 'answers': ['recentPlaces'] }
 				]
-			},
-			{
-				'name': 'Settings', 
-				'visualizations': [
-					{'title': 'Settings', 'key': 'settings', 'answers': [] }        
-				]
-			}   
+			}  
 		]"
     </string>
     <string name="main_pipeline_config">        {

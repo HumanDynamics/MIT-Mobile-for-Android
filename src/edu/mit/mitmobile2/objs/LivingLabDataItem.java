@@ -19,7 +19,7 @@ public class LivingLabDataItem implements Serializable {
 	private List<LivingLabDataItem> mDependencies;
 	
 	
-	public LivingLabDataItem(JSONObject dataJson) {
+	protected LivingLabDataItem(JSONObject dataJson) {
 		assert(dataJson != null && dataJson.has("key"));
 		setKey(dataJson.optString("key"));
 		setRequired(dataJson.has("required")? dataJson.optBoolean("required") : true);

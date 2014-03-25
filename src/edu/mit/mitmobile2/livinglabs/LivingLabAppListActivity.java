@@ -42,7 +42,7 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 		LinearLayout layout = new LinearLayout(this);
 		
 		mLivingLabsListView = (ListView) findViewById(R.id.livingLabsListView);
-		mLivingLabsListView.setAdapter(new LivingLabArrayAdapter(this, 0, labs));		
+		mLivingLabsListView.setAdapter(new LivingLabArrayAdapter(this, R.layout.living_lab_row, R.id.livingLabRowTitle, labs));		
 		mLivingLabsListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
