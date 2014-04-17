@@ -1,37 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="edu.mit.mitmobile2.livinglabs"
-      android:versionCode="14"
-      android:installLocation="auto"
-      android:versionName="2.5"
-      >
+    package="edu.mit.mitmobile2.livinglabs"
+    android:installLocation="auto"
+    android:versionCode="14"
+    android:versionName="2.5" >
 
     <!-- targetSdkVersion must remain < 11 in order for the menu to work correctly on 4.0+ devices -->
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19"></uses-sdk>
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="19" >
+    </uses-sdk>
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-    <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-    <uses-permission android:name="android.permission.READ_CONTACTS"></uses-permission>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-    <uses-permission android:name="android.permission.READ_CALENDAR"></uses-permission>
-    <uses-permission android:name="android.permission.WRITE_CALENDAR"></uses-permission>
-    <uses-permission android:name="android.permission.VIBRATE"></uses-permission>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.CALL_PHONE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.READ_CONTACTS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.READ_CALENDAR" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.VIBRATE" >
+    </uses-permission>
 
     <!-- Only this application can receive the messages and registration result -->
-    <permission android:name="edu.mit.mitmobile2.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <permission
+        android:name="edu.mit.mitmobile2.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="edu.mit.mitmobile2.permission.C2D_MESSAGE" />
 
     <!-- This app has permission to register and receive message -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
-    
-    	<!-- Additional living labs permissions  -->
-	<!-- Launching -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <!-- Additional living labs permissions -->
+    <!-- Launching -->
     <uses-permission android:name="android.permission.BATTERY_STATS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -55,216 +72,377 @@
     <!-- Wifi probe -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    
-    <!-- Bluetooth probe -->    
+
+    <!-- Bluetooth probe -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <application android:label="@string/app_name"
-                 android:name="edu.mit.mitmobile2.Global"
-                 android:icon="@drawable/mit_mobile_icon"
-                 android:theme="@style/Main"
-                 android:hardwareAccelerated="true"
-                 android:allowBackup="true">
-
-        <activity android:name="edu.mit.mitmobile2.HomeScreenActivity"
-                  android:screenOrientation="portrait"
-                  android:alwaysRetainTaskState="true"
-                  android:label="@string/app_name">
+    <application
+        android:name="edu.mit.mitmobile2.Global"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/mit_mobile_icon"
+        android:label="@string/app_name"
+        android:theme="@style/Main" >
+        <activity
+            android:name="edu.mit.mitmobile2.HomeScreenActivity"
+            android:alwaysRetainTaskState="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                 <action android:name="android.intent.action.VIEW" />
-                 <category android:name="android.intent.category.DEFAULT" />
-                 <category android:name="android.intent.category.BROWSABLE" />
-                 <data android:scheme="mitmobile" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="mitmobile" />
             </intent-filter>
         </activity>
-
-
-        <activity android:name="com.google.zxing.client.android.CaptureActivity"
-            android:screenOrientation="landscape" android:configChanges="orientation|keyboardHidden"
+        <activity
+            android:name="com.google.zxing.client.android.CaptureActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden">
+            android:windowSoftInputMode="stateAlwaysHidden" >
             <intent-filter>
                 <action android:name="com.google.zxing.client.android.SCAN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-
-        <receiver android:name="edu.mit.mitmobile2.alerts.BootReceiver" android:enabled="true">
+        <receiver
+            android:name="edu.mit.mitmobile2.alerts.BootReceiver"
+            android:enabled="true" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
 
         <!-- Only C2DM servers can send messages for the app. If permission is not set - any other app can generate it -->
-        <receiver android:name="edu.mit.mitmobile2.alerts.C2DMReceiver" android:permission="com.google.android.c2dm.permission.SEND">
-          <!-- Receive the actual message -->
-          <intent-filter>
-              <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-              <category android:name="edu.mit.mitmobile2" />
-          </intent-filter>
-          <!-- Receive the registration id -->
-          <intent-filter>
-              <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-              <category android:name="edu.mit.mitmobile2" />
-          </intent-filter>
-       </receiver>
+        <receiver
+            android:name="edu.mit.mitmobile2.alerts.C2DMReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
 
-        <activity android:name="edu.mit.mitmobile2.tour.TourCameraActivity"/>
-        <activity android:name="edu.mit.mitmobile2.mit150.MainMIT150Activity" android:screenOrientation="portrait"/>
-        <activity android:name="edu.mit.mitmobile2.mit150.MIT150WelcomeActivity" android:screenOrientation="portrait" />
-        <activity android:name="edu.mit.mitmobile2.mit150.MIT150VideoActivity" android:screenOrientation="landscape" />
+            <!-- Receive the actual message -->
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="edu.mit.mitmobile2" />
+            </intent-filter>
+            <!-- Receive the registration id -->
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="edu.mit.mitmobile2" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name="edu.mit.mitmobile2.tour.TourCameraActivity" />
+        <activity
+            android:name="edu.mit.mitmobile2.mit150.MainMIT150Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.mit150.MIT150WelcomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.mit150.MIT150VideoActivity"
+            android:screenOrientation="landscape" />
         <activity android:name="edu.mit.mitmobile2.mit150.CorridorListActivity" />
-        <activity android:name="edu.mit.mitmobile2.mit150.CorridorStorySliderActivity"  android:theme="@style/PlainBackground" />
-
+        <activity
+            android:name="edu.mit.mitmobile2.mit150.CorridorStorySliderActivity"
+            android:theme="@style/PlainBackground" />
 
         <uses-library android:name="com.google.android.maps" />
-                   
-        <activity android:name="edu.mit.mitmobile2.maps.MITMapActivity" 
-                  android:launchMode="singleTop" 
-                  android:exported="false"
-                  android:screenOrientation="portrait" >
-                  <intent-filter>
-                      <action android:name="android.intent.action.SEARCH"/>
-                  </intent-filter>
-                  <meta-data android:name="android.app.searchable" android:resource="@xml/maps_searchable" />
-        </activity>
 
-        <activity android:name="edu.mit.mitmobile2.maps.MITMapBrowseCatsActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".maps.MITMapActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.maps.MITMapBrowseSubCatsActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".maps.MITMapActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.maps.MITMapBrowseResultsActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".maps.MITMapActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.maps.MITMapDetailsSliderActivity" android:theme="@style/PlainBackground" android:screenOrientation="portrait">
-            <meta-data android:name="android.app.default_searchable" android:value=".maps.MITMapActivity" />
-        </activity>
-        <provider android:name="edu.mit.mitmobile2.maps.MapsSearchSuggestionsProvider" android:authorities="edu.mit.mitmobile2.maps.SuggestionsProvider" />
-
-        <activity android:name="edu.mit.mitmobile2.maps.MapBookmarksActivity" android:launchMode="singleTop"  android:theme="@style/PlainBackground" />
-
-
-        <activity android:name="edu.mit.mitmobile2.maps.NewMapActivity">
+        <activity
+            android:name="edu.mit.mitmobile2.maps.MITMapActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable" android:resource="@xml/maps_searchable" />
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/maps_searchable" />
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.maps.MITMapBrowseCatsActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".maps.MITMapActivity" />
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.maps.MITMapBrowseSubCatsActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".maps.MITMapActivity" />
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.maps.MITMapBrowseResultsActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".maps.MITMapActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.maps.MITMapDetailsSliderActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/PlainBackground" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".maps.MITMapActivity" />
         </activity>
 
-        <activity android:name="edu.mit.mitmobile2.events.EventsTopActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".events.EventsSearchActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.events.EventsSearchActivity"
-                  android:launchMode="singleTop"
-                  android:windowSoftInputMode="stateAlwaysHidden"
-                  android:theme="@style/PlainBackground">
+        <provider
+            android:name="edu.mit.mitmobile2.maps.MapsSearchSuggestionsProvider"
+            android:authorities="edu.mit.mitmobile2.maps.SuggestionsProvider" />
+
+        <activity
+            android:name="edu.mit.mitmobile2.maps.MapBookmarksActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/PlainBackground" />
+        <activity android:name="edu.mit.mitmobile2.maps.NewMapActivity" >
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable" android:resource="@xml/events_searchable" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.events.MITEventsDaysSliderActivity" android:theme="@style/PlainBackground" android:configChanges="orientation">
-            <meta-data android:name="android.app.default_searchable" android:value=".events.EventsSearchActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.events.EventsCategoryActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".events.EventsSearchActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.events.EventsSimpleCategoryActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".events.EventsSearchActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.events.MITEventsSliderActivity" android:configChanges="orientation">
-            <meta-data android:name="android.app.default_searchable" android:value=".events.EventsSearchActivity" />
-        </activity>
-        <provider android:name="edu.mit.mitmobile2.events.EventsSearchSuggestionsProvider" android:authorities="edu.mit.mitmobile2.events.SuggestionsProvider" />
 
-
-        <activity android:name="edu.mit.mitmobile2.shuttles.ShuttlesActivity" 
-        		android:screenOrientation="portrait"
-        		android:label="Shuttles"
-        		android:taskAffinity="edu.mit.mitmobile2.shuttles"/>
-        <activity android:name="edu.mit.mitmobile2.shuttles.MITStopsSliderActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
-        <activity android:name="edu.mit.mitmobile2.shuttles.MITRoutesSliderActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
-		
-        <activity android:name="edu.mit.mitmobile2.shuttles.ShuttlesMapActivity" android:launchMode="singleTop" android:configChanges="orientation"/>
-
-        <activity android:name="edu.mit.mitmobile2.people.PeopleActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".people.PeopleSearchActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/maps_searchable" />
         </activity>
-        <activity android:name="edu.mit.mitmobile2.people.PeopleSearchActivity"
-                  android:launchMode="singleTop"
-                  android:windowSoftInputMode="stateAlwaysHidden"
-                  android:theme="@style/PlainBackground">
+        <activity android:name="edu.mit.mitmobile2.events.EventsTopActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".events.EventsSearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.events.EventsSearchActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/PlainBackground"
+            android:windowSoftInputMode="stateAlwaysHidden" >
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable" android:resource="@xml/people_searchable" />
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/events_searchable" />
         </activity>
-        <provider android:name="edu.mit.mitmobile2.people.PeopleSearchSuggestionsProvider" android:authorities="edu.mit.mitmobile2.people.SuggestionsProvider" />
-        <activity android:name="edu.mit.mitmobile2.people.PeopleDetailActivity" android:configChanges="orientation">
-            <meta-data android:name="android.app.default_searchable" android:value=".people.PeopleSearchActivity" />
+        <activity
+            android:name="edu.mit.mitmobile2.events.MITEventsDaysSliderActivity"
+            android:configChanges="orientation"
+            android:theme="@style/PlainBackground" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".events.EventsSearchActivity" />
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.events.EventsCategoryActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".events.EventsSearchActivity" />
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.events.EventsSimpleCategoryActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".events.EventsSearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.events.MITEventsSliderActivity"
+            android:configChanges="orientation" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".events.EventsSearchActivity" />
         </activity>
 
-        <activity android:name="edu.mit.mitmobile2.news.NewsListActivity" android:theme="@style/PlainBackground" android:configChanges="orientation">
-            <meta-data android:name="android.app.default_searchable" android:value=".news.NewsSearchActivity" />
+        <provider
+            android:name="edu.mit.mitmobile2.events.EventsSearchSuggestionsProvider"
+            android:authorities="edu.mit.mitmobile2.events.SuggestionsProvider" />
+
+        <activity
+            android:name="edu.mit.mitmobile2.shuttles.ShuttlesActivity"
+            android:label="Shuttles"
+            android:screenOrientation="portrait"
+            android:taskAffinity="edu.mit.mitmobile2.shuttles" />
+        <activity
+            android:name="edu.mit.mitmobile2.shuttles.MITStopsSliderActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.shuttles.MITRoutesSliderActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.shuttles.ShuttlesMapActivity"
+            android:configChanges="orientation"
+            android:launchMode="singleTop" />
+        <activity android:name="edu.mit.mitmobile2.people.PeopleActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".people.PeopleSearchActivity" />
         </activity>
-        <activity android:name="edu.mit.mitmobile2.news.NewsSearchActivity"
-                android:launchMode="singleTop"
-                android:windowSoftInputMode="stateAlwaysHidden"
-                android:theme="@style/PlainBackground">
+        <activity
+            android:name="edu.mit.mitmobile2.people.PeopleSearchActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/PlainBackground"
+            android:windowSoftInputMode="stateAlwaysHidden" >
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable" android:resource="@xml/news_searchable" />
-        </activity>
-        <provider android:name="edu.mit.mitmobile2.news.NewsSearchSuggestionsProvider" android:authorities="edu.mit.mitmobile2.news.SuggestionsProvider" />
-        <activity android:name="edu.mit.mitmobile2.news.NewsBookmarksActivity" android:theme="@style/PlainBackground">
-            <meta-data android:name="android.app.default_searchable" android:value=".news.NewsSearchActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.news.NewsDetailsActivity" android:theme="@style/PlainBackground" android:configChanges="orientation">
-            <meta-data android:name="android.app.default_searchable" android:value=".news.NewsSearchActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.news.NewsImageActivity" android:theme="@style/PlainBackground">
-            <meta-data android:name="android.app.default_searchable" android:value=".news.NewsSearchActivity" />
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/people_searchable" />
         </activity>
 
-        <activity android:name="edu.mit.mitmobile2.emergency.EmergencyActivity" android:theme="@style/PlainBackground" />
-        <activity android:name="edu.mit.mitmobile2.emergency.EmergencyContactsActivity" android:theme="@style/PlainBackground" />
+        <provider
+            android:name="edu.mit.mitmobile2.people.PeopleSearchSuggestionsProvider"
+            android:authorities="edu.mit.mitmobile2.people.SuggestionsProvider" />
 
-        <activity android:name="edu.mit.mitmobile2.tour.MainTourActivity"  android:screenOrientation="portrait"/>
-        <activity android:name="edu.mit.mitmobile2.tour.TourIntroductionActivity" android:theme="@style/PlainBackground" android:screenOrientation="portrait"/>
-        <activity android:name="edu.mit.mitmobile2.tour.MITIntroductionActivity" android:theme="@style/PlainBackground" android:screenOrientation="portrait"/>
-        <activity android:name="edu.mit.mitmobile2.tour.TourStopSliderActivity" android:theme="@style/PlainBackground" android:screenOrientation="portrait"/>
-        <activity android:name="edu.mit.mitmobile2.tour.TourSideTripActivity" android:screenOrientation="portrait"/>
-        <activity android:name="edu.mit.mitmobile2.tour.TourMapActivity" android:process=":tourmap" android:screenOrientation="portrait"/>
-        <activity android:name="edu.mit.mitmobile2.tour.TourStartHelpActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name="edu.mit.mitmobile2.people.PeopleDetailActivity"
+            android:configChanges="orientation" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".people.PeopleSearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.news.NewsListActivity"
+            android:configChanges="orientation"
+            android:theme="@style/PlainBackground" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".news.NewsSearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.news.NewsSearchActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/PlainBackground"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
 
-        <activity android:name="edu.mit.mitmobile2.qrreader.QRReaderMainActivity" android:screenOrientation="portrait" android:process=":qrreader" android:hardwareAccelerated="false" />
-        <activity android:name="edu.mit.mitmobile2.qrreader.QRReaderDetailActivity" android:screenOrientation="portrait" android:process=":qrreader" />
-        <activity android:name="edu.mit.mitmobile2.qrreader.QRReaderHistoryActivity" android:screenOrientation="portrait" android:process=":qrreader" />
-        <activity android:name="edu.mit.mitmobile2.qrreader.QRReaderHelpActivity" android:screenOrientation="portrait" android:process=":qrreader" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/news_searchable" />
+        </activity>
 
-        <activity android:name="edu.mit.mitmobile2.SettingsActivity" android:theme="@android:style/Theme.Light" />
+        <provider
+            android:name="edu.mit.mitmobile2.news.NewsSearchSuggestionsProvider"
+            android:authorities="edu.mit.mitmobile2.news.SuggestionsProvider" />
+
+        <activity
+            android:name="edu.mit.mitmobile2.news.NewsBookmarksActivity"
+            android:theme="@style/PlainBackground" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".news.NewsSearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.news.NewsDetailsActivity"
+            android:configChanges="orientation"
+            android:theme="@style/PlainBackground" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".news.NewsSearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.news.NewsImageActivity"
+            android:theme="@style/PlainBackground" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".news.NewsSearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.emergency.EmergencyActivity"
+            android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.emergency.EmergencyContactsActivity"
+            android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.tour.MainTourActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.tour.TourIntroductionActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.tour.MITIntroductionActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.tour.TourStopSliderActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.tour.TourSideTripActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.tour.TourMapActivity"
+            android:process=":tourmap"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.tour.TourStartHelpActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.qrreader.QRReaderMainActivity"
+            android:hardwareAccelerated="false"
+            android:process=":qrreader"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.qrreader.QRReaderDetailActivity"
+            android:process=":qrreader"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.qrreader.QRReaderHistoryActivity"
+            android:process=":qrreader"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.qrreader.QRReaderHelpActivity"
+            android:process=":qrreader"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.SettingsActivity"
+            android:theme="@android:style/Theme.Light" />
 
         <!-- FACILITIES -->
         <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesActivity" />
-        <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesInfoActivity" android:theme="@style/PlainBackground" />
-        <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesProblemTypeActivity" android:theme="@style/PlainBackground" />
-        <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesProblemLocationActivity" android:windowSoftInputMode="stateHidden" android:theme="@style/PlainBackground" />
-        <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesLocationsForCategoryActivity" android:windowSoftInputMode="stateHidden" android:theme="@style/PlainBackground" />
-        <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesRoomLocationsActivity" android:windowSoftInputMode="stateHidden" android:theme="@style/PlainBackground" />
-        <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesInsideOutsideActivity" android:theme="@style/PlainBackground" />
-        <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesDetailsActivity" android:windowSoftInputMode="stateHidden" android:screenOrientation="portrait" />
-        <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesUseMyLocationActivity" android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.facilities.FacilitiesInfoActivity"
+            android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.facilities.FacilitiesProblemTypeActivity"
+            android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.facilities.FacilitiesProblemLocationActivity"
+            android:theme="@style/PlainBackground"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="edu.mit.mitmobile2.facilities.FacilitiesLocationsForCategoryActivity"
+            android:theme="@style/PlainBackground"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="edu.mit.mitmobile2.facilities.FacilitiesRoomLocationsActivity"
+            android:theme="@style/PlainBackground"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="edu.mit.mitmobile2.facilities.FacilitiesInsideOutsideActivity"
+            android:theme="@style/PlainBackground" />
+        <activity
+            android:name="edu.mit.mitmobile2.facilities.FacilitiesDetailsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="edu.mit.mitmobile2.facilities.FacilitiesUseMyLocationActivity"
+            android:theme="@style/PlainBackground" />
         <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesLeasedBuildingActivity" />
         <activity android:name="edu.mit.mitmobile2.facilities.FacilitiesUploadSuccessModuleActivity" />
 
@@ -273,26 +451,33 @@
 
         <!-- TOUCHSTONE -->
         <activity android:name="edu.mit.mitmobile2.touchstone.TouchstoneActivity" />
-        <activity android:name="edu.mit.mitmobile2.touchstone.TouchstonePrefsActivity"></activity>
+        <activity android:name="edu.mit.mitmobile2.touchstone.TouchstonePrefsActivity" >
+        </activity>
 
         <!-- LIBRARIES -->
         <activity android:name="edu.mit.mitmobile2.libraries.LibrariesActivity" />
 
         <!-- DINING -->
-        <activity android:name="edu.mit.mitmobile2.dining.DiningHomeActivity" android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.dining.DiningHomeActivity"
+            android:screenOrientation="portrait" />
         <activity android:name="edu.mit.mitmobile2.dining.DiningMapActivity" />
         <activity android:name="edu.mit.mitmobile2.dining.DiningScheduleActivity" />
-        <activity android:name="edu.mit.mitmobile2.dining.DiningHouseInfoActivity" android:screenOrientation="portrait" />
-        <activity android:name="edu.mit.mitmobile2.dining.DiningRetailInfoActivity" android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.dining.DiningHouseInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="edu.mit.mitmobile2.dining.DiningRetailInfoActivity"
+            android:screenOrientation="portrait" />
         <activity android:name="edu.mit.mitmobile2.dining.DiningFilterActivity" />
         <activity android:name="edu.mit.mitmobile2.dining.SimpleSingleWebViewActivity" />
-
-
         <activity android:name="edu.mit.mitmobile2.about.AboutActivity" />
         <activity android:name="edu.mit.mitmobile2.about.AboutMITActivity" />
         <activity android:name="edu.mit.mitmobile2.about.AboutCreditsActivity" />
 
-        <receiver android:name="edu.mit.mitmobile2.alerts.NotificationsAlarmReceiver"  class=".NotificationsAlarmReceiver" />
+        <receiver
+            android:name="edu.mit.mitmobile2.alerts.NotificationsAlarmReceiver"
+            class=".NotificationsAlarmReceiver" />
         <!--
         <service android:name=".UpdateService"   class=".UpdateService"  />
         <service android:name=".UpdateService"  android:enabled="true"  >
@@ -302,63 +487,114 @@
         </service>
         <service android:name=".UpdateService"  class="UpdateService" android:enabled="true"  />
         <service android:name=".UpdateService"  android:enabled="true"  />
-        <intentservice android:name=".UpdateService"  android:enabled="true"  />
-         -->
-        <service android:name="edu.mit.mitmobile2.alerts.NotificationService"  android:enabled="true"  ></service>
+        <intentservice android:name=".UpdateService"  android:enabled="true"  />
+        -->
+        <service
+            android:name="edu.mit.mitmobile2.alerts.NotificationService"
+            android:enabled="true" >
+        </service>
 
+        <provider
+            android:name="edu.mit.mitmobile2.WebImageCacheProvider"
+            android:authorities="edu.mit.mitmobile2.WebImageCacheProvider" />
 
-        <provider android:name="edu.mit.mitmobile2.WebImageCacheProvider" android:authorities="edu.mit.mitmobile2.WebImageCacheProvider" />
-
-        <activity android:name="edu.mit.mitmobile2.PrefsActivity"></activity>
-
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryActivity" android:screenOrientation="portrait">
-            <meta-data android:name="android.app.default_searchable" android:value=".libraries.LibrarySearchActivity" />
+        <activity android:name="edu.mit.mitmobile2.PrefsActivity" >
         </activity>
-
-        <activity android:name="edu.mit.mitmobile2.libraries.LibrarySearchActivity"
-                  android:launchMode="singleTop"
-                  android:windowSoftInputMode="stateAlwaysHidden"
-                  android:theme="@style/PlainBackground">
+        <activity
+            android:name="edu.mit.mitmobile2.libraries.LibraryActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".libraries.LibrarySearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.libraries.LibrarySearchActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/PlainBackground"
+            android:windowSoftInputMode="stateAlwaysHidden" >
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable" android:resource="@xml/library_searchable" />
-        </activity>
-        <provider android:name="edu.mit.mitmobile2.libraries.LibrarySearchSuggestionsProvider" android:authorities="edu.mit.mitmobile2.libraries.SuggestionsProvider" />
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryLocationAndHour"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryDetailActivity"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.BookDetailActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".libraries.LibrarySearchActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryBLCHoldingsActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".libraries.LibrarySearchActivity" />
-        </activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibrariesHoldingsSliderActivity">
-            <meta-data android:name="android.app.default_searchable" android:value=".libraries.LibrarySearchActivity" />
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/library_searchable" />
         </activity>
 
-        <activity android:name="edu.mit.mitmobile2.libraries.AskUsActivity" android:windowSoftInputMode="stateHidden"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.TellUsActivity" android:windowSoftInputMode="stateHidden"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.AskUsTopActivity"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.AppointmentActivity" android:windowSoftInputMode="stateHidden"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryYourAccount" android:screenOrientation="portrait"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryLoans"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryLoanDetail"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryRenewBooks"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryRenewDetail"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryHolds"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryHoldDetail"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryFines"></activity>
-        <activity android:name="edu.mit.mitmobile2.libraries.LibraryFineDetail"></activity>
-        <activity android:name="edu.mit.mitmobile2.links.LinksActivity"></activity>
-        
+        <provider
+            android:name="edu.mit.mitmobile2.libraries.LibrarySearchSuggestionsProvider"
+            android:authorities="edu.mit.mitmobile2.libraries.SuggestionsProvider" />
+
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryLocationAndHour" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryDetailActivity" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.BookDetailActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".libraries.LibrarySearchActivity" />
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryBLCHoldingsActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".libraries.LibrarySearchActivity" />
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibrariesHoldingsSliderActivity" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".libraries.LibrarySearchActivity" />
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.libraries.AskUsActivity"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.libraries.TellUsActivity"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.AskUsTopActivity" >
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.libraries.AppointmentActivity"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.libraries.LibraryYourAccount"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryLoans" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryLoanDetail" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryRenewBooks" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryRenewDetail" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryHolds" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryHoldDetail" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryFines" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.libraries.LibraryFineDetail" >
+        </activity>
+        <activity android:name="edu.mit.mitmobile2.links.LinksActivity" >
+        </activity>
+
         <!-- Living Labs -->
-        <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabAppListActivity"></activity>
-        <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabSettingsActivity" android:screenOrientation="portrait"></activity>
-		
-		<!--  Living Labs Services / Receiver -->
-		<service
+        <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabAppListActivity" >
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.livinglabs.LivingLabActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="edu.mit.mitmobile2.livinglabs.LivingLabSettingsActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!-- Living Labs Services / Receiver -->
+        <service
             android:name="edu.mit.media.funf.storage.NameValueDatabaseService"
             android:enabled="true" >
         </service>
@@ -366,7 +602,6 @@
             android:name="edu.mit.media.openpds.client.funf.HttpsUploadService"
             android:enabled="true" >
         </service>
-        
         <service android:name="edu.mit.media.openpds.client.NotificationService" />
         <service
             android:name="edu.mit.media.funf.FunfManager"
@@ -375,7 +610,7 @@
                 android:name="MainPipeline"
                 android:resource="@string/main_pipeline_config" />
         </service>
-        
+
         <receiver
             android:name="edu.mit.media.openpds.client.funf.LauncherReceiver"
             android:enabled="true" >
@@ -387,6 +622,11 @@
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="edu.mit.mitmobile2.livinglabs.LivingLabsLoginActivity"
+            android:label="@string/title_activity_living_labs_login" >
+        </activity>
     </application>
 
 </manifest>

@@ -32,7 +32,7 @@ public class LivingLabActivity extends NewModuleFragmentActivity {
 			try {
 				pds = new PersonalDataStore(this);
 			} catch (Exception e) {
-				Intent intent = new Intent(this, TouchstonePrefsActivity.class);
+				Intent intent = new Intent(this, LivingLabsLoginActivity.class);
 				startActivity(intent);
 				finish();
 				return;

@@ -35,6 +35,7 @@ public class WebViewFragment extends Fragment {
 	private Activity mActivity;
 	private ViewPager mViewPager;
 	private WebViewFragmentJavascriptInterface mJavascriptInterface;
+	private WebViewFragmentClient mWebViewClient;
 	
 	public static WebViewFragment Create(String url, String title, Activity activity, ViewPager viewPager) {
 		return Create(url, title, activity, viewPager, new WebViewFragmentJavascriptInterface(viewPager, activity));
@@ -43,6 +44,25 @@ public class WebViewFragment extends Fragment {
 	public static WebViewFragment Create(String url, String title, Activity activity, ViewPager viewPager, WebViewFragmentJavascriptInterface jsInterface) {
 		WebViewFragment fragment = new WebViewFragment(url, title, activity, viewPager);
 		fragment.mJavascriptInterface = jsInterface;
+		fragment.mWebViewClient = new WebViewFragmentClient(activity, fragment);
+		
+		return fragment;
+	}
+	
+	public WebViewFragmentClient getWebViewClient() {
+		return mWebViewClient;
+	}
+
+	public void setWebViewClient(WebViewFragmentClient webViewClient) {
+		mWebViewClient = webViewClient;
+	}
+
+	public static WebViewFragment Create(String url, String title, Activity activity, ViewPager viewPager, WebViewFragmentJavascriptInterface jsInterface, WebViewFragmentClient webViewClient) {
+		WebViewFragment fragment = new WebViewFragment(url, title, activity, viewPager);
+		fragment.mJavascriptInterface = jsInterface;
+		webViewClient.setContext(activity);
+		webViewClient.setWebViewFragment(fragment);
+		fragment.mWebViewClient = webViewClient;
 		
 		return fragment;
 	}
@@ -50,6 +70,8 @@ public class WebViewFragment extends Fragment {
 	public WebViewFragment() {
 		super();
 		mUrl = mTitle = "";
+		mWebViewClient = new WebViewFragmentClient();
+		mWebViewClient.setWebViewFragment(this);
 	}
 	
 	protected WebViewFragment(String url, String title, Activity activity, ViewPager viewPager) {
@@ -74,35 +96,10 @@ public class WebViewFragment extends Fragment {
 		//mWebView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		mWebView.getSettings().setJavaScriptEnabled(true);
 		mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		mWebView.setWebViewClient(new WebViewClient() {			
-			@Override
-			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				mWebView.setVisibility(View.GONE);
-				mLoadingStatusView.setVisibility(View.VISIBLE);
-			}
-			
-			@Override
-			public void onPageFinished(WebView view, String url) {		
-				mWebView.setVisibility(View.VISIBLE);
-				mLoadingStatusView.setVisibility(View.GONE);
-			}
-			
-			@Override
-			public void onReceivedError(WebView view, int errorCode,
-					String description, String failingUrl) {
-				view.loadData(getString(R.string.problem_contacting_server), "text/html", "UTF-8");
-			}		
-			
-			@Override
-			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				if (url != null && url.contains("maps.google.com")) {
-		            view.getContext().startActivity(
-		                    new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-		            return true;
-				}
-				return super.shouldOverrideUrlLoading(view, url);
-			}
-		});
+		//mWebViewClient.setWebView(mWebView);
+		//mWebViewClient.setErrorString("Problem contacting server");
+		//mWebViewClient.setLoadingStatusView(mLoadingStatusView);
+		mWebView.setWebViewClient(mWebViewClient);
 					
 		mWebView.addJavascriptInterface(mJavascriptInterface, "android");
 		
@@ -122,6 +119,19 @@ public class WebViewFragment extends Fragment {
 	
 	public String getTitle() {
 		return mTitle;
-	}		
+	}
 	
+	public void showLoadingScreen() {
+		mWebView.setVisibility(View.GONE);
+		mLoadingStatusView.setVisibility(View.VISIBLE);
+	}
+	
+	public void hideLoadingScreen() {
+		mWebView.setVisibility(View.VISIBLE);
+		mLoadingStatusView.setVisibility(View.GONE);
+	}
+	
+	public void showErrorScreen() {
+		mWebView.loadData(getString(R.string.problem_contacting_server), "text/html", "UTF-8");
+	}
 }
