@@ -52,7 +52,7 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 				
 				if(labItem.getName().equalsIgnoreCase("settings")){
 					labItem = (LivingLabItem) listView.getItemAtPosition(0);
-					Intent labIntent = new Intent(LivingLabAppListActivity.this, LivingLabSettingsActivity.class);
+					Intent labIntent = new Intent(LivingLabAppListActivity.this, LivingLabAccessControlActivity.class);
 					labIntent.putExtra("lab", labItem);
 					startActivity(labIntent);
 				} else {

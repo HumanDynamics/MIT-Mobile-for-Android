@@ -45,7 +45,7 @@ public class LivingLabArrayAdapter extends ArrayAdapter<LivingLabItem> {
 			
 			@Override
 			public void onClick(View v) {
-				Intent labIntent = new Intent(getContext(), LivingLabSettingsActivity.class);
+				Intent labIntent = new Intent(getContext(), LivingLabAccessControlActivity.class);
 				labIntent.putExtra("lab", labItem);
 				getContext().startActivity(labIntent);
 			}

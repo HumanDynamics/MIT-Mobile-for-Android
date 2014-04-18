@@ -28,7 +28,7 @@
 			    android:id="@+id/livingLabRowButton"
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
-			    style="@style/Widget.AppCompat.Light.ActionButton.Overflow"
+			    style="android:style/Widget.AppCompat.Light.ActionButton.Overflow"
 			    android:src="@drawable/ic_menu_moreoverflow_normal_holo_light" />
     </LinearLayout>
 

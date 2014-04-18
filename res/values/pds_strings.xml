@@ -151,4 +151,5 @@
 			]
 		}</string>
 		<string name="living_lab_settings">Settings</string>
+		<string name="select_context">Select context</string>
 </resources>

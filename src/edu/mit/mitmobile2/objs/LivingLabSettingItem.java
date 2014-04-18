@@ -3,15 +3,17 @@ package edu.mit.mitmobile2.objs;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LivingLabSettingItem implements Serializable {
 	private static final long serialVersionUID = -7377069315139664175L; //??
 	public long sql_id = -1;  // not to confuse with any other "id"
-	private String mAppId, mLabId, mServiceId;
-	private int mEnabled, mActivityProbe, mSMSProbe, mCallLogProbe, 
+	private String mAppId, mLabId;
+	private int mActivityProbe, mSMSProbe, mCallLogProbe, 
 		mBluetoothProbe, mWifiProbe, mSimpleLocationProbe, mScreenProbe, mRunningApplicationsProbe, mHardwareInfoProbe, mAppUsageProbe;
+	private String mSettingsContextLabel;
 	protected HashMap<String,Object> itemData;
 	
 	public LivingLabSettingItem() {
@@ -20,12 +22,12 @@ public class LivingLabSettingItem implements Serializable {
 	}
 	
 	public LivingLabSettingItem(JSONObject labSettingJson) throws JSONException {
-		assert(labSettingJson != null && labSettingJson.has("app_id") && labSettingJson.has("lab_id") && labSettingJson.has("service_id"));
+		assert(labSettingJson != null && labSettingJson.has("app_id") && labSettingJson.has("lab_id"));
 		mAppId = labSettingJson.optString("app_id");
 		mLabId = labSettingJson.optString("lab_id");
-		mServiceId = labSettingJson.optString("service_id");
+		//mServiceId = labSettingJson.optString("service_id");
 		
-		mEnabled = labSettingJson.optInt("enabled");
+		//mEnabled = labSettingJson.optInt("enabled");
 		
 		mActivityProbe = labSettingJson.optInt("activity_probe");
 		mSMSProbe = labSettingJson.optInt("sms_probe");
@@ -37,6 +39,8 @@ public class LivingLabSettingItem implements Serializable {
 		mRunningApplicationsProbe = labSettingJson.optInt("running_applications_probe");
 		mHardwareInfoProbe = labSettingJson.optInt("hardware_info_probe");
 		mAppUsageProbe = labSettingJson.optInt("app_usage_probe");		
+		
+		mSettingsContextLabel = labSettingJson.optString("settings_context_label");
 	}
 	
 	
@@ -64,21 +68,21 @@ public class LivingLabSettingItem implements Serializable {
 		this.mLabId = mLabId;
 	}
 	
-	public String getServiceId() {
-		return mServiceId;
-	}
-
-	public void setServiceId(String mServiceId) {
-		this.mServiceId = mServiceId;
-	}
+//	public String getServiceId() {
+//		return mServiceId;
+//	}
+//
+//	public void setServiceId(String mServiceId) {
+//		this.mServiceId = mServiceId;
+//	}
 	
-	public int getEnabled(){
-		return mEnabled;
-	}
-	
-	public void setEnabled(int mEnabled){
-		this.mEnabled = mEnabled;
-	}
+//	public int getEnabled(){
+//		return mEnabled;
+//	}
+//	
+//	public void setEnabled(int mEnabled){
+//		this.mEnabled = mEnabled;
+//	}
 	
 	public int getActivityProbe(){
 		return mActivityProbe;
@@ -160,8 +164,16 @@ public class LivingLabSettingItem implements Serializable {
 		return mAppUsageProbe;
 	}
 	
+	public String getSettingsContextLabel() {
+		return mSettingsContextLabel;
+	}
+
+	public void setSettingsContextLabel(String mSettingsContextLabel) {
+		this.mSettingsContextLabel = mSettingsContextLabel;
+	}
+	
 	@Override
 	public String toString() {
-		return getServiceId();
+		return getAppId();
 	}
 }

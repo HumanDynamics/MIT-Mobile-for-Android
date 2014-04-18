@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="libs/commons-io-2.0.1.jar"/>
 	<classpathentry kind="lib" path="libs/httpmime-4.1.1.jar"/>
@@ -12,6 +10,10 @@
 	<classpathentry exported="true" kind="con" path="com.esri.arcgis.android.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="con" path="com.esri.arcgis.android.APPLICATION_FRAMEWORK"/>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/Android/android-sdk/add-ons/addon-google_apis-google-17/libs/maps.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="/Users/sharon/Documents/Research/adt-bundle-mac-x86_64-20131030/sdk/add-ons/addon-google_apis-google-16/libs/maps.jar"/>
+	<classpathentry kind="lib" path="libs/newfunf.jar"/>
+	<classpathentry kind="lib" path="libs/google-play-services.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

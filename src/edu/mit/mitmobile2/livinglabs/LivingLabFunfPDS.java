@@ -21,6 +21,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.gson.Gson;
@@ -41,7 +42,7 @@ public class LivingLabFunfPDS extends FunfPDS {
 	
 	
 	private static final String TAG = "LivingLabFunfPDS";
-	private LivingLabsSettingsDB mLivingLabSettingsDB = LivingLabsSettingsDB.getInstance(getContext());
+	private LivingLabsAccessControlDB mLivingLabSettingsDB = LivingLabsAccessControlDB.getInstance(getContext());
 
 	public LivingLabFunfPDS(Context context) throws Exception {
 		super(context);
@@ -54,64 +55,71 @@ public class LivingLabFunfPDS extends FunfPDS {
 		JsonArray pipelinesJsonArray = getPipelinesJsonArray();		
 		
 		ArrayList<String> probesToEnable = new ArrayList<String>();
-		ArrayList<LivingLabSettingItem> llsiArray = mLivingLabSettingsDB.retrieveLivingLabSettingItem();
-		for(int i=0; i<llsiArray.size(); i++){
-			LivingLabSettingItem llsi = llsiArray.get(i);
+		ArrayList<LivingLabSettingItem> llsiArray;
+		try {
+			llsiArray = mLivingLabSettingsDB.retrieveLivingLabSettingItem();
+			for(int i=0; i<llsiArray.size(); i++){
+				LivingLabSettingItem llsi = llsiArray.get(i);
+				
+				if (llsi.getActivityProbe() == 1) probesToEnable.add("ActivityProbe");
+				if (llsi.getSMSProbe() == 1) probesToEnable.add("SmsProbe");
+				if (llsi.getCallLogProbe() == 1) probesToEnable.add("CallLogProbe");
+				if (llsi.getBluetoothProbe() == 1) probesToEnable.add("BluetoothProbe");
+				if (llsi.getWifiProbe() == 1) probesToEnable.add("WifiProbe");
+				if (llsi.getSimpleLocationProbe() == 1) probesToEnable.add("SimpleLocationProbe");
+				if (llsi.getScreenProbe() == 1) probesToEnable.add("ScreenProbe");
+				if (llsi.getRunningApplicationsProbe() == 1) probesToEnable.add("RunningApplicationsProbe");
+				if (llsi.getHardwareInfoProbe() == 1) probesToEnable.add("HardwareInfoProbe");
+				if (llsi.getAppUsageProbe() == 1) probesToEnable.add("AppUsageProbe");
+			}
 			
-			if (llsi.getActivityProbe() == 1) probesToEnable.add("ActivityProbe");
-			if (llsi.getSMSProbe() == 1) probesToEnable.add("SmsProbe");
-			if (llsi.getCallLogProbe() == 1) probesToEnable.add("CallLogProbe");
-			if (llsi.getBluetoothProbe() == 1) probesToEnable.add("BluetoothProbe");
-			if (llsi.getWifiProbe() == 1) probesToEnable.add("WifiProbe");
-			if (llsi.getSimpleLocationProbe() == 1) probesToEnable.add("SimpleLocationProbe");
-			if (llsi.getScreenProbe() == 1) probesToEnable.add("ScreenProbe");
-			if (llsi.getRunningApplicationsProbe() == 1) probesToEnable.add("RunningApplicationsProbe");
-			if (llsi.getHardwareInfoProbe() == 1) probesToEnable.add("HardwareInfoProbe");
-			if (llsi.getAppUsageProbe() == 1) probesToEnable.add("AppUsageProbe");
-		}
-		
-		if (pipelinesJsonArray != null) {
-			Gson gson = FunfManager.getGsonBuilder(getContext()).create();
-			for (JsonElement pipelineJsonElement : getPipelinesJsonArray()) {
-				try {
-					JsonObject pipelineJsonObject = pipelineJsonElement.getAsJsonObject();
-					if (pipelineJsonObject.has("name") && pipelineJsonObject.has("config")) {
-						
-						JsonObject pipelineConfig = pipelineJsonObject.get("config").getAsJsonObject();
-						JsonObject newPipelineConfig = new JsonObject();
-						
-				    	JsonArray finalProbesArray = new JsonArray();
-						for (Map.Entry<String,JsonElement> entry : pipelineConfig.entrySet()) {
-						    if(!entry.getKey().equalsIgnoreCase("data")){
-						    	newPipelineConfig.add(entry.getKey(), entry.getValue());
-						    } else {
-						    	JsonArray probesArray = entry.getValue().getAsJsonArray();
-						    	for(int i=0; i<probesArray.size(); i++){
-						    		JsonObject tempProbe = probesArray.get(i).getAsJsonObject();
-						    		
-						    		boolean probePresent = false;
-						    		for(int j=0; j<probesToEnable.size(); j++){
-						    			if(tempProbe.get("@type").toString().contains(probesToEnable.get(j).toString())){
-						    				probePresent = true;
-						    			}
-						    		}
-						    		if(probePresent){
-						    			finalProbesArray.add(tempProbe);
-						    		}
-						    	}
-						    	newPipelineConfig.add(entry.getKey(), finalProbesArray);
-						    }
+			if (pipelinesJsonArray != null) {
+				Gson gson = FunfManager.getGsonBuilder(getContext()).create();
+				for (JsonElement pipelineJsonElement : getPipelinesJsonArray()) {
+					try {
+						JsonObject pipelineJsonObject = pipelineJsonElement.getAsJsonObject();
+						if (pipelineJsonObject.has("name") && pipelineJsonObject.has("config")) {
+							
+							JsonObject pipelineConfig = pipelineJsonObject.get("config").getAsJsonObject();
+							JsonObject newPipelineConfig = new JsonObject();
+							
+					    	JsonArray finalProbesArray = new JsonArray();
+							for (Map.Entry<String,JsonElement> entry : pipelineConfig.entrySet()) {
+							    if(!entry.getKey().equalsIgnoreCase("data")){
+							    	newPipelineConfig.add(entry.getKey(), entry.getValue());
+							    } else {
+							    	JsonArray probesArray = entry.getValue().getAsJsonArray();
+							    	for(int i=0; i<probesArray.size(); i++){
+							    		JsonObject tempProbe = probesArray.get(i).getAsJsonObject();
+							    		
+							    		boolean probePresent = false;
+							    		for(int j=0; j<probesToEnable.size(); j++){
+							    			if(tempProbe.get("@type").toString().contains(probesToEnable.get(j).toString())){
+							    				probePresent = true;
+							    			}
+							    		}
+							    		if(probePresent){
+							    			finalProbesArray.add(tempProbe);
+							    		}
+							    	}
+							    	newPipelineConfig.add(entry.getKey(), finalProbesArray);
+							    }
+							}
+							
+							
+							Pipeline pipeline = gson.fromJson(pipelineJsonObject.get("config"), OpenPDSPipeline.class);
+							pipelines.put(pipelineJsonObject.get("name").getAsString(), pipeline);
 						}
-						
-						
-						Pipeline pipeline = gson.fromJson(pipelineJsonObject.get("config"), OpenPDSPipeline.class);
-						pipelines.put(pipelineJsonObject.get("name").getAsString(), pipeline);
+					} catch (Exception e) {
+						Log.w(LogUtil.TAG, "Error creating pipelines from PDS configs", e);
 					}
-				} catch (Exception e) {
-					Log.w(LogUtil.TAG, "Error creating pipelines from PDS configs", e);
 				}
 			}
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		
 		
 		return pipelines;
 	}
@@ -119,6 +127,14 @@ public class LivingLabFunfPDS extends FunfPDS {
 	@Override
 	public String getFunfUploadUrl() {
 		return buildAbsoluteApiUrl("/accesscontrol/store/");
+	}
+	
+	public String getAccessControlStoreUrl() {
+		return buildAbsoluteApiUrl("/accesscontrol/store/");
+	}
+	
+	public String getAccessControlDeleteUrl() {
+		return buildAbsoluteApiUrl("/accesscontrol/delete/");
 	}
 	
 	public String uploadFunfData(JSONObject object) throws ClientProtocolException, IOException {          
