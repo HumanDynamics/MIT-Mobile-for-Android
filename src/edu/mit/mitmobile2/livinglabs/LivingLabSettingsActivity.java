@@ -421,13 +421,14 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 		String context = arg0.getSelectedItem().toString();
 		if(!context.equalsIgnoreCase("Select..."))
 				settings_context_label = context;
-    	
-    	if(settings_context_label.equalsIgnoreCase("Create a new context")){
-    		Intent activityIntent = new Intent(LivingLabSettingsActivity.this, LivingLabContextActivity.class);
-			LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
-        	activityIntent.putExtra("lab", labItem);
-			LivingLabSettingsActivity.this.startActivity(activityIntent);
-    	} 
+    	if(settings_context_label != null){
+	    	if(settings_context_label.equalsIgnoreCase("Create a new context")){
+	    		Intent activityIntent = new Intent(LivingLabSettingsActivity.this, LivingLabContextActivity.class);
+				LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
+	        	activityIntent.putExtra("lab", labItem);
+				LivingLabSettingsActivity.this.startActivity(activityIntent);
+	    	}
+    	}
 		
 	}
 

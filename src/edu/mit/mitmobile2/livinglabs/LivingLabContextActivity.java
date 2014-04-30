@@ -23,6 +23,8 @@ import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -147,7 +149,8 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
     					
     					arrayPoints.add(latlng);
     					
-    					countPolygonPoints();
+    					//countPolygonPoints();
+    					drawCircles(arrayPoints);
     					
     				}
     				
@@ -227,7 +230,9 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 				
 				if(duration_days_value_flag && !contextLabelString.isEmpty() && !contextLabelString.equalsIgnoreCase("Create a new context") && !contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){
 					String duration_days = (Arrays.toString(duration_days_value));
+					
 					String places = arrayPoints.toString();
+					Log.v(TAG, "places: " + places);
 					
 					try{
 						llciJson.put("context_label", contextLabelString);
@@ -425,7 +430,7 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 		    	map.setMapType(1);
 		    	
 			    	LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-			  	   	CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+			  	   	CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
 			  	   	map.animateCamera(cameraUpdate);
 			  	   	map.getUiSettings().setZoomControlsEnabled(true);
 
@@ -450,14 +455,51 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 		    map.addPolygon(rectOptions);
 		}
 
+//	@Override
+//	public void onMapClick(LatLng point) {
+//		// TODO Auto-generated method stub
+//		if (checkClick == false) { 
+//			MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
+//		    GoogleMap map = mapFragment.getMap();
+//			map.addMarker(new MarkerOptions().position(point).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
+//			arrayPoints.add(point); 
+//		}
+//		
+//	}
+	
 	@Override
 	public void onMapClick(LatLng point) {
-		// TODO Auto-generated method stub
-		if (checkClick == false) { 
-			MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-		    GoogleMap map = mapFragment.getMap();
-			map.addMarker(new MarkerOptions().position(point).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
-			arrayPoints.add(point); 
+		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
+		GoogleMap map = mapFragment.getMap();
+		map.addMarker(new MarkerOptions().position(point).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
+		
+		// Instantiates a new CircleOptions object and defines the center and radius
+		CircleOptions circleOptions = new CircleOptions()
+		    .center(point)
+		    .radius(300); // In meters
+
+		// Get back the mutable Circle
+		Circle circle = map.addCircle(circleOptions);
+		
+		
+		arrayPoints.add(point); 
+		
+	}
+	
+	public void drawCircles(ArrayList<LatLng> points){
+		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
+		GoogleMap map = mapFragment.getMap();
+		
+		
+		for(int i=0; i<points.size(); i++){
+			map.addMarker(new MarkerOptions().position(points.get(i)).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
+			// Instantiates a new CircleOptions object and defines the center and radius
+			CircleOptions circleOptions = new CircleOptions()
+			    .center(points.get(i))
+			    .radius(300); // In meters
+
+			// Get back the mutable Circle
+			Circle circle = map.addCircle(circleOptions);
 		}
 		
 	}
