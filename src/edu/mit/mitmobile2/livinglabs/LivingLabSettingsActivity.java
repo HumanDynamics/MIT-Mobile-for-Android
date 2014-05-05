@@ -119,9 +119,9 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 				}
 				for(int k=0; k<nonRequiredProbesArray.length(); k++){
 					//String tempData = nonRequiredProbesArray.getString(k);
-					LivingLabDataItem dataItem = (LivingLabDataItem) requiredProbesArray.get(k);
+					LivingLabDataItem dataItem = (LivingLabDataItem) nonRequiredProbesArray.get(k);
 					String tempData = dataItem.getKey();
-					
+
 					Set<String> existingPurposes = purposes.get(tempData);
 					if(existingPurposes == null){
 						Set<String> tempPurposes = new HashSet<String>();
