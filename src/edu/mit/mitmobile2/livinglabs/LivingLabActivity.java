@@ -11,11 +11,14 @@ import edu.mit.mitmobile2.touchstone.TouchstonePrefsActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
 public class LivingLabActivity extends NewModuleFragmentActivity {
+	private static final String TAG = "LivingLabActivity";
+	
 	private ViewPager mViewPager;
 	private WebViewFragmentPagerAdapter mFragmentAdapter;	
 	private WebViewFragment mWebViewFragment;
@@ -45,10 +48,12 @@ public class LivingLabActivity extends NewModuleFragmentActivity {
 							
 				for (LivingLabVisualizationItem visualizationItem : labItem.getVisualizations()) {
 					mFragmentAdapter.addItem(WebViewFragment.Create(pds.buildAbsoluteUrl("/visualization/" + visualizationItem.getKey()), visualizationItem.getTitle(), this, mViewPager));
+					Log.v(TAG, "url: " + pds.buildAbsoluteUrl("/visualization/" + visualizationItem.getKey()));
 				}
 			} else if (labItem.getVisualizations().size() == 1) {
 				LivingLabVisualizationItem visualizationItem = labItem.getVisualizations().get(0);
 				WebViewFragment visualizationWebView = WebViewFragment.Create(pds.buildAbsoluteUrl("/visualization/" + visualizationItem.getKey()), visualizationItem.getTitle(), this, mViewPager);
+				Log.v(TAG, "url: " + pds.buildAbsoluteUrl("/visualization/" + visualizationItem.getKey()));
 				getSupportFragmentManager().beginTransaction().add(R.id.livingLabContainerLinearLayout, visualizationWebView, "visualizationWebView").commit();
 			}
 					

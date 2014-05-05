@@ -1,7 +1,10 @@
 package edu.mit.mitmobile2.livinglabs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
@@ -11,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.mit.mitmobile2.objs.LivingLabContextItem;
+import edu.mit.mitmobile2.objs.LivingLabDataItem;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
@@ -56,6 +60,7 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
     String app_id, lab_id;
     
     Set<Integer> requiredIdsList = new HashSet<Integer>();
+    Map<String, Set<String>> purposes = new HashMap<String, Set<String>>();
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +78,7 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText(lab_id + " can access the following probes for <PURPOSE>");
+        labText.setText(lab_id + " can access the following probes.");
         ll.addView(labText);
         
         RelativeLayout rl = new RelativeLayout(this);
@@ -91,14 +96,43 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 				JSONArray nonRequiredProbesArray = dataObject.getJSONArray("non-required");
 				
 				for(int j=0; j<requiredProbesArray.length(); j++){
-					String tempData = requiredProbesArray.getString(j);
+					//String tempData = requiredProbesArray.getString(j);
+					LivingLabDataItem dataItem = (LivingLabDataItem) requiredProbesArray.get(j);
+					String tempData = dataItem.getKey();
+					
+					Set<String> existingPurposes = purposes.get(tempData);
+					if(existingPurposes == null){
+						Set<String> tempPurposes = new HashSet<String>();
+						tempPurposes.addAll(dataItem.getPurposes());
+						purposes.put(tempData, tempPurposes);
+					} else{
+						Set<String> tempPurposes = existingPurposes;
+						tempPurposes.addAll(dataItem.getPurposes());
+						purposes.put(tempData, tempPurposes);
+					}
+					
+
 					if(tempData.contains("Probe")){
 						requiredProbesSet.add(tempData);
 						allProbesSet.add(tempData);
 					}						
 				}
 				for(int k=0; k<nonRequiredProbesArray.length(); k++){
-					String tempData = nonRequiredProbesArray.getString(k);
+					//String tempData = nonRequiredProbesArray.getString(k);
+					LivingLabDataItem dataItem = (LivingLabDataItem) requiredProbesArray.get(k);
+					String tempData = dataItem.getKey();
+					
+					Set<String> existingPurposes = purposes.get(tempData);
+					if(existingPurposes == null){
+						Set<String> tempPurposes = new HashSet<String>();
+						tempPurposes.addAll(dataItem.getPurposes());
+						purposes.put(tempData, tempPurposes);
+					} else{
+						Set<String> tempPurposes = existingPurposes;
+						tempPurposes.addAll(dataItem.getPurposes());
+						purposes.put(tempData, tempPurposes);
+					}
+					
 					if(tempData.contains("Probe")){
 						nonRequiredProbesSet.add(tempData);
 						allProbesSet.add(tempData);
@@ -135,11 +169,11 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
             
             boolean requiredProbe = false;
             if(requiredProbesSet.contains(probe)){
-            	probeCheckBox.setText(probe + " (Required)");
+            	probeCheckBox.setText(probe + " (Required) for " + purposes.get(probe).toString());
             	requiredProbe = true;
             	requiredIdsList.add(id);
             } else{
-            	probeCheckBox.setText(probe);
+            	probeCheckBox.setText(probe + " for " + purposes.get(probe).toString());
             	probeCheckBox.setOnClickListener(this);
             }
 
@@ -339,7 +373,6 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 						llsiJson.put(probe_id, checked);
 					
 						llsiJson.put("settings_context_label", settings_context_label);
-						Log.v(TAG, "going to store " + settings_context_label);
 					}
 					
 						

@@ -33,10 +33,10 @@
 					{'title': 'Focus', 'key': 'focus', 'answers': ['recentFocusByHour'] }
 				],
 				'answers': [ 
-					{ 'key': 'socialhealth', 'data': ['recentActivityByHour', 'recentSocialByHour', 'recentFocusByHour'] }, 
-					{ 'key': 'recentActivityByHour', 'data': ['Activity Probe', { 'key': 'Simple Location Probe', 'required': false }] },
-					{ 'key': 'recentSocialByHour', 'data': ['Sms Probe', 'Call Log Probe', 'Bluetooth Probe'] },
-					{ 'key': 'recentFocusByHour', 'data': ['Screen Probe'] }
+					{ 'key': 'socialhealth', 'data': ['recentActivityByHour', 'recentSocialByHour', 'recentFocusByHour'], 'purpose': ['visualization'] }, 
+					{ 'key': 'recentActivityByHour', 'data': ['Activity Probe', { 'key': 'Simple Location Probe', 'required': false }], 'purpose': ['visualization', 'tracking'] },
+					{ 'key': 'recentSocialByHour', 'data': ['Sms Probe', 'Call Log Probe', 'Bluetooth Probe'], 'purpose': ['visualization'] },
+					{ 'key': 'recentFocusByHour', 'data': ['Screen Probe'], 'purpose': ['visualization'] }
 				]
 			},
 			{
@@ -45,7 +45,7 @@
 					{'title': 'Home / Work', 'key': 'places', 'answers': ['recentPlaces'] }
 				],
 				'answers': [
-					{ 'key': 'recentPlaces', 'data': [ 'Simple Location Probe' ] }
+					{ 'key': 'recentPlaces', 'data': [ 'Simple Location Probe' ], 'purpose': ['visualization', 'tracking'] }
 				]
 			},
 			{

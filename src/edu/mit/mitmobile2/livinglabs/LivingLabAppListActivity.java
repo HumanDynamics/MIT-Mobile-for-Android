@@ -37,6 +37,9 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 		} catch (JSONException e) {
 			Log.e("LivingLabAppListActivity", "Error Constructing Labs List", e);
 			return;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		LinearLayout layout = new LinearLayout(this);

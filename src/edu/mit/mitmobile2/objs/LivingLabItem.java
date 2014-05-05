@@ -12,7 +12,7 @@ public class LivingLabItem implements Serializable {
 	private ArrayList<LivingLabVisualizationItem> mVisualizations;
 	private ArrayList<LivingLabDataItem> mAnswerItems;
 	
-	public LivingLabItem(JSONObject labJson) {
+	public LivingLabItem(JSONObject labJson) throws Exception {
 		assert(labJson != null && labJson.has("name") && labJson.has("visualizations"));
 		mName = labJson.optString("name");
 		mVisualizations = new ArrayList<LivingLabVisualizationItem>();

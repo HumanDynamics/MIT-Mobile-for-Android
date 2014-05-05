@@ -10,8 +10,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class LivingLabVisualizationItem implements Serializable {
 
+	private static final String TAG = "LLVisualizationItem";
 	/**
 	 * 
 	 */
@@ -21,7 +24,7 @@ public class LivingLabVisualizationItem implements Serializable {
 	private String mKey;
 	private List<LivingLabDataItem> mAnswerItems;
 	
-	public LivingLabVisualizationItem(String title, String key, JSONArray answers) {
+	public LivingLabVisualizationItem(String title, String key, JSONArray answers) throws Exception {
 		assert(title != null && key != null && answers != null);
 		setTitle(title);
 		setKey(key);
@@ -29,7 +32,7 @@ public class LivingLabVisualizationItem implements Serializable {
 		setAnswerItems(answers);
 	}
 	
-	public LivingLabVisualizationItem(JSONObject viewJson) {
+	public LivingLabVisualizationItem(JSONObject viewJson) throws Exception {
 		this(viewJson.optString("title"), viewJson.optString("key"), viewJson.optJSONArray("answers"));	
 	}
 
@@ -49,12 +52,17 @@ public class LivingLabVisualizationItem implements Serializable {
 		this.mKey = key;
 	}
 	
-	public JSONObject getData() {
+	public JSONObject getData() throws JSONException {
 		JSONObject dataJson = new JSONObject();
 		Set<LivingLabDataItem> probes = new HashSet<LivingLabDataItem>();
 		
 		for (LivingLabDataItem dataItem : getAnswerItems()) {
-			probes.addAll(dataItem.getProbes());
+			Set <LivingLabDataItem> probeCollection = dataItem.getProbes();
+			for(LivingLabDataItem probe : probeCollection){
+				probe.setPurposes(dataItem.getPurposes());
+			}
+			probes.addAll(probeCollection);
+			//probes.addAll(dataItem.getProbes());
 		}
 		
 		try {
@@ -69,14 +77,16 @@ public class LivingLabVisualizationItem implements Serializable {
 			if (dataItem.isRequired()) {
 				// NOTE: The key is either human readable, or must be mapped to work with the current system
 				try {
-					dataJson.accumulate("required", dataItem.getKey());
+					//dataJson.accumulate("required", dataItem.getKey());
+					dataJson.accumulate("required", dataItem);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else {
 				try {
-					dataJson.accumulate("non-required", dataItem.getKey());
+					//dataJson.accumulate("non-required", dataItem.getKey());
+					dataJson.accumulate("non-required", dataItem);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -90,7 +100,7 @@ public class LivingLabVisualizationItem implements Serializable {
 		return mAnswerItems;
 	}
 
-	public void setAnswerItems(JSONArray answersJson) {
+	public void setAnswerItems(JSONArray answersJson) throws Exception {
 		mAnswerItems.clear();
 		
 		for (int i = 0; i < answersJson.length(); i++) {
