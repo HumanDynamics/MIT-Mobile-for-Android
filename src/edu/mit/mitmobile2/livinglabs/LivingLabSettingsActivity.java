@@ -205,7 +205,7 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
                 
                 settings_context_label = llsiFetched.getSettingsContextLabel();
             }
-             
+            
             if(requiredProbe == true){
             	//probeChecked = true;
             	if(!probeChecked){
@@ -260,7 +260,8 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerArrayAdapter);
         //spinner.setPrompt(this.getString(R.string.select_context));
-        spinner.setSelection(toHighlight);
+        
+        spinner.setSelection(toHighlight+1); //+1 since we start with "Select..."
         spinner.setId(id);
         contextId = id;
         id++;
@@ -358,7 +359,9 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 						
 						probe_id_raw = (String) checkBox.getText();
 						probe_id = "";
-						String[] tokens = probe_id_raw.split(" ");
+						
+						String[] initial_tokens = probe_id_raw.split(" for ");
+						String[] tokens = initial_tokens[0].split(" ");
 					
 						for(int k = 0; k<tokens.length; k++){
 							if(tokens[k].contains("Required"))
