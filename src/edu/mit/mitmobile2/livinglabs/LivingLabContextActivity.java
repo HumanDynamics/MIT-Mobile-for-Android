@@ -429,7 +429,14 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 		        // The GoogleMap object is ready to go.
 		    	map.setMapType(1);
 		    	
-			    	LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+			    	//LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()); 
+		    		LatLng latLng;
+		    		if(currentLocation == null){
+		    			latLng = new LatLng(42.359957, -71.093539); //centering the map on 77 Mass Ave.
+		    		} else {
+		    			latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()); //obtained location through the device
+		    		}
+		    		
 			  	   	CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
 			  	   	map.animateCamera(cameraUpdate);
 			  	   	map.getUiSettings().setZoomControlsEnabled(true);

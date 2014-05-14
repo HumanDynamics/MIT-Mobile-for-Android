@@ -416,6 +416,7 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         	try {
         		LivingLabFunfPDS llFunfPDS = new LivingLabFunfPDS(mContext);
         		
+        		Log.v(TAG, "openPDS URL: " + llFunfPDS.getAccessControlStoreUrl());
         		StringTokenizer st_uuid =  new StringTokenizer(llFunfPDS.getAccessControlStoreUrl(),"&");
         		st_uuid.nextToken();
         		StringTokenizer st_uuidval = new StringTokenizer(st_uuid.nextToken(),"=");
