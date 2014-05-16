@@ -1,7 +1,12 @@
 package edu.mit.mitmobile2.objs;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +18,42 @@ public class LivingLabSettingItem implements Serializable {
 	private String mAppId, mLabId;
 	private int mActivityProbe, mSMSProbe, mCallLogProbe, 
 		mBluetoothProbe, mWifiProbe, mSimpleLocationProbe, mScreenProbe, mRunningApplicationsProbe, mHardwareInfoProbe, mAppUsageProbe;
+	private HashSet<String> mEnabledProbes;
+
 	private String mSettingsContextLabel;
+	
+	private static Map<String, String> PROBE_MAPPING;
+	
+	static {
+		PROBE_MAPPING = new HashMap<String, String>();
+		PROBE_MAPPING.put("activity_probe", "ActivityProbe");
+		PROBE_MAPPING.put("sms_probe", "SmsProbe");
+		PROBE_MAPPING.put("call_log_probe", "CallLogProbe");
+		PROBE_MAPPING.put("bluetooth_probe", "BluetoothProbe");
+		PROBE_MAPPING.put("wifi_probe", "WifiProbe");
+		PROBE_MAPPING.put("simple_location_probe", "SimpleLocationProbe");
+		PROBE_MAPPING.put("screen_probe", "ScreenProbe");
+		PROBE_MAPPING.put("running_applications_probe", "RunningApplicationsProbe");
+		PROBE_MAPPING.put("hardware_info_probe", "HardwareInfoProbe");
+	}
+	
+	private static String probeNameFromColumn(String column) {
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		for (int i = 0; i < column.length(); i++) {
+			char c = column.charAt(i);
+			if (c == '_' && i + 1 < column.length()) {
+				i++;
+				stringBuilder.append(Character.toUpperCase(column.charAt(i)));
+			} else {
+				stringBuilder.append(column.charAt(i));
+			}
+		}
+		
+		return stringBuilder.toString();
+	}
+	
+	
 	protected HashMap<String,Object> itemData;
 	
 	public LivingLabSettingItem() {
@@ -25,6 +65,7 @@ public class LivingLabSettingItem implements Serializable {
 		assert(labSettingJson != null && labSettingJson.has("app_id") && labSettingJson.has("lab_id"));
 		mAppId = labSettingJson.optString("app_id");
 		mLabId = labSettingJson.optString("lab_id");
+		mEnabledProbes = new HashSet<String>();
 		//mServiceId = labSettingJson.optString("service_id");
 		
 		//mEnabled = labSettingJson.optInt("enabled");
@@ -38,11 +79,25 @@ public class LivingLabSettingItem implements Serializable {
 		mScreenProbe = labSettingJson.optInt("screen_probe");
 		mRunningApplicationsProbe = labSettingJson.optInt("running_applications_probe");
 		mHardwareInfoProbe = labSettingJson.optInt("hardware_info_probe");
-		mAppUsageProbe = labSettingJson.optInt("app_usage_probe");		
+		mAppUsageProbe = labSettingJson.optInt("app_usage_probe");
+		
+		Iterator<String> keysIterator = labSettingJson.keys();
+		
+		while (keysIterator.hasNext()) {
+			String key = keysIterator.next();
+			
+			if (PROBE_MAPPING.containsKey(key) && labSettingJson.optInt(key) == 1) {
+				mEnabledProbes.add(PROBE_MAPPING.get(key));
+			}
+		}
 		
 		mSettingsContextLabel = labSettingJson.optString("settings_context_label");
 	}
-	
+
+	public HashSet<String> getEnabledProbes() {
+		return mEnabledProbes;
+	}
+
 	
 	public HashMap<String,Object> getItemData() {
 		return itemData;
@@ -67,22 +122,6 @@ public class LivingLabSettingItem implements Serializable {
 	public void setLabId(String mLabId) {
 		this.mLabId = mLabId;
 	}
-	
-//	public String getServiceId() {
-//		return mServiceId;
-//	}
-//
-//	public void setServiceId(String mServiceId) {
-//		this.mServiceId = mServiceId;
-//	}
-	
-//	public int getEnabled(){
-//		return mEnabled;
-//	}
-//	
-//	public void setEnabled(int mEnabled){
-//		this.mEnabled = mEnabled;
-//	}
 	
 	public int getActivityProbe(){
 		return mActivityProbe;

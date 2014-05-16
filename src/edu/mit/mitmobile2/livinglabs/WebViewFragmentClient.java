@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -25,17 +26,20 @@ public class WebViewFragmentClient extends WebViewClient {
 	
 	@Override
 	public void onPageStarted(WebView view, String url, Bitmap favicon) {
+		//Log.d("WebViewFragmentClient", String.format("url started: %s", url));
 		getWebViewFragment().showLoadingScreen();
 	}
 	
 	@Override
 	public void onPageFinished(WebView view, String url) {
+		//Log.d("WebViewFragmentClient", String.format("url finished: %s", url));
 		getWebViewFragment().hideLoadingScreen();
 	}
 	
 	@Override
 	public void onReceivedError(WebView view, int errorCode,
 			String description, String failingUrl) {
+		//Log.d("WebViewFragmentClient", String.format("url error: %s", failingUrl));
 		mWebViewFragment.showErrorScreen();
 	}		
 	

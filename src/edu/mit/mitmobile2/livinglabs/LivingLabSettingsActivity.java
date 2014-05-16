@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.mit.media.openpds.client.PreferencesWrapper;
 import edu.mit.mitmobile2.objs.LivingLabContextItem;
 import edu.mit.mitmobile2.objs.LivingLabDataItem;
 import edu.mit.mitmobile2.objs.LivingLabItem;
@@ -415,16 +416,13 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         protected Object doInBackground(JSONObject... object) {
         	try {
         		LivingLabFunfPDS llFunfPDS = new LivingLabFunfPDS(mContext);
+        		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
         		
         		Log.v(TAG, "openPDS URL: " + llFunfPDS.getAccessControlStoreUrl());
-        		StringTokenizer st_uuid =  new StringTokenizer(llFunfPDS.getAccessControlStoreUrl(),"&");
-        		st_uuid.nextToken();
-        		StringTokenizer st_uuidval = new StringTokenizer(st_uuid.nextToken(),"=");
-        		st_uuidval.nextToken();
-        		String uuid = st_uuidval.nextToken();
+        		String uuid = prefs.getUUID();
         		llsiJson.put("datastore_owner", uuid); 
         		llsiJson.put("context_setting_flag", 1); //1 - setting
-        		String result = llFunfPDS.uploadFunfData(llsiJson);
+        		String result = llFunfPDS.saveAccessControlData(llsiJson);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

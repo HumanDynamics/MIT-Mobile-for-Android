@@ -57,21 +57,17 @@
 		]"
     </string>
     <string name="main_pipeline_config">        {
-			<!--  "@type": "edu.mit.media.openpds.client.funf.OpenPDSPipeline", -->
-			"@type": "edu.mit.mitmobile2.livinglabs.LivingLabOpenPDSPipeline",
+			"@type": "edu.mit.media.openpds.client.funf.OpenPDSPipeline",
+			<!-- "@type": "edu.mit.mitmobile2.livinglabs.LivingLabOpenPDSPipeline", -->
 			"schedules": {
 				"archive": {
 					"strict": false,
 					"interval": 86405
 				},
 				"upload": {
-					"strict": true,
+					"strict": false,
 					"interval": 900
-				},
-				"save": {
-					"strict": true,
-					"interval": 900
-				}				
+				}
 			},
 			"data": [
 				{

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import android.content.Context;
 import android.util.Log;
@@ -39,8 +41,8 @@ import edu.mit.media.openpds.client.funf.OpenPDSPipeline;
 import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 
 public class LivingLabFunfPDS extends FunfPDS {
-	
-	
+
+
 	private static final String TAG = "LivingLabFunfPDS";
 	private LivingLabsAccessControlDB mLivingLabSettingsDB = LivingLabsAccessControlDB.getInstance(getContext());
 
@@ -48,65 +50,69 @@ public class LivingLabFunfPDS extends FunfPDS {
 		super(context);
 		// TODO Auto-generated constructor stub
 	}
+
+	private JsonObject filterPipelineData(JsonObject pipelineJsonObject, HashSet<String> enabledProbes) {
+		if (pipelineJsonObject != null && pipelineJsonObject.has("name") && pipelineJsonObject.has("config")) {
+			JsonObject pipelineConfig = pipelineJsonObject.getAsJsonObject("config");
+			JsonObject newPipelineConfig = new JsonObject();
+
+			JsonArray finalProbesArray = new JsonArray();
+			for (Map.Entry<String,JsonElement> entry : pipelineConfig.entrySet()) {
+				if(!entry.getKey().equalsIgnoreCase("data")){
+					newPipelineConfig.add(entry.getKey(), entry.getValue());
+				} else {
+					JsonArray probesArray = entry.getValue().getAsJsonArray();
+					for(int i=0; i<probesArray.size(); i++){
+						JsonObject tempProbe = probesArray.get(i).getAsJsonObject();
+
+						for (String probe : enabledProbes) {
+							if (tempProbe.get("@type").toString().contains(probe)) {
+								finalProbesArray.add(tempProbe);
+							}
+						}
+					}
+					newPipelineConfig.add(entry.getKey(), finalProbesArray);
+				}
+			}
+			
+			return newPipelineConfig;
+		}
+		return null;
+	}
+
+	@Override
+	protected JsonArray getPipelinesJsonArray() {
+		// Overriding this here to assure that we always have a pipeline without having to hit the server
+		JsonParser jsonParser = new JsonParser();
+		JsonObject mainPipelineConfig = new JsonObject();
+		mainPipelineConfig.addProperty("name", "MainPipeline");
+		mainPipelineConfig.add("config",jsonParser.parse(getContext().getString(R.string.main_pipeline_config)).getAsJsonObject());
+		JsonArray pipelinesJsonArray = new JsonArray();
+		pipelinesJsonArray.add(mainPipelineConfig);
+		return pipelinesJsonArray;
+	}
 	
 	@Override
 	public Map<String, Pipeline> getPipelines() { 
 		Map<String, Pipeline> pipelines = new HashMap<String, Pipeline>();
 		JsonArray pipelinesJsonArray = getPipelinesJsonArray();		
-		
-		ArrayList<String> probesToEnable = new ArrayList<String>();
+
+		HashSet<String> probesToEnable = new HashSet<String>();
 		ArrayList<LivingLabSettingItem> llsiArray;
 		try {
 			llsiArray = mLivingLabSettingsDB.retrieveLivingLabSettingItem();
-			for(int i=0; i<llsiArray.size(); i++){
-				LivingLabSettingItem llsi = llsiArray.get(i);
-				
-				if (llsi.getActivityProbe() == 1) probesToEnable.add("ActivityProbe");
-				if (llsi.getSMSProbe() == 1) probesToEnable.add("SmsProbe");
-				if (llsi.getCallLogProbe() == 1) probesToEnable.add("CallLogProbe");
-				if (llsi.getBluetoothProbe() == 1) probesToEnable.add("BluetoothProbe");
-				if (llsi.getWifiProbe() == 1) probesToEnable.add("WifiProbe");
-				if (llsi.getSimpleLocationProbe() == 1) probesToEnable.add("SimpleLocationProbe");
-				if (llsi.getScreenProbe() == 1) probesToEnable.add("ScreenProbe");
-				if (llsi.getRunningApplicationsProbe() == 1) probesToEnable.add("RunningApplicationsProbe");
-				if (llsi.getHardwareInfoProbe() == 1) probesToEnable.add("HardwareInfoProbe");
-				if (llsi.getAppUsageProbe() == 1) probesToEnable.add("AppUsageProbe");
-			}
 			
+			for (LivingLabSettingItem llsi : llsiArray) {
+				probesToEnable.addAll(llsi.getEnabledProbes());
+			}
+
 			if (pipelinesJsonArray != null) {
 				Gson gson = FunfManager.getGsonBuilder(getContext()).create();
 				for (JsonElement pipelineJsonElement : getPipelinesJsonArray()) {
 					try {
-						JsonObject pipelineJsonObject = pipelineJsonElement.getAsJsonObject();
-						if (pipelineJsonObject.has("name") && pipelineJsonObject.has("config")) {
-							
-							JsonObject pipelineConfig = pipelineJsonObject.get("config").getAsJsonObject();
-							JsonObject newPipelineConfig = new JsonObject();
-							
-					    	JsonArray finalProbesArray = new JsonArray();
-							for (Map.Entry<String,JsonElement> entry : pipelineConfig.entrySet()) {
-							    if(!entry.getKey().equalsIgnoreCase("data")){
-							    	newPipelineConfig.add(entry.getKey(), entry.getValue());
-							    } else {
-							    	JsonArray probesArray = entry.getValue().getAsJsonArray();
-							    	for(int i=0; i<probesArray.size(); i++){
-							    		JsonObject tempProbe = probesArray.get(i).getAsJsonObject();
-							    		
-							    		boolean probePresent = false;
-							    		for(int j=0; j<probesToEnable.size(); j++){
-							    			if(tempProbe.get("@type").toString().contains(probesToEnable.get(j).toString())){
-							    				probePresent = true;
-							    			}
-							    		}
-							    		if(probePresent){
-							    			finalProbesArray.add(tempProbe);
-							    		}
-							    	}
-							    	newPipelineConfig.add(entry.getKey(), finalProbesArray);
-							    }
-							}
-							
-							
+						JsonObject pipelineJsonObject = filterPipelineData(pipelineJsonElement.getAsJsonObject(), probesToEnable);
+						
+						if (pipelineJsonObject != null) {
 							Pipeline pipeline = gson.fromJson(pipelineJsonObject.get("config"), OpenPDSPipeline.class);
 							pipelines.put(pipelineJsonObject.get("name").getAsString(), pipeline);
 						}
@@ -119,26 +125,20 @@ public class LivingLabFunfPDS extends FunfPDS {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		
+
 		return pipelines;
 	}
-	
-	@Override
-	public String getFunfUploadUrl() {
-		return buildAbsoluteApiUrl("/accesscontrol/store/");
-	}
-	
+
 	public String getAccessControlStoreUrl() {
 		return buildAbsoluteApiUrl("/accesscontrol/store/");
 	}
-	
+
 	public String getAccessControlDeleteUrl() {
 		return buildAbsoluteApiUrl("/accesscontrol/delete/");
 	}
 	
-	public String uploadFunfData(JSONObject object) throws ClientProtocolException, IOException {          
-	    HttpPost httppost = new HttpPost(getFunfUploadUrl());
+	public String saveAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
+		HttpPost httppost = new HttpPost(getAccessControlStoreUrl());
 
 		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
 		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
@@ -148,9 +148,9 @@ public class LivingLabFunfPDS extends FunfPDS {
 
 		ResponseHandler<String> responseHandler=new BasicResponseHandler();
 		String response = httpClient.execute(httppost, responseHandler); 
-		
+
 		return response;
-	
+
 	}
 
 }

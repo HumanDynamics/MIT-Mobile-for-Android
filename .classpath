@@ -12,8 +12,6 @@
 	<classpathentry exported="true" kind="con" path="com.esri.arcgis.android.APPLICATION_FRAMEWORK"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="/Users/sharon/Documents/Research/adt-bundle-mac-x86_64-20131030/sdk/add-ons/addon-google_apis-google-16/libs/maps.jar"/>
-	<classpathentry kind="lib" path="libs/newfunf.jar"/>
-	<classpathentry kind="lib" path="libs/google-play-services.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Android/android-sdk/add-ons/addon-google_apis-google-17/libs/maps.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -51,6 +51,8 @@ public class LivingLabArrayAdapter extends ArrayAdapter<LivingLabItem> {
 			}
 		});
 		
+		settingsButton.setVisibility(View.GONE);
+		
 		return convertView;
 	}
 
