@@ -1,26 +1,18 @@
 package edu.mit.mitmobile2.livinglabs;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,8 +129,44 @@ public class LivingLabFunfPDS extends FunfPDS {
 		return buildAbsoluteApiUrl("/accesscontrol/delete/");
 	}
 	
+	public String getAccessControlLoadUrl() {
+		return buildAbsoluteApiUrl("/accesscontrol/load/");
+	}
+	
 	public String saveAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
 		HttpPost httppost = new HttpPost(getAccessControlStoreUrl());
+
+		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
+		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
+		entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
+		httppost.setEntity(entity); 
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+
+		ResponseHandler<String> responseHandler=new BasicResponseHandler();
+		String response = httpClient.execute(httppost, responseHandler); 
+
+		return response;
+
+	}
+	
+	public String loadAccessControlData(JSONObject object) throws ClientProtocolException, IOException, JSONException { 
+		
+		HttpPost httppost = new HttpPost(getAccessControlLoadUrl());
+
+		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
+		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
+		entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
+		httppost.setEntity(entity); 
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+
+		ResponseHandler<String> responseHandler=new BasicResponseHandler();
+		String response = httpClient.execute(httppost, responseHandler); 
+		
+		return response;
+	}
+	
+	public String deleteAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
+		HttpPost httppost = new HttpPost(getAccessControlDeleteUrl());
 
 		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
 		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8

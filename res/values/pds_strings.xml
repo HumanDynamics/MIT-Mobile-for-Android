@@ -53,7 +53,20 @@
 				'visualizations': [
 					{'title': 'Meetup Home', 'key': 'meetup_home', 'answers': ['recentPlaces'] }
 				]
-			}  
+			},
+			{
+				'name': 'MIT-FIT',
+				'visualizations': [
+					{'title': 'You are active at', 'key': 'mitfit/userlocation', 'answers': ['activeLocations'] },
+					{'title': 'You are active during', 'key': 'mitfit/usertime', 'answers': ['activeLocations'] },					
+					{'title': 'Your stats', 'key': 'mitfit/statsuser', 'answers': ['activityStats'] },
+					{'title': 'Locations MIT community is active at', 'key': 'mitfit/statsaggregate', 'answers': ['activityStats'] }					
+				],
+				'answers': [ 
+					{ 'key': 'activeLocations', 'data': ['Activity Probe', 'Location Probe'], 'purpose': ['visualization'] }, 
+					{ 'key': 'activityStats', 'data': ['Activity Probe', 'Location Probe'], 'purpose': ['visualization'] }
+				]
+			}    
 		]"
     </string>
     <string name="main_pipeline_config">        {

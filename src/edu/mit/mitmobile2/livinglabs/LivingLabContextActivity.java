@@ -5,35 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import edu.mit.media.openpds.client.PersonalDataStore;
 import edu.mit.media.openpds.client.PreferencesWrapper;
-import edu.mit.mitmobile2.objs.LivingLabContextItem;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 
 import android.app.Activity;
@@ -41,8 +20,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,24 +32,18 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 
 public class LivingLabContextActivity extends Activity implements OnClickListener, OnTouchListener  {
 	private static final String TAG = "LLContextActivity";
 	private JSONObject llciJson;
 
-	private LivingLabsAccessControlDB mLivingLabAccessControlDB;
-
 	private int selectedHourStart, selectedMinuteStart, selectedHourEnd, selectedMinuteEnd;
-
-	private LocationClient mLocationClient;
-
-	private boolean store_delete_flag = false; //false - store, true - delete
-	private ArrayList<LatLng> arrayPoints = new ArrayList<LatLng>(); 
+	
 	PolylineOptions polylineOptions; 
-	private boolean checkClick = false;
 	private LivingLabFunfPDS pds;
+	private Connection connection;
+	private boolean saveFlag = false, deleteFlag = false;
 
 	private int[] daysViews = {R.id.livinglabContextDurationDaySunday, R.id.livinglabContextDurationDayMonday, R.id.livinglabContextDurationDayTuesday,
 			R.id.livinglabContextDurationDayWednesday, R.id.livinglabContextDurationDayThursday, R.id.livinglabContextDurationDayFriday,
@@ -91,9 +62,7 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 			startActivity(intent);
 			finish();
 			return;
-		}
-
-		mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);   
+		}   
 
 		setContentView(R.layout.living_lab_context);
 		Serializable  context_label_serializable = getIntent().getSerializableExtra("context_label");
@@ -102,76 +71,69 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 
 		if(context_label_serializable != null)
 			context_label = context_label_serializable.toString();
+		
+		String contextsString = getIntent().getStringExtra("contexts");
+		JSONObject contextFromServer = new JSONObject();
+		if(contextsString != null){
+			Log.v(TAG, contextsString);
+			try {
+	            JSONArray contextsArray = new JSONArray(contextsString);
+	            for(int i=0; i<contextsArray.length(); i++){
+	            	if(context_label.equalsIgnoreCase(contextsArray.getJSONObject(i).getString("context_label"))){
+	            		contextFromServer = contextsArray.getJSONObject(i);
+	            	}
+	            }
+	        } catch (JSONException e) {
+	            e.printStackTrace();
+	        }
+		}
 
 		boolean context_prefill_success = false;
 		if(context_label != null){
 			ArrayList<String> searchDataInput = new ArrayList<String>();
 			searchDataInput.add(context_label);
-			LivingLabContextItem llciFetched = null;
 			try {
-				llciFetched = mLivingLabAccessControlDB.retrieveLivingLabContextItem(searchDataInput);
 
-				if(llciFetched != null){
+				EditText contextLabelEditText = (EditText) findViewById(R.id.livinglabContextLabelEditText);
+				contextLabelEditText.setText(contextFromServer.getString("context_label"));
+				contextLabelEditText.setEnabled(false);
 
-					EditText contextLabelEditText = (EditText) findViewById(R.id.livinglabContextLabelEditText);
-					contextLabelEditText.setText(llciFetched.getContextLabel());
-					contextLabelEditText.setEnabled(false);
-
-					TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextLabelError);
-					durationDaysError.setText("(not editable)");
-					durationDaysError.setTextColor(Color.parseColor("#FF0000"));
+				TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextLabelError);
+				durationDaysError.setText("(not editable)");
+				durationDaysError.setTextColor(Color.parseColor("#FF0000"));
 
 
-					EditText durationStartEditText = (EditText) findViewById(R.id.livinglabContextDurationStartEditText);
-					durationStartEditText.setText(llciFetched.getContextDurationStart());
-					durationStartEditText.setOnTouchListener(this);
+				EditText durationStartEditText = (EditText) findViewById(R.id.livinglabContextDurationStartEditText);
+				durationStartEditText.setText(contextFromServer.getString("context_duration_start"));
+				durationStartEditText.setOnTouchListener(this);
 
 
-					EditText durationEndEditText = (EditText) findViewById(R.id.livinglabContextDurationEndEditText);
-					durationEndEditText.setText(llciFetched.getContextDurationEnd());
-					durationEndEditText.setOnTouchListener(this);
+				EditText durationEndEditText = (EditText) findViewById(R.id.livinglabContextDurationEndEditText);
+				durationEndEditText.setText(contextFromServer.getString("context_duration_end"));
+				durationEndEditText.setOnTouchListener(this);
 
-					String days = llciFetched.getContextDurationDays();
-					String[] days_items = days.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
-					int[] days_array = new int[days_items.length];
+				String days = contextFromServer.getString("context_duration_days");
+				String[] days_items = days.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+				int[] days_array = new int[days_items.length];
 
-					for (int i=0; i < days_items.length; i++) {
-						try {
-							days_array[i] = Integer.parseInt(days_items[i].trim());
-						} catch (NumberFormatException nfe) {};
-					}
-
-					for(int i=0; i<days_array.length; i++){
-						int day_value = days_array[i];
-						if(day_value == 1){
-							CheckBox dayCheckBox = (CheckBox)findViewById(daysViews[i]);
-							dayCheckBox.setChecked(true);
-						}
-					}
-
-//					mLocationClient = new LocationClient(this, this, this);	
-//					String places = llciFetched.getContextPlaces();
-//
-//					Pattern p = Pattern.compile("\\((.*?)\\)",Pattern.DOTALL);
-//					Matcher matcher = p.matcher(places);
-//					while(matcher.find()) {
-//						String[] geo = matcher.group(1).split(",");
-//						double lat = Double.parseDouble(geo[0]);
-//						double lng = Double.parseDouble(geo[1]);
-//						LatLng latlng = new LatLng(lat, lng);
-//
-//						arrayPoints.add(latlng);
-//
-//						//countPolygonPoints();
-//						//drawCircles(arrayPoints);
-//
-//					}
-
-					Button delete = (Button) findViewById(R.id.livinglabContextDeleteButton);
-					delete.setOnClickListener(this);
-
-					context_prefill_success = true;
+				for (int i=0; i < days_items.length; i++) {
+					try {
+						days_array[i] = Integer.parseInt(days_items[i].trim());
+					} catch (NumberFormatException nfe) {};
 				}
+
+				for(int i=0; i<days_array.length; i++){
+					int day_value = days_array[i];
+					if(day_value == 1){
+						CheckBox dayCheckBox = (CheckBox)findViewById(daysViews[i]);
+						dayCheckBox.setChecked(true);
+					}
+				}
+
+				Button delete = (Button) findViewById(R.id.livinglabContextDeleteButton);
+				delete.setOnClickListener(this);
+
+				context_prefill_success = true;
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -194,9 +156,6 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 			EditText durationEndEditText = (EditText) findViewById(R.id.livinglabContextDurationEndEditText);
 			durationEndEditText.setText("" + selectedHourEnd + " : " + selectedMinuteEnd);
 			durationEndEditText.setOnTouchListener(this);
-
-			// Create the LocationRequest object
-//			mLocationClient = new LocationClient(this, this, this);	
 		}
 
 		TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextDurationDayError);
@@ -243,9 +202,6 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 
 			if(duration_days_value_flag && !contextLabelString.isEmpty() && !contextLabelString.equalsIgnoreCase("Create a new context") && !contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){
 				String duration_days = (Arrays.toString(duration_days_value));
-
-				//String places = arrayPoints.toString();
-				//Log.v(TAG, "places: " + places);
 				String places = "";
 
 				try{
@@ -258,16 +214,12 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 					e.printStackTrace();
 				}
 
-				LivingLabContextItem llci;
+
 				try {
-					llci = new LivingLabContextItem(llciJson);
-					Log.v(TAG,  llciJson.toString());
-					mLivingLabAccessControlDB.saveLivingLabContextItem(llci);
-
-					store_delete_flag = false; //store
-
-					Connection connection = new Connection(this);
+					connection = new Connection(this);
+					saveFlag = true;
 					connection.execute(llciJson).get(1000, TimeUnit.MILLISECONDS);
+					saveFlag = false;
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -298,22 +250,21 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 			finish();
 			break;
 		case R.id.livinglabContextDeleteButton:
-			LivingLabContextItem llci;
 			llciJson = new JSONObject();
 
 			try {
 				llciJson.put("context_label", contextLabelString);
-				llci = new LivingLabContextItem(llciJson);
-				mLivingLabAccessControlDB.deleteContextItem(llci);
-
-				store_delete_flag = true; //delete
+				connection = new Connection(this);
+				deleteFlag = true;
+				connection.execute(llciJson).get(1000, TimeUnit.MILLISECONDS);
+				deleteFlag = false;
 
 				Intent activityIntent = new Intent(LivingLabContextActivity.this, LivingLabSettingsActivity.class);
 				LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
 				activityIntent.putExtra("lab", labItem);
 				LivingLabContextActivity.this.startActivity(activityIntent);
 
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -398,13 +349,24 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 		@Override
 		protected Object doInBackground(JSONObject... object) {
 			try {
-				PreferencesWrapper prefs = new PreferencesWrapper(mContext);
-
-				String uuid = prefs.getUUID();
-				llciJson.put("datastore_owner", uuid); 
-				llciJson.put("context_setting_flag", 0); //0 - context
 				
-				String result = pds.saveAccessControlData(llciJson);
+				if(saveFlag){
+					PreferencesWrapper prefs = new PreferencesWrapper(mContext);
+
+					String uuid = prefs.getUUID();
+					llciJson.put("datastore_owner", uuid); 
+					llciJson.put("context_setting_flag", 0); //0 - context
+					
+					String result = pds.saveAccessControlData(llciJson);
+				} else if(deleteFlag){
+					PreferencesWrapper prefs = new PreferencesWrapper(mContext);
+	
+					String uuid = prefs.getUUID();
+					llciJson.put("datastore_owner", uuid); 
+					llciJson.put("context_setting_flag", 0); //0 - context
+					
+					String result = pds.deleteAccessControlData(llciJson);
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
