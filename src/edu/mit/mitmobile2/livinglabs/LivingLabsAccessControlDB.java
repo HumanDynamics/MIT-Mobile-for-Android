@@ -458,6 +458,17 @@ public class LivingLabsAccessControlDB {
 					+ CONTEXT_LABEL + ")"					
 				+ ");");
 			
+			db.execSQL("INSERT INTO " + LIVINGLABS_CONTEXT_TABLE + " ("
+					+ CONTEXT_LABEL + ", "
+					+ CONTEXT_DURATION_START + ", "
+					+ CONTEXT_DURATION_END + ", "
+					+ CONTEXT_DURATION_DAYS + ", "
+					+ CONTEXT_PLACES
+					+ ") VALUES ("
+					+ "'MIT', '10 : 00', '18 : 00','[0,1,1,1,1,1,0]',''"
+					+ ")");
+					
+			
 		}
 
 		@Override

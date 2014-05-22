@@ -172,13 +172,14 @@
 	</View>    
 
     
+<!--    
     <TextView
         android:id="@+id/livinglabContextLocationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Location"
         android:textAppearance="?android:attr/textAppearanceMedium" />  
-        
+          
         <View
   		android:layout_width="1dp"
   		android:layout_height="15dp">
@@ -194,7 +195,7 @@
     <View
   		android:layout_width="1dp"
   		android:layout_height="15dp">
-	</View>           
+	</View>          
         
     <fragment
         android:id="@+id/livinglabContextMap"
@@ -203,6 +204,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_weight="1.0"/>
+-->
 
         <LinearLayout 
             android:layout_width="330dip" 

@@ -62,9 +62,22 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
     
     Set<Integer> requiredIdsList = new HashSet<Integer>();
     Map<String, Set<String>> purposes = new HashMap<String, Set<String>>();
+    
+	private LivingLabFunfPDS pds;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+		//If user is not logged in, redirect to touchstone
+		try {
+			pds = new LivingLabFunfPDS(this);
+		} catch (Exception e) {
+			Intent intent = new Intent(this, LivingLabsLoginActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
         
         mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
         app_id = "Living Lab";       		
@@ -415,14 +428,15 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         @Override
         protected Object doInBackground(JSONObject... object) {
         	try {
-        		LivingLabFunfPDS llFunfPDS = new LivingLabFunfPDS(mContext);
+        		//LivingLabFunfPDS llFunfPDS = new LivingLabFunfPDS(mContext);
         		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
         		
-        		Log.v(TAG, "openPDS URL: " + llFunfPDS.getAccessControlStoreUrl());
+        		//Log.v(TAG, "openPDS URL: " + llFunfPDS.getAccessControlStoreUrl());
         		String uuid = prefs.getUUID();
         		llsiJson.put("datastore_owner", uuid); 
         		llsiJson.put("context_setting_flag", 1); //1 - setting
-        		String result = llFunfPDS.saveAccessControlData(llsiJson);
+        		//String result = llFunfPDS.saveAccessControlData(llsiJson);
+        		String result = pds.saveAccessControlData(llsiJson);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

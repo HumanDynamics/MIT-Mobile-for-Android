@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import edu.mit.media.openpds.client.PersonalDataStore;
 import edu.mit.media.openpds.client.PreferencesWrapper;
 import edu.mit.mitmobile2.objs.LivingLabContextItem;
 import edu.mit.mitmobile2.objs.LivingLabItem;
@@ -57,7 +58,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 
-public class LivingLabContextActivity extends Activity implements OnClickListener, OnMapClickListener, OnMapLongClickListener, OnMarkerClickListener, OnTouchListener, ConnectionCallbacks, OnConnectionFailedListener, LocationListener  {
+public class LivingLabContextActivity extends Activity implements OnClickListener, OnTouchListener  {
 	private static final String TAG = "LLContextActivity";
 	private JSONObject llciJson;
 
@@ -71,6 +72,7 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 	private ArrayList<LatLng> arrayPoints = new ArrayList<LatLng>(); 
 	PolylineOptions polylineOptions; 
 	private boolean checkClick = false;
+	private LivingLabFunfPDS pds;
 
 	private int[] daysViews = {R.id.livinglabContextDurationDaySunday, R.id.livinglabContextDurationDayMonday, R.id.livinglabContextDurationDayTuesday,
 			R.id.livinglabContextDurationDayWednesday, R.id.livinglabContextDurationDayThursday, R.id.livinglabContextDurationDayFriday,
@@ -80,6 +82,16 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//If user is not logged in, redirect to touchstone
+		try {
+			pds = new LivingLabFunfPDS(this);
+		} catch (Exception e) {
+			Intent intent = new Intent(this, LivingLabsLoginActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
 
 		mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);   
 
@@ -137,23 +149,23 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 						}
 					}
 
-					mLocationClient = new LocationClient(this, this, this);	
-					String places = llciFetched.getContextPlaces();
-
-					Pattern p = Pattern.compile("\\((.*?)\\)",Pattern.DOTALL);
-					Matcher matcher = p.matcher(places);
-					while(matcher.find()) {
-						String[] geo = matcher.group(1).split(",");
-						double lat = Double.parseDouble(geo[0]);
-						double lng = Double.parseDouble(geo[1]);
-						LatLng latlng = new LatLng(lat, lng);
-
-						arrayPoints.add(latlng);
-
-						//countPolygonPoints();
-						drawCircles(arrayPoints);
-
-					}
+//					mLocationClient = new LocationClient(this, this, this);	
+//					String places = llciFetched.getContextPlaces();
+//
+//					Pattern p = Pattern.compile("\\((.*?)\\)",Pattern.DOTALL);
+//					Matcher matcher = p.matcher(places);
+//					while(matcher.find()) {
+//						String[] geo = matcher.group(1).split(",");
+//						double lat = Double.parseDouble(geo[0]);
+//						double lng = Double.parseDouble(geo[1]);
+//						LatLng latlng = new LatLng(lat, lng);
+//
+//						arrayPoints.add(latlng);
+//
+//						//countPolygonPoints();
+//						//drawCircles(arrayPoints);
+//
+//					}
 
 					Button delete = (Button) findViewById(R.id.livinglabContextDeleteButton);
 					delete.setOnClickListener(this);
@@ -184,10 +196,10 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 			durationEndEditText.setOnTouchListener(this);
 
 			// Create the LocationRequest object
-			mLocationClient = new LocationClient(this, this, this);	
+//			mLocationClient = new LocationClient(this, this, this);	
 		}
 
-		TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextLocationMessage);
+		TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextDurationDayError);
 		durationDaysError.setTextColor(Color.parseColor("#0000FF"));
 
 		Button save = (Button) findViewById(R.id.livinglabContextSaveButton);
@@ -232,8 +244,9 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 			if(duration_days_value_flag && !contextLabelString.isEmpty() && !contextLabelString.equalsIgnoreCase("Create a new context") && !contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){
 				String duration_days = (Arrays.toString(duration_days_value));
 
-				String places = arrayPoints.toString();
-				Log.v(TAG, "places: " + places);
+				//String places = arrayPoints.toString();
+				//Log.v(TAG, "places: " + places);
+				String places = "";
 
 				try{
 					llciJson.put("context_label", contextLabelString);
@@ -248,6 +261,7 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 				LivingLabContextItem llci;
 				try {
 					llci = new LivingLabContextItem(llciJson);
+					Log.v(TAG,  llciJson.toString());
 					mLivingLabAccessControlDB.saveLivingLabContextItem(llci);
 
 					store_delete_flag = false; //store
@@ -273,7 +287,7 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 					TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextDurationDayError);
 					durationDaysError.setText("Select at least one day.");
 					durationDaysError.setTextColor(Color.parseColor("#FF0000"));
-				} else if (contextLabelString.isEmpty() || contextLabelString.equalsIgnoreCase("Create a new context") || contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){
+				} else if (contextLabelString.isEmpty() || contextLabelString.equalsIgnoreCase("Create a new context") || contextLabelString.equalsIgnoreCase("MIT") || contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){
 					TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextLabelError);
 					durationDaysError.setText("Provide a valid label.");
 					durationDaysError.setTextColor(Color.parseColor("#FF0000"));
@@ -316,6 +330,13 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 		// TODO Auto-generated method stub
 		if ((me.getAction() == MotionEvent.ACTION_DOWN) && (v.getId() == R.id.livinglabContextDurationStartEditText || v.getId() == R.id.livinglabContextDurationEndEditText)){
 			if(v.getId() == R.id.livinglabContextDurationStartEditText){
+				EditText selectedTimeStartEdit = (EditText)findViewById(R.id.livinglabContextDurationStartEditText);
+				String selectedTimeStart = selectedTimeStartEdit.getText().toString();
+				StringTokenizer timeSt = new StringTokenizer(selectedTimeStart, " : ");
+				
+				selectedHourStart = Integer.parseInt(timeSt.nextToken());
+				selectedMinuteStart = Integer.parseInt(timeSt.nextToken());
+				
 				TimePickerDialog mTimePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
 					@Override
 					public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
@@ -336,6 +357,13 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 				mTimePicker.setTitle("Select Start");
 				mTimePicker.show();
 			} else if(v.getId() == R.id.livinglabContextDurationEndEditText){
+				EditText selectedTimeEndEdit = (EditText)findViewById(R.id.livinglabContextDurationEndEditText);
+				String selectedTimeEnd = selectedTimeEndEdit.getText().toString();
+				StringTokenizer timeSt = new StringTokenizer(selectedTimeEnd, " : ");
+				
+				selectedHourEnd = Integer.parseInt(timeSt.nextToken());
+				selectedMinuteEnd = Integer.parseInt(timeSt.nextToken());
+				
 				TimePickerDialog mTimePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
 					@Override
 					public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
@@ -364,199 +392,19 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 	}
 
 
-	@Override
-	public void onLocationChanged(Location arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onProviderDisabled(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onProviderEnabled(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		// Connect the client.
-		mLocationClient.connect();
-	}
-	@Override
-	protected void onStop() {
-		// Disconnect the client.
-		mLocationClient.disconnect();
-		super.onStop();
-	}
-
-
-	@Override
-	public void onDisconnected() {
-		// Display the connection status
-		Toast.makeText(this, "Disconnected. Please re-connect.",
-				Toast.LENGTH_SHORT).show();
-	}
-	@Override
-	public void onConnectionFailed(ConnectionResult connectionResult) {
-		// Display the error code on failure
-		Toast.makeText(this, "Connection Failure : " + 
-				connectionResult.getErrorCode(),
-				Toast.LENGTH_SHORT).show();
-	}
-
-
-	@Override
-	public void onConnected(Bundle bundle) {
-		// Get the current location's latitude & longitude
-		Location currentLocation = mLocationClient.getLastLocation();
-
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-		GoogleMap map = mapFragment.getMap();
-		if (map != null) {
-			// The GoogleMap object is ready to go.
-			map.setMapType(1);
-
-			//LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()); 
-			LatLng latLng;
-			if(currentLocation == null){
-				latLng = new LatLng(42.359957, -71.093539); //centering the map on 77 Mass Ave.
-			} else {
-				latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()); //obtained location through the device
-			}
-
-			CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-			map.animateCamera(cameraUpdate);
-			map.getUiSettings().setZoomControlsEnabled(true);
-
-			map.setOnMapClickListener(this);
-			map.setOnMapLongClickListener(this);
-			map.setOnMarkerClickListener(this);
-
-
-		}
-
-
-	}
-
-	public void Draw_Map(ArrayList<LatLng> latlngList) {
-		PolygonOptions rectOptions = new PolygonOptions();
-		rectOptions.addAll(latlngList);
-		rectOptions.strokeColor(Color.BLACK);
-		rectOptions.strokeWidth(7);
-		rectOptions.fillColor(Color.GRAY);
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-		GoogleMap map = mapFragment.getMap();
-		map.addPolygon(rectOptions);
-	}
-
-	//	@Override
-	//	public void onMapClick(LatLng point) {
-	//		// TODO Auto-generated method stub
-	//		if (checkClick == false) { 
-	//			MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-	//		    GoogleMap map = mapFragment.getMap();
-	//			map.addMarker(new MarkerOptions().position(point).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
-	//			arrayPoints.add(point); 
-	//		}
-	//		
-	//	}
-
-	@Override
-	public void onMapClick(LatLng point) {
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-		GoogleMap map = mapFragment.getMap();
-		map.addMarker(new MarkerOptions().position(point).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
-
-		// Instantiates a new CircleOptions object and defines the center and radius
-		CircleOptions circleOptions = new CircleOptions()
-		.center(point)
-		.radius(300); // In meters
-
-		// Get back the mutable Circle
-		Circle circle = map.addCircle(circleOptions);
-
-
-		arrayPoints.add(point); 
-
-	}
-
-	public void drawCircles(ArrayList<LatLng> points){
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-		GoogleMap map = mapFragment.getMap();
-
-
-		for(int i=0; i<points.size(); i++){
-			map.addMarker(new MarkerOptions().position(points.get(i)).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
-			// Instantiates a new CircleOptions object and defines the center and radius
-			CircleOptions circleOptions = new CircleOptions()
-			.center(points.get(i))
-			.radius(300); // In meters
-
-			// Get back the mutable Circle
-			Circle circle = map.addCircle(circleOptions);
-		}
-
-	}
-
-	@Override
-	public boolean onMarkerClick(Marker marker) {
-		// TODO Auto-generated method stub
-		if (arrayPoints.get(0).equals(marker.getPosition())) { 
-			countPolygonPoints(); 
-		} 
-		return false; 
-	}
-
-	public void countPolygonPoints() { 
-		if (arrayPoints.size() >= 3) { 
-			checkClick = true; 
-			PolygonOptions polygonOptions = new PolygonOptions(); 
-			polygonOptions.addAll(arrayPoints); 
-			polygonOptions.strokeColor(Color.BLUE); 
-			polygonOptions.strokeWidth(7); polygonOptions.fillColor(Color.CYAN); 
-			MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-			GoogleMap map = mapFragment.getMap();
-			map.addPolygon(polygonOptions); 
-		} 
-	}
-
-
-	@Override
-	public void onMapLongClick(LatLng arg0) {
-		// TODO Auto-generated method stub
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-		GoogleMap map = mapFragment.getMap();
-		map.clear();
-		arrayPoints.clear();
-		checkClick = false;
-	}
-
-
 	private class Connection extends AsyncTask<JSONObject, Object, Object> {		 
 		private Context mContext;
 
 		@Override
 		protected Object doInBackground(JSONObject... object) {
 			try {
-				LivingLabFunfPDS llFunfPDS = new LivingLabFunfPDS(mContext);
 				PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 
 				String uuid = prefs.getUUID();
 				llciJson.put("datastore_owner", uuid); 
 				llciJson.put("context_setting_flag", 0); //0 - context
-				String result = llFunfPDS.saveAccessControlData(llciJson);
+				
+				String result = pds.saveAccessControlData(llciJson);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

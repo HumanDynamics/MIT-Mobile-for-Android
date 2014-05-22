@@ -39,20 +39,20 @@ import android.widget.TextView;
 public class LivingLabAccessControlActivity extends Activity implements OnClickListener {
 	private static final String TAG = "LLAccessControlActivity";
     
-    private LivingLabsAccessControlDB mLivingLabAccessControlDB;
+    //private LivingLabsAccessControlDB mLivingLabAccessControlDB;
     
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
-        ArrayList<LivingLabContextItem> llciArray = mLivingLabAccessControlDB.retrieveLivingLabContextItem();
+        //mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
+        //ArrayList<LivingLabContextItem> llciArray = mLivingLabAccessControlDB.retrieveLivingLabContextItem();
         Intent activityIntent;
-        if(llciArray == null){
-        	activityIntent = new Intent(LivingLabAccessControlActivity.this, LivingLabContextActivity.class);
-        } else{
+//        if(llciArray == null){
+//        	activityIntent = new Intent(LivingLabAccessControlActivity.this, LivingLabContextActivity.class);
+//        } else{
         	activityIntent = new Intent(LivingLabAccessControlActivity.this, LivingLabSettingsActivity.class);
-        }
+//        }
     	LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
     	activityIntent.putExtra("lab", labItem);
     	LivingLabAccessControlActivity.this.startActivity(activityIntent);
