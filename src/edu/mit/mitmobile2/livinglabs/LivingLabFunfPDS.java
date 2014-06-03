@@ -33,14 +33,11 @@ import edu.mit.media.openpds.client.funf.OpenPDSPipeline;
 import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 
 public class LivingLabFunfPDS extends FunfPDS {
-
-
 	private static final String TAG = "LivingLabFunfPDS";
 	private LivingLabsAccessControlDB mLivingLabSettingsDB = LivingLabsAccessControlDB.getInstance(getContext());
 
 	public LivingLabFunfPDS(Context context) throws Exception {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 
 	private JsonObject filterPipelineData(JsonObject pipelineJsonObject, HashSet<String> enabledProbes) {
