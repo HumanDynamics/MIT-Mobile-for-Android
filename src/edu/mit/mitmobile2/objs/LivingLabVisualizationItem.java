@@ -52,7 +52,8 @@ public class LivingLabVisualizationItem implements Serializable {
 		this.mKey = key;
 	}
 	
-	public JSONObject getData() throws JSONException {
+//	public JSONObject getData() throws JSONException {
+	public Set<LivingLabDataItem> getData() throws JSONException {
 		JSONObject dataJson = new JSONObject();
 		Set<LivingLabDataItem> probes = new HashSet<LivingLabDataItem>();
 		
@@ -65,35 +66,36 @@ public class LivingLabVisualizationItem implements Serializable {
 			//probes.addAll(dataItem.getProbes());
 		}
 		
-		try {
-			dataJson.put("required", new JSONArray());
-			dataJson.put("non-required", new JSONArray());
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		for (LivingLabDataItem dataItem : probes) {
-			if (dataItem.isRequired()) {
-				// NOTE: The key is either human readable, or must be mapped to work with the current system
-				try {
-					//dataJson.accumulate("required", dataItem.getKey());
-					dataJson.accumulate("required", dataItem);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				try {
-					//dataJson.accumulate("non-required", dataItem.getKey());
-					dataJson.accumulate("non-required", dataItem);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		return dataJson;
+//		try {
+//			dataJson.put("required", new JSONArray());
+//			dataJson.put("non-required", new JSONArray());
+//		} catch (JSONException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		
+//		for (LivingLabDataItem dataItem : probes) {
+//			if (dataItem.isRequired()) {
+//				// NOTE: The key is either human readable, or must be mapped to work with the current system
+//				try {
+//					//dataJson.accumulate("required", dataItem.getKey());
+//					dataJson.accumulate("required", dataItem);
+//				} catch (JSONException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			} else {
+//				try {
+//					//dataJson.accumulate("non-required", dataItem.getKey());
+//					dataJson.accumulate("non-required", dataItem);
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//		
+//		return dataJson;
+		return probes;
 	}
 	
 	public List<LivingLabDataItem> getAnswerItems() {

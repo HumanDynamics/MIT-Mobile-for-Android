@@ -1,16 +1,21 @@
 package edu.mit.mitmobile2.livinglabs;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.util.Log;
 
+import edu.mit.media.openpds.client.PreferencesWrapper;
 import edu.mit.mitmobile2.objs.LivingLabContextItem;
 import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 
@@ -21,6 +26,7 @@ public class LivingLabsAccessControlDB {
 	private static final String DATABASE_NAME = "livinglabsaccesscontrol.db";
 	private static final String LIVINGLABS_SETTINGS_TABLE = "livinglabs_settings";
 	private static final String LIVINGLABS_CONTEXT_TABLE = "livinglabs_context";
+	private static final String LIVINGLABS_PROBES_TABLE = "livinglabs_probes";
 	
 	// settings table field names
 	private static final String APP_ID = "app_id";
@@ -54,9 +60,14 @@ public class LivingLabsAccessControlDB {
 	
 	private static final String CONTEXT_LABEL_WHERE = CONTEXT_LABEL + " = ?";
 
-	SQLiteOpenHelper mLLSettingsDBHelper;
+	static SQLiteOpenHelper mLLSettingsDBHelper;
 	
 	private static LivingLabsAccessControlDB llsettingsDBInstance = null;
+	
+	private static JSONObject loadParams, probesFromServer;
+	private static LivingLabFunfPDS pds;
+	private static Connection connection;
+	private Context context;
 	
 	/********************************************************************/
 	public static LivingLabsAccessControlDB getInstance(Context context) {
@@ -74,6 +85,7 @@ public class LivingLabsAccessControlDB {
 	
 	private LivingLabsAccessControlDB(Context context) {
 		mLLSettingsDBHelper = new LLSettingsDatabaseHelper(context); 
+		this.context = context;
 	}
 	
 	private String[] whereArgsSettings(LivingLabSettingItem llsItem) {
@@ -190,6 +202,43 @@ public class LivingLabsAccessControlDB {
 		mLLSettingsDBHelper.close();
 		
 	}	
+	
+	synchronized static void saveLivingLabProbeItem(JSONObject llpi) throws JSONException {
+		
+		SQLiteDatabase db = mLLSettingsDBHelper.getWritableDatabase();
+		
+		ContentValues llpiValues = new ContentValues();
+		
+		int activity_probe_value = llpi.getBoolean("activity_probe") ? 1 : 0;
+		llpiValues.put(ACTIVITY_PROBE, activity_probe_value);
+		int sms_probe_value = llpi.getBoolean("sms_probe") ? 1 : 0;
+		llpiValues.put(SMS_PROBE, sms_probe_value);
+		int call_log_probe_value = llpi.getBoolean("call_log_probe") ? 1 : 0;
+		llpiValues.put(CALL_LOG_PROBE, call_log_probe_value);
+		int bluetooth_probe_value = llpi.getBoolean("bluetooth_probe") ? 1 : 0;
+		llpiValues.put(BLUETOOTH_PROBE, bluetooth_probe_value);
+		int wifi_probe_value = llpi.getBoolean("wifi_probe") ? 1 : 0;
+		llpiValues.put(WIFI_PROBE, wifi_probe_value);
+		int simple_location_probe_value = llpi.getBoolean("simple_location_probe") ? 1 : 0;
+		llpiValues.put(SIMPLE_LOCATION_PROBE, simple_location_probe_value);
+		int screen_probe_value = llpi.getBoolean("screen_probe") ? 1 : 0;
+		llpiValues.put(SCREEN_PROBE, screen_probe_value);
+		int running_applications_probe_value = llpi.getBoolean("running_applications_probe") ? 1 : 0;
+		llpiValues.put(RUNNING_APPLICATIONS_PROBE, running_applications_probe_value);
+		int hardware_info_probe_value = llpi.getBoolean("hardware_info_probe") ? 1 : 0;
+		llpiValues.put(HARDWARE_INFO_PROBE, hardware_info_probe_value);
+		int app_usage_probe_value = llpi.getBoolean("app_usage_probe") ? 1 : 0;
+		llpiValues.put(APP_USAGE_PROBE, app_usage_probe_value);
+		
+		long row_id;
+		int rows;
+		row_id = db.insert(LIVINGLABS_PROBES_TABLE, null, llpiValues);
+		//llpi.sql_id = row_id;
+		rows = db.update(LIVINGLABS_PROBES_TABLE, llpiValues, null, null);
+		db.close();
+		mLLSettingsDBHelper.close();
+		
+	}	
 	/********************************************************************/
 	public Cursor getMapsCursorSettings(ArrayList<String> searchDataInput) {
 		return getMapsCursorSettings(searchDataInput, null);
@@ -239,6 +288,15 @@ public class LivingLabsAccessControlDB {
 		return cursor;
 	}
 	
+	public Cursor getMapsCursorProbes() {
+		SQLiteDatabase db = mLLSettingsDBHelper.getReadableDatabase();
+		String[] fields = new String[] {ACTIVITY_PROBE, SMS_PROBE, 
+				CALL_LOG_PROBE, BLUETOOTH_PROBE, WIFI_PROBE, SIMPLE_LOCATION_PROBE, SCREEN_PROBE, RUNNING_APPLICATIONS_PROBE, HARDWARE_INFO_PROBE, APP_USAGE_PROBE};
+		
+		Cursor cursor = db.query(LIVINGLABS_PROBES_TABLE, fields, null, null, null, null, null, null);
+		return cursor;
+	}
+	
 	static LivingLabSettingItem retrieveLivingLabSettingItem(Cursor cursor) throws JSONException {
 		LivingLabSettingItem llsi = new LivingLabSettingItem();
 		
@@ -271,6 +329,23 @@ public class LivingLabsAccessControlDB {
 		llci.setContextPlaces(cursor.getString(cursor.getColumnIndex(CONTEXT_PLACES)));	
 
 		return llci;
+	}
+	
+	static JSONObject retrieveLivingLabProbesItem(Cursor cursor) throws JSONException {
+		JSONObject llpObject = new JSONObject();
+		
+		llpObject.put("activity_probe", cursor.getInt(cursor.getColumnIndex(ACTIVITY_PROBE)));
+		llpObject.put("sms_probe", cursor.getInt(cursor.getColumnIndex(SMS_PROBE)));
+		llpObject.put("call_log_probe", cursor.getInt(cursor.getColumnIndex(CALL_LOG_PROBE)));
+		llpObject.put("bluetooth_probe", cursor.getInt(cursor.getColumnIndex(BLUETOOTH_PROBE)));
+		llpObject.put("wifi_probe", cursor.getInt(cursor.getColumnIndex(WIFI_PROBE)));
+		llpObject.put("simple_location_probe", cursor.getInt(cursor.getColumnIndex(SIMPLE_LOCATION_PROBE)));
+		llpObject.put("screen_probe", cursor.getInt(cursor.getColumnIndex(SCREEN_PROBE)));
+		llpObject.put("running_applications_probe", cursor.getInt(cursor.getColumnIndex(RUNNING_APPLICATIONS_PROBE)));
+		llpObject.put("hardware_info_probe", cursor.getInt(cursor.getColumnIndex(HARDWARE_INFO_PROBE)));
+		llpObject.put("app_usage_probe", cursor.getInt(cursor.getColumnIndex(APP_USAGE_PROBE)));	
+		
+		return llpObject;
 	}
 	
 	public ArrayList<LivingLabSettingItem> retrieveLivingLabSettingItem() throws JSONException {
@@ -315,6 +390,25 @@ public class LivingLabsAccessControlDB {
 		mLLSettingsDBHelper.close();
 		
 		return llciArray;
+	}
+	
+	public JSONObject retrieveLivingLabProbeItem() throws JSONException {
+		SQLiteDatabase db = mLLSettingsDBHelper.getReadableDatabase();
+	
+		Cursor cursor = db.query(LIVINGLABS_PROBES_TABLE, null, null, null, null, null, null);
+		
+		if (cursor.getCount()<1) return null;
+		
+		cursor.moveToFirst();
+		
+		JSONObject llpObject = new JSONObject();
+
+		llpObject = retrieveLivingLabProbesItem(cursor);
+		
+		cursor.close();
+		mLLSettingsDBHelper.close();
+		
+		return llpObject;
 	}
 	
 	public LivingLabSettingItem retrieveLivingLabSettingItem(ArrayList<String> searchDataInput) throws JSONException {
@@ -414,9 +508,11 @@ public class LivingLabsAccessControlDB {
 	/********************************************************************/
 	private static class LLSettingsDatabaseHelper extends SQLiteOpenHelper {
 		
+		private Context context;
 		//make private?
 		private LLSettingsDatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+			this.context = context;
 		}
 		
 		@Override
@@ -458,6 +554,22 @@ public class LivingLabsAccessControlDB {
 					+ CONTEXT_LABEL + ")"					
 				+ ");");
 			
+			db.execSQL("CREATE TABLE IF NOT EXISTS " + LIVINGLABS_PROBES_TABLE + " ("
+					+ ACTIVITY_PROBE + " INTEGER, "
+					+ SMS_PROBE + " INTEGER, "
+					+ CALL_LOG_PROBE + " INTEGER, "
+					+ BLUETOOTH_PROBE + " INTEGER, "
+					+ WIFI_PROBE + " INTEGER, "
+					+ SIMPLE_LOCATION_PROBE + " INTEGER, "
+					+ SCREEN_PROBE + " INTEGER, "
+					+ RUNNING_APPLICATIONS_PROBE + " INTEGER, "
+					+ HARDWARE_INFO_PROBE + " INTEGER, "
+					+ APP_USAGE_PROBE + " INTEGER "
+					
+					//+ " PRIMARY KEY ("
+					//+ CONTEXT_LABEL + ")"					
+					+ ");");
+			
 			db.execSQL("INSERT INTO " + LIVINGLABS_CONTEXT_TABLE + " ("
 					+ CONTEXT_LABEL + ", "
 					+ CONTEXT_DURATION_START + ", "
@@ -466,9 +578,33 @@ public class LivingLabsAccessControlDB {
 					+ CONTEXT_PLACES
 					+ ") VALUES ("
 					+ "'MIT', '10 : 00', '18 : 00','[0,1,1,1,1,1,0]',''"
-					+ ")");
-					
+					+ ");");
 			
+			db.execSQL("INSERT INTO " + LIVINGLABS_PROBES_TABLE + " ("
+					+ ACTIVITY_PROBE + ", "
+					+ SMS_PROBE + ", "
+					+ CALL_LOG_PROBE + ", "
+					+ BLUETOOTH_PROBE + ", "
+					+ WIFI_PROBE + ", "
+					+ SIMPLE_LOCATION_PROBE + ", "
+					+ SCREEN_PROBE + ", "
+					+ RUNNING_APPLICATIONS_PROBE + ", "
+					+ HARDWARE_INFO_PROBE + ", "
+					+ APP_USAGE_PROBE
+					+ ") VALUES ("
+					+ "0,0,0,0,0,0,0,0,0,0"
+					+ ");");
+					
+			loadParams = new JSONObject();
+			try {
+				pds = new LivingLabFunfPDS(context);
+				connection = new Connection(context);
+				connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
 		@Override
@@ -480,5 +616,36 @@ public class LivingLabsAccessControlDB {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	private static class Connection extends AsyncTask<JSONObject, Object, Object> {
+		 
+		private Context mContext;
+		
+        @Override
+        protected Object doInBackground(JSONObject... object) {
+        	try {
+        		
+        		
+	    		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
+	    		String uuid = prefs.getUUID();
+	    		loadParams.put("datastore_owner", uuid); 
+	    		JSONObject result = new JSONObject(pds.loadAccessControlData(loadParams));
+	    		
+	    		Log.v(TAG, result.toString());
+	    		probesFromServer = (JSONObject) result.getJSONObject("probes");
+	    		saveLivingLabProbeItem(probesFromServer);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            return null;
+        }
+
+        public Connection(Context context) {
+            this.mContext = context;
+        }
+ 
+    }
 
 }

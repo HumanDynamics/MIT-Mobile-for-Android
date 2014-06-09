@@ -6,6 +6,8 @@ import edu.mit.mitmobile2.TwoLineActionRow;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +23,12 @@ import android.widget.AdapterView.OnItemClickListener;
 public class LivingLabArrayAdapter extends ArrayAdapter<LivingLabItem> {
 
 	private LayoutInflater mLayoutInflater;
+	SharedPreferences isFirstVisitOfLab;
+	private Context context;
 	
 	public LivingLabArrayAdapter(Context context, int resource, int textViewResourceId, List<LivingLabItem> objects) {
 		super(context, resource, textViewResourceId, objects);
+		this.context = context;
 		mLayoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
@@ -45,7 +50,18 @@ public class LivingLabArrayAdapter extends ArrayAdapter<LivingLabItem> {
 			
 			@Override
 			public void onClick(View v) {
-				Intent labIntent = new Intent(getContext(), LivingLabAccessControlActivity.class);
+				isFirstVisitOfLab = PreferenceManager.getDefaultSharedPreferences(context);
+				boolean firstVisitOfLabFlag = isFirstVisitOfLab.getBoolean(labItem.getName(), false);
+				Intent labIntent = null;
+				
+				if(firstVisitOfLabFlag){
+					SharedPreferences.Editor editor = isFirstVisitOfLab.edit();
+				    editor.putBoolean(labItem.getName(), false);
+				    editor.commit();
+					labIntent = new Intent(getContext(), LivingLabsWalkthroughActivity.class);
+				} else {
+					labIntent = new Intent(getContext(), LivingLabSettingsProbesActivity.class);
+				}
 				labIntent.putExtra("lab", labItem);
 				getContext().startActivity(labIntent);
 			}

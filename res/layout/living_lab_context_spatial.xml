@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fillViewport="true" >
+<LinearLayout 
+    android:id="@+id/livingLabContextLinearLayout"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <TextView
+        android:id="@+id/livinglabContextHeaderTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Specify location"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <View
+  		android:layout_width="1dp"
+  		android:layout_height="13dp">
+	</View>
+	
+	    <TextView
+        android:id="@+id/livinglabContextLocationMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This location will not be shared with app providers."
+        android:textAppearance="?android:attr/textAppearanceSmall" />  
+	        
+    <View
+  		android:layout_width="1dp"
+  		android:layout_height="15dp">
+	</View>          
+        
+    <fragment
+        android:id="@+id/livinglabContextMap"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1.0"/>
+
+        <LinearLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:gravity="center_horizontal">
+    
+        
+        <Button
+        android:id="@+id/livinglabContextFinishSpatialButton"
+        android:text="Finish"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>        
+        
+        </LinearLayout>
+
+</LinearLayout>
+</ScrollView>

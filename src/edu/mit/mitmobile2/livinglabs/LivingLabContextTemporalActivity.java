@@ -1,50 +1,23 @@
 package edu.mit.mitmobile2.livinglabs;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-//import com.google.android.gms.location.LocationClient;
-//import com.google.android.gms.maps.model.LatLng;
-//import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-
 import edu.mit.media.openpds.client.PreferencesWrapper;
 import edu.mit.mitmobile2.objs.LivingLabItem;
+import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -59,16 +32,15 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 
-public class LivingLabContextActivity extends Activity implements OnClickListener, OnTouchListener, OnCheckedChangeListener, OnMapClickListener, OnMapLongClickListener, OnMarkerClickListener, ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
-	private static final String TAG = "LLContextActivity";
-	private JSONObject llciJson;
+public class LivingLabContextTemporalActivity extends Activity implements OnClickListener, OnTouchListener, OnCheckedChangeListener {
+	private static final String TAG = "LLContextTemporalActivity";
+	private JSONObject llciJson, llsiJson;
 
 	private int selectedHourStart, selectedMinuteStart, selectedHourEnd, selectedMinuteEnd;
 	
-	PolylineOptions polylineOptions; 
+	String app_id, lab_id; 
 	private LivingLabFunfPDS pds;
 	private Connection connection;
 	private boolean saveFlag = false, deleteFlag = false;
@@ -78,11 +50,20 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 			R.id.livinglabContextDurationDaySaturday};
 	
 	private boolean weekdayFlag = false, weekendFlag = false;
-	private CheckBox weekdayCheckBox, weekendCheckBox;
+	private CheckBox weekdayCheckBox, weekendCheckBox, suCheckBox, mCheckBox, tCheckBox, wCheckBox, rCheckBox, fCheckBox, saCheckBox;
 
-	private LocationClient mLocationClient;
-	private ArrayList<LatLng> arrayPoints = new ArrayList<LatLng>(); 
-	private boolean checkClick = false;
+	private View contextMapView, locationTitleView, locationMessageView;
+	
+	private HashMap<String, Boolean> probeSettings;
+	private String contextsFromServer;
+	private String context_label = null;
+	
+	private JSONObject accesscontrolObject = new JSONObject();
+	
+	private String contextLabelString = "";
+	private boolean duration_days_value_flag = false;
+	
+	private LivingLabItem labItem = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -97,21 +78,36 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 			finish();
 			return;
 		}   
-
-		setContentView(R.layout.living_lab_context);
-		Serializable  context_label_serializable = getIntent().getSerializableExtra("context_label");
-		String context_label = null;
-
-
-		if(context_label_serializable != null)
-			context_label = context_label_serializable.toString();
 		
-		String contextsString = getIntent().getStringExtra("contexts");
+		app_id = "Living Lab";    
+		labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
+		try {
+			llsiJson = new JSONObject(getIntent().getSerializableExtra("llsiJson").toString());
+			context_label = llsiJson.getString("settings_context_label");
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		
+		ArrayList<LivingLabVisualizationItem> visualization = labItem.getVisualizations();
+        lab_id = labItem.getName();
+
+		setContentView(R.layout.living_lab_context_temporal);
+		
+		probeSettings = (HashMap<String, Boolean>) getIntent().getSerializableExtra("probeSettings");
+		
+		contextMapView = findViewById(R.id.livinglabContextMap);
+		contextMapView.setVisibility(View.GONE);
+		locationTitleView = findViewById(R.id.livinglabContextLocationTextView);
+		locationTitleView.setVisibility(View.GONE);
+		locationMessageView = findViewById(R.id.livinglabContextLocationMessage);
+		locationMessageView.setVisibility(View.GONE);
+		
+		contextsFromServer = getIntent().getStringExtra("contextsFromServer");
 		JSONObject contextFromServer = new JSONObject();
-		if(contextsString != null){
-			Log.v(TAG, contextsString);
+		if(contextsFromServer != null){
+			Log.v(TAG, contextsFromServer);
 			try {
-	            JSONArray contextsArray = new JSONArray(contextsString);
+	            JSONArray contextsArray = new JSONArray(contextsFromServer);
 	            for(int i=0; i<contextsArray.length(); i++){
 	            	if(context_label.equalsIgnoreCase(contextsArray.getJSONObject(i).getString("context_label"))){
 	            		contextFromServer = contextsArray.getJSONObject(i);
@@ -124,6 +120,14 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 		
 		weekdayCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekday);
 		weekendCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekend);
+		suCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDaySunday);
+		mCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayMonday);
+		tCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayTuesday);
+		wCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWednesday);
+		rCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayThursday);
+		fCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayFriday);
+		saCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDaySaturday);
+		
 
 		boolean context_prefill_success = false;
 		if(context_label != null){
@@ -150,6 +154,7 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 				durationEndEditText.setOnTouchListener(this);
 
 				String days = contextFromServer.getString("context_duration_days");
+				Log.v(TAG, days);
 				String[] days_items = days.replaceAll("\\[", "").replaceAll("\\]", "").split(",");
 				int[] days_array = new int[days_items.length];
 
@@ -167,35 +172,22 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 					}
 				}
 
+				Log.v(TAG, "days_array length: " + days_array.length);
 				if(days_array[1] == 1 && days_array[2] == 1 && days_array[3] == 1 && days_array[4] == 1 && days_array[5] == 1)
 					weekdayCheckBox.setChecked(true);
 				if(days_array[0] == 1 && days_array[6] == 1)
 					weekendCheckBox.setChecked(true);
-				
-				
-				mLocationClient = new LocationClient(this, this, this);	
-		        String places = contextFromServer.getString("context_places");
-		        
-		        Pattern p = Pattern.compile("\\((.*?)\\)",Pattern.DOTALL);
-				Matcher matcher = p.matcher(places);
-				while(matcher.find()) {
-					String[] geo = matcher.group(1).split(",");
-					double lat = Double.parseDouble(geo[0]);
-					double lng = Double.parseDouble(geo[1]);
-					LatLng latlng = new LatLng(lat, lng);
-					
-					arrayPoints.add(latlng);
-					drawCircles(arrayPoints);
-				}
 					
 				Button delete = (Button) findViewById(R.id.livinglabContextDeleteButton);
 				delete.setOnClickListener(this);
 
 				context_prefill_success = true;
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else { //new context!
+			Button delete = (Button) findViewById(R.id.livinglabContextDeleteButton);
+			delete.setVisibility(View.GONE);
 		}
 
 		if(!context_prefill_success){
@@ -215,21 +207,26 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 			durationEndEditText.setText("" + selectedHourEnd + " : " + selectedMinuteEnd);
 			durationEndEditText.setOnTouchListener(this);
 			
-			// Create the LocationRequest object
-	        mLocationClient = new LocationClient(this, this, this);	
 		}
 
 		//weekday/weekend processing
 		weekdayCheckBox.setOnCheckedChangeListener(this);
 		weekendCheckBox.setOnCheckedChangeListener(this);
+		suCheckBox.setOnCheckedChangeListener(this);
+		mCheckBox.setOnCheckedChangeListener(this);
+		tCheckBox.setOnCheckedChangeListener(this);
+		wCheckBox.setOnCheckedChangeListener(this);
+		tCheckBox.setOnCheckedChangeListener(this);
+		fCheckBox.setOnCheckedChangeListener(this);
+		saCheckBox.setOnCheckedChangeListener(this);
 		
 		TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextDurationDayError);
 		durationDaysError.setTextColor(Color.parseColor("#0000FF"));
 
-		Button save = (Button) findViewById(R.id.livinglabContextSaveButton);
-		save.setOnClickListener(this);
-		Button cancel = (Button) findViewById(R.id.livinglabContextCancelButton);
-		cancel.setOnClickListener(this);
+		Button setLocationButton = (Button) findViewById(R.id.livinglabContextSetLocationButton);
+		setLocationButton.setOnClickListener(this);
+		Button finishButton = (Button) findViewById(R.id.livinglabContextFinishTemporalButton);
+		finishButton.setOnClickListener(this);
 
 		TextView locationMessage = (TextView)findViewById(R.id.livinglabContextLocationMessage);
 		locationMessage.setTextColor(Color.parseColor("#0000FF"));
@@ -240,66 +237,28 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 	@Override
 	public void onClick(View v) {
 		EditText contextLabel = (EditText)findViewById(R.id.livinglabContextLabelEditText);
-		String contextLabelString = contextLabel.getText().toString();
+		contextLabelString = contextLabel.getText().toString();
+		
+		llciJson = new JSONObject();
 
 		switch(v.getId()){
-		case R.id.livinglabContextSaveButton:
-			llciJson = new JSONObject();
+		case R.id.livinglabContextFinishTemporalButton:
+			formLlciJson();
 
-
-			EditText durationStartText = (EditText) findViewById(R.id.livinglabContextDurationStartEditText);
-			String durationStart = durationStartText.getText().toString();
-			EditText durationEndText = (EditText) findViewById(R.id.livinglabContextDurationEndEditText);
-			String durationEnd = durationEndText.getText().toString();
-
-			int[] duration_days_value = new int[7];
-			duration_days_value[0] = ((CheckBox)findViewById(R.id.livinglabContextDurationDaySunday)).isChecked()? 1 : 0;
-			duration_days_value[1] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayMonday)).isChecked()? 1 : 0;
-			duration_days_value[2] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayTuesday)).isChecked()? 1 : 0;
-			duration_days_value[3] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayWednesday)).isChecked()? 1 : 0;
-			duration_days_value[4] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayThursday)).isChecked()? 1 : 0;
-			duration_days_value[5] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayFriday)).isChecked()? 1 : 0;
-			duration_days_value[6] = ((CheckBox)findViewById(R.id.livinglabContextDurationDaySaturday)).isChecked()? 1 : 0;
-
-			boolean duration_days_value_flag = false;
-			for(int i=0; i<duration_days_value.length; i++){
-				if(duration_days_value[i] == 1)
-					duration_days_value_flag = true;
-			}
-
-			if(duration_days_value_flag && !contextLabelString.isEmpty() && !contextLabelString.equalsIgnoreCase("Create a new context") && !contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){
-				String duration_days = (Arrays.toString(duration_days_value));
-				String places = arrayPoints.toString();
-
+			if(duration_days_value_flag && !contextLabelString.isEmpty() && !contextLabelString.equalsIgnoreCase("Create a new context") && !contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){				
 				try{
-					llciJson.put("context_label", contextLabelString);
-					llciJson.put("context_duration_start", durationStart);
-					llciJson.put("context_duration_end", durationEnd);
-					llciJson.put("context_duration_days", duration_days);
-					llciJson.put("context_places", places);
-				} catch(Exception e){
-					e.printStackTrace();
-				}
-
-
-				try {
+					
 					connection = new Connection(this);
 					saveFlag = true;
-					connection.execute(llciJson).get(1000, TimeUnit.MILLISECONDS);
+					connection.execute(accesscontrolObject).get(1000, TimeUnit.MILLISECONDS);
 					saveFlag = false;
 
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
-
-				Intent activityIntent = new Intent(LivingLabContextActivity.this, LivingLabSettingsActivity.class);
-				LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
-				activityIntent.putExtra("lab", labItem);
-				LivingLabContextActivity.this.startActivity(activityIntent);
-
-				finish();
+				Intent labIntent = new Intent(LivingLabContextTemporalActivity.this, LivingLabActivity.class);
+				labIntent.putExtra("lab", labItem);
+				startActivity(labIntent);
 			} else{
 
 				if(!duration_days_value_flag){
@@ -313,39 +272,75 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 				}
 			}
 			break;
-		case R.id.livinglabContextCancelButton:
-			finish();
-			break;
 		case R.id.livinglabContextDeleteButton:
-			llciJson = new JSONObject();
-
 			try {
 				llciJson.put("context_label", contextLabelString);
+				
+				accesscontrolObject.put("setting_object", null);
+				accesscontrolObject.put("context_object", llciJson);
+				
 				connection = new Connection(this);
 				deleteFlag = true;
-				connection.execute(llciJson).get(1000, TimeUnit.MILLISECONDS);
+				connection.execute(accesscontrolObject).get(1000, TimeUnit.MILLISECONDS);
 				deleteFlag = false;
 
-				Intent activityIntent = new Intent(LivingLabContextActivity.this, LivingLabSettingsActivity.class);
-				LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
-				activityIntent.putExtra("lab", labItem);
-				LivingLabContextActivity.this.startActivity(activityIntent);
+				JSONArray updatedContextsArray = new JSONArray();
+				try {
+		            JSONArray contextsArray = new JSONArray(contextsFromServer);
+		            for(int i=0; i<contextsArray.length(); i++){
+		            	if(contextLabelString.equalsIgnoreCase(contextsArray.getJSONObject(i).getString("context_label"))){
+		            		context_label = null;
+		            	} else {
+		            		updatedContextsArray.put(contextsArray.getJSONObject(i));
+		            	}
+		            }
+		        } catch (JSONException e) {
+		            e.printStackTrace();
+		        }
+	            
+				Intent labIntent = new Intent(LivingLabContextTemporalActivity.this, LivingLabSettingsContextActivity.class);
+				labIntent.putExtra("lab", labItem);
+				labIntent.putExtra("probeSettings", probeSettings);
+				labIntent.putExtra("context_label", context_label);
+				labIntent.putExtra("contextsFromServer", updatedContextsArray.toString());
+				startActivity(labIntent);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
+		case R.id.livinglabContextSetLocationButton:	
+			
+			formLlciJson();
+			if(duration_days_value_flag && !contextLabelString.isEmpty() && !contextLabelString.equalsIgnoreCase("Create a new context") && !contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){					
+				Intent intent = new Intent(this, LivingLabContextSpatialActivity.class);
+				LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
+				intent.putExtra("lab", labItem);
+				intent.putExtra("llsiJson", llsiJson.toString());
+				intent.putExtra("llciJson", llciJson.toString());
+				intent.putExtra("contextsFromServer", contextsFromServer);
+				intent.putExtra("context_label", contextLabelString);
+				
+				startActivity(intent);
+			} else{
+
+				if(!duration_days_value_flag){
+					TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextDurationDayError);
+					durationDaysError.setText("Select at least one day.");
+					durationDaysError.setTextColor(Color.parseColor("#FF0000"));
+				} else if (contextLabelString.isEmpty() || contextLabelString.equalsIgnoreCase("Create a new context") || contextLabelString.equalsIgnoreCase("MIT") || contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){
+					TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextLabelError);
+					durationDaysError.setText("Provide a valid label.");
+					durationDaysError.setTextColor(Color.parseColor("#FF0000"));
+				}
+			}
 		default:
 			break;
 		}
-
-
 	}
 
 	@Override
 	public boolean onTouch(View v, MotionEvent me) {
-		// TODO Auto-generated method stub
 		if ((me.getAction() == MotionEvent.ACTION_DOWN) && (v.getId() == R.id.livinglabContextDurationStartEditText || v.getId() == R.id.livinglabContextDurationEndEditText)){
 			if(v.getId() == R.id.livinglabContextDurationStartEditText){
 				EditText selectedTimeStartEdit = (EditText)findViewById(R.id.livinglabContextDurationStartEditText);
@@ -412,20 +407,61 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		Log.v(TAG, Integer.toString(buttonView.getId()));
+		CheckBox suCheckBox, mCheckBox, tCheckBox, wCheckBox, rCheckBox, fCheckBox, saCheckBox, weekdayCheckBox, weekendCheckBox;
+		boolean weekdaysChecked, weekendsChecked;
 		switch(buttonView.getId()){
 		case R.id.livinglabContextDurationDayWeekday:
-			for(int i=1; i<6; i++){
-				CheckBox weekdayCheckBox = (CheckBox)findViewById(daysViews[i]);
-				weekdayCheckBox.setChecked(!weekdayCheckBox.isChecked());
+			mCheckBox = (CheckBox)findViewById(daysViews[1]);
+			tCheckBox = (CheckBox)findViewById(daysViews[2]);
+			wCheckBox = (CheckBox)findViewById(daysViews[3]);
+			rCheckBox = (CheckBox)findViewById(daysViews[4]);
+			fCheckBox = (CheckBox)findViewById(daysViews[5]);
+			weekdaysChecked = mCheckBox.isChecked() && tCheckBox.isChecked() && wCheckBox.isChecked() && rCheckBox.isChecked() && fCheckBox.isChecked();
+			if(weekdaysChecked != isChecked){
+				mCheckBox.setChecked(isChecked);
+				tCheckBox.setChecked(isChecked);
+				wCheckBox.setChecked(isChecked);
+				rCheckBox.setChecked(isChecked);
+				fCheckBox.setChecked(isChecked);
 			}
 			break;
 		case R.id.livinglabContextDurationDayWeekend:
-			CheckBox weekendCheckBox1 = (CheckBox)findViewById(daysViews[0]);
-			weekendCheckBox1.setChecked(!weekendCheckBox1.isChecked());
-			CheckBox weekendCheckBox2 = (CheckBox)findViewById(daysViews[6]);
-			weekendCheckBox2.setChecked(!weekendCheckBox2.isChecked());			
+			suCheckBox = (CheckBox)findViewById(daysViews[0]);
+			saCheckBox = (CheckBox)findViewById(daysViews[6]);
+			weekendsChecked = suCheckBox.isChecked() && saCheckBox.isChecked();
+			if(weekendsChecked != isChecked)
+				suCheckBox.setChecked(isChecked);
+				saCheckBox.setChecked(isChecked);		
 			break;
+		case R.id.livinglabContextDurationDaySunday:
+		case R.id.livinglabContextDurationDaySaturday:	
+			suCheckBox = (CheckBox)findViewById(daysViews[0]);
+			saCheckBox = (CheckBox)findViewById(daysViews[6]);
+			weekendCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekend);
 			
+			weekendsChecked = suCheckBox.isChecked() && saCheckBox.isChecked();
+			if(weekendsChecked != weekendCheckBox.isChecked())
+				weekendCheckBox.setChecked(!weekendCheckBox.isChecked());
+			break;
+		case R.id.livinglabContextDurationDayMonday:
+		case R.id.livinglabContextDurationDayTuesday:
+		case R.id.livinglabContextDurationDayWednesday:
+		case R.id.livinglabContextDurationDayThursday:
+		case R.id.livinglabContextDurationDayFriday:
+			mCheckBox = (CheckBox)findViewById(daysViews[1]);
+			tCheckBox = (CheckBox)findViewById(daysViews[2]);
+			wCheckBox = (CheckBox)findViewById(daysViews[3]);
+			rCheckBox = (CheckBox)findViewById(daysViews[4]);
+			fCheckBox = (CheckBox)findViewById(daysViews[5]);
+			weekdayCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekday);
+		
+			boolean daysChecked = mCheckBox.isChecked() && tCheckBox.isChecked() && wCheckBox.isChecked() && rCheckBox.isChecked() && fCheckBox.isChecked();
+			if(daysChecked != weekdayCheckBox.isChecked()){
+				weekdayCheckBox.setChecked(!weekdayCheckBox.isChecked());
+				Log.v(TAG, "days checked: " + daysChecked);
+				Log.v(TAG, "weekday checked: " + weekdayCheckBox.isChecked());
+			}
+			break;
 		}
 		
 	}
@@ -439,23 +475,17 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 				
 				if(saveFlag){
 					PreferencesWrapper prefs = new PreferencesWrapper(mContext);
-
 					String uuid = prefs.getUUID();
-					llciJson.put("datastore_owner", uuid); 
-					llciJson.put("context_setting_flag", 0); //0 - context
-					
-					String result = pds.saveAccessControlData(llciJson);
+					accesscontrolObject.put("datastore_owner", uuid); 
+					pds.saveAccessControlData(accesscontrolObject);
 				} else if(deleteFlag){
 					PreferencesWrapper prefs = new PreferencesWrapper(mContext);
-	
 					String uuid = prefs.getUUID();
-					llciJson.put("datastore_owner", uuid); 
-					llciJson.put("context_setting_flag", 0); //0 - context
 					
-					String result = pds.deleteAccessControlData(llciJson);
+					accesscontrolObject.put("datastore_owner", uuid); 
+					pds.deleteAccessControlData(accesscontrolObject);
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;
@@ -467,130 +497,50 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 
 	}
 	
-	@Override
-	protected void onStart() {
-		super.onStart();
-	    // Connect the client.
-	    mLocationClient.connect();
-	}
-	
-	@Override
-	protected void onStop() {
-		// Disconnect the client.
-	    mLocationClient.disconnect();
-	    super.onStop();
-	}
+	public void formLlciJson(){
+		EditText durationStartText = (EditText) findViewById(R.id.livinglabContextDurationStartEditText);
+		String durationStart = durationStartText.getText().toString();
+		EditText durationEndText = (EditText) findViewById(R.id.livinglabContextDurationEndEditText);
+		String durationEnd = durationEndText.getText().toString();
 
+		int[] duration_days_value = new int[7];
+		duration_days_value[0] = ((CheckBox)findViewById(R.id.livinglabContextDurationDaySunday)).isChecked()? 1 : 0;
+		duration_days_value[1] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayMonday)).isChecked()? 1 : 0;
+		duration_days_value[2] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayTuesday)).isChecked()? 1 : 0;
+		duration_days_value[3] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayWednesday)).isChecked()? 1 : 0;
+		duration_days_value[4] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayThursday)).isChecked()? 1 : 0;
+		duration_days_value[5] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayFriday)).isChecked()? 1 : 0;
+		duration_days_value[6] = ((CheckBox)findViewById(R.id.livinglabContextDurationDaySaturday)).isChecked()? 1 : 0;
 
-   @Override
-   public void onDisconnected() {
-      // Display the connection status
-      Toast.makeText(this, "Disconnected. Please re-connect.",
-      Toast.LENGTH_SHORT).show();
-   }
-   @Override
-   public void onConnectionFailed(ConnectionResult connectionResult) {
-      // Display the error code on failure
-      Toast.makeText(this, "Connection Failure : " + 
-      connectionResult.getErrorCode(),
-      Toast.LENGTH_SHORT).show();
-   }
-
-
-   @Override
-	public void onConnected(Bundle bundle) {
-      // Get the current location's latitude & longitude
-      Location currentLocation = mLocationClient.getLastLocation();
-
-      MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-	    GoogleMap map = mapFragment.getMap();
-	    if (map != null) {
-	        // The GoogleMap object is ready to go.
-	    	map.setMapType(1);
-
-		    	//LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()); 
-	    		LatLng latLng;
-	    		if(currentLocation == null){
-	    			latLng = new LatLng(42.359957, -71.093539); //centering the map on 77 Mass Ave.
-	    		} else {
-	    			latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()); //obtained location through the device
-	    		}
-
-		  	   	CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-		  	   	map.animateCamera(cameraUpdate);
-		  	   	map.getUiSettings().setZoomControlsEnabled(true);
-
-		  	  map.setOnMapClickListener(this);
-		  	  map.setOnMapLongClickListener(this);
-		  	  map.setOnMarkerClickListener(this);
-
-
-	    }
-
-
-   }
-
-
-	@Override
-	public boolean onMarkerClick(Marker arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public void onMapLongClick(LatLng arg0) {
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-	    GoogleMap map = mapFragment.getMap();
-		map.clear();
-		arrayPoints.clear();
-		checkClick = false;
-	}
-
-
-	@Override
-	public void onMapClick(LatLng point) {
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-		GoogleMap map = mapFragment.getMap();
-		map.addMarker(new MarkerOptions().position(point).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
-	
-		// Instantiates a new CircleOptions object and defines the center and radius
-		CircleOptions circleOptions = new CircleOptions()
-		    .center(point)
-		    .radius(300); // In meters
-	
-		// Get back the mutable Circle
-		Circle circle = map.addCircle(circleOptions);
-	
-	
-		arrayPoints.add(point); 
-		
-	}
-	
-	public void drawCircles(ArrayList<LatLng> points){
-		MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.livinglabContextMap);
-		GoogleMap map = mapFragment.getMap();
-
-
-		for(int i=0; i<points.size(); i++){
-			map.addMarker(new MarkerOptions().position(points.get(i)).icon( BitmapDescriptorFactory.fromResource(R.drawable.map_red_pin))); 
-			// Instantiates a new CircleOptions object and defines the center and radius
-			CircleOptions circleOptions = new CircleOptions()
-			    .center(points.get(i))
-			    .radius(300); // In meters
-
-			// Get back the mutable Circle
-			Circle circle = map.addCircle(circleOptions);
+		for(int i=0; i<duration_days_value.length; i++){
+			if(duration_days_value[i] == 1)
+				duration_days_value_flag = true;
 		}
-
-	}
-
-
-	@Override
-	public void onLocationChanged(Location arg0) {
-		// TODO Auto-generated method stub
 		
-	}
+		String duration_days = (Arrays.toString(duration_days_value));
+		//String places = arrayPoints.toString();
 
+		try{
+			llsiJson.put("settings_context_label", contextLabelString);
+			
+			llciJson.put("context_label", contextLabelString);
+			llciJson.put("context_duration_start", durationStart);
+			llciJson.put("context_duration_end", durationEnd);
+			llciJson.put("context_duration_days", duration_days);
+			llciJson.put("context_places", "");
+			
+			Log.v(TAG, llciJson.toString());
+
+			accesscontrolObject.put("setting_object", llsiJson);
+			accesscontrolObject.put("context_object", llciJson);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+	}
 
 }

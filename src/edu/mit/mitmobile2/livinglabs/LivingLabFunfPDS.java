@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
@@ -35,6 +36,19 @@ import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 public class LivingLabFunfPDS extends FunfPDS {
 	private static final String TAG = "LivingLabFunfPDS";
 	private LivingLabsAccessControlDB mLivingLabSettingsDB = LivingLabsAccessControlDB.getInstance(getContext());
+	private static Map<String, String> PROBE_MAPPING;
+	static {
+		PROBE_MAPPING = new HashMap<String, String>();
+		PROBE_MAPPING.put("activity_probe", "ActivityProbe");
+		PROBE_MAPPING.put("sms_probe", "SmsProbe");
+		PROBE_MAPPING.put("call_log_probe", "CallLogProbe");
+		PROBE_MAPPING.put("bluetooth_probe", "BluetoothProbe");
+		PROBE_MAPPING.put("wifi_probe", "WifiProbe");
+		PROBE_MAPPING.put("simple_location_probe", "SimpleLocationProbe");
+		PROBE_MAPPING.put("screen_probe", "ScreenProbe");
+		PROBE_MAPPING.put("running_applications_probe", "RunningApplicationsProbe");
+		PROBE_MAPPING.put("hardware_info_probe", "HardwareInfoProbe");
+	}
 
 	public LivingLabFunfPDS(Context context) throws Exception {
 		super(context);
@@ -88,13 +102,26 @@ public class LivingLabFunfPDS extends FunfPDS {
 
 		HashSet<String> probesToEnable = new HashSet<String>();
 		ArrayList<LivingLabSettingItem> llsiArray;
+		JSONObject llpObject;
 		try {
-			llsiArray = mLivingLabSettingsDB.retrieveLivingLabSettingItem();
+//			llsiArray = mLivingLabSettingsDB.retrieveLivingLabSettingItem();
+//			
+//			for (LivingLabSettingItem llsi : llsiArray) {
+//				probesToEnable.addAll(llsi.getEnabledProbes());
+//			}
+			llpObject = mLivingLabSettingsDB.retrieveLivingLabProbeItem();
+			Iterator<String> keysIterator = llpObject.keys();
 			
-			for (LivingLabSettingItem llsi : llsiArray) {
-				probesToEnable.addAll(llsi.getEnabledProbes());
+			while (keysIterator.hasNext()) {
+				String key = keysIterator.next();
+				
+				if (PROBE_MAPPING.containsKey(key) && llpObject.optInt(key) == 1) {
+					probesToEnable.add(PROBE_MAPPING.get(key));
+				}
 			}
-
+			
+			Log.v(TAG, "probesToEnable: " + probesToEnable.toString());
+			
 			if (pipelinesJsonArray != null) {
 				Gson gson = FunfManager.getGsonBuilder(getContext()).create();
 				for (JsonElement pipelineJsonElement : getPipelinesJsonArray()) {

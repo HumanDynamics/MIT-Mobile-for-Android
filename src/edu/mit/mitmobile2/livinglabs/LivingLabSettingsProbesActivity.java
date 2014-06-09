@@ -24,41 +24,26 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
  
-public class LivingLabSettingsActivity extends Activity implements OnClickListener, OnTouchListener, OnItemSelectedListener {
-	private static final String TAG = "LLSettingsActivity";
-    private int[] buttonIds = new int[3];
-    private int editContextId, probeErrorTextId, contextErrorTextId;
+public class LivingLabSettingsProbesActivity extends Activity implements OnClickListener, OnCheckedChangeListener {
+	private static final String TAG = "LLSettingsProbesActivity";
     String settings_context_label = null;
     private JSONObject llsiJson, loadParams;
     private JSONArray labProbes = new JSONArray();
-    
-    private LivingLabsAccessControlDB mLivingLabAccessControlDB;
-    
-    private ArrayList<CheckBox> checkBoxes = new ArrayList<CheckBox>();
     
     String app_id, lab_id;
     
@@ -69,9 +54,24 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 	private Connection connection;
 	
 	private JSONArray settingsFromServer, contextsFromServer;
-	private JSONObject probesFromServer;
+	private JSONObject probesFromServer; //returns union of the probes (and their statuses) on the server.
 	
-	private boolean loadFlag = false, saveFlag = false;
+	private boolean loadFlag = false;
+	
+	private int nextButtonId = 1;
+	private final int activityProbeId = 2;
+	private final int smsProbeId = 3;
+	private final int calllogProbeId = 4;
+	private final int bluetoothProbeId = 5;
+	private final int wifiProbeId = 6;
+	private final int simplelocationProbeId = 7;
+	private final int screenProbeId = 8;
+	private final int runningapplicationsProbeId = 9;
+	private final int hardwareinfoProbeId = 10;
+	private final int appusageProbeId = 11;
+	
+	private HashMap<String, Boolean> probeSettings = new HashMap<String, Boolean>();
+	
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,8 +86,6 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 			finish();
 			return;
 		}
-        
-		mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
 		
         app_id = "Living Lab";       		
         LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
@@ -101,15 +99,13 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText("Select data that you would allow " + lab_id + " to use. Note: indicated functionality may not work if associated data not selected.");
-        labText.setTextSize(14);
+        labText.setText("Select data for " + lab_id + " to use. Indicated functionality may not work if associated data not selected.");
+        labText.setTextSize(16);
         ll.addView(labText);
         
         RelativeLayout rl = new RelativeLayout(this);
         rl.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT));
-        
-        Set<String> requiredProbesSet = new HashSet<String>();
-		Set<String> nonRequiredProbesSet = new HashSet<String>();
+
 		Set<String> allProbesSet = new HashSet<String>();
         
         for(int i=0; i<visualization.size(); i++){
@@ -158,9 +154,7 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 			connection = new Connection(this);
 			connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
 			loadFlag = false;
-			//mLivingLabAccessControlDB.saveLivingLabProbeItem(probesFromServer);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
@@ -217,25 +211,42 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 			StringBuilder iconPath = new StringBuilder("@drawable/");
 			String probeText = "";
 			String iconName = "";
+			int probeId = 0;
 			
-			if(probe.equalsIgnoreCase("Call Log Probe"))
+			if(probe.equalsIgnoreCase("Call Log Probe")){
 				iconName = "livinglab_calllog_probe";
-			else if(probe.equalsIgnoreCase("Screen Probe"))
+				probeId = calllogProbeId;
+			}
+			else if(probe.equalsIgnoreCase("Screen Probe")){
 				iconName = "livinglab_screen_probe";
-			else if(probe.equalsIgnoreCase("Activity Probe"))
+				probeId = screenProbeId;
+			}
+			else if(probe.equalsIgnoreCase("Activity Probe")){
 				iconName = "livinglab_activity_probe";
-			else if(probe.equalsIgnoreCase("Sms Probe"))
+				probeId = activityProbeId;
+			}
+			else if(probe.equalsIgnoreCase("Sms Probe")){
 				iconName = "livinglab_sms_probe";
-			else if(probe.equalsIgnoreCase("Bluetooth Probe"))
+				probeId = smsProbeId;
+			}
+			else if(probe.equalsIgnoreCase("Bluetooth Probe")){
 				iconName = "livinglab_bluetooth_probe";
+				probeId = bluetoothProbeId;
+			}
 			
 			int iconValue = getResources().getIdentifier(iconName , "drawable", getPackageName());
 			iconPath.append(iconName);
 			Log.v(TAG, iconPath.toString());
 			
 			icon = Drawable.createFromPath(iconPath.toString());		
-			probeButton.setBackgroundDrawable(getResources().getDrawable(iconValue));
+			//probeButton.setBackgroundDrawable(getResources().getDrawable(iconValue));
+			probeButton.setCompoundDrawablesWithIntrinsicBounds(0, iconValue, 0, 0);
 			probeButton.setChecked(probeChecked);
+			probeButton.setTextColor(Color.BLUE);
+			probeButton.setId(probeId);	
+			probeButton.setOnCheckedChangeListener(this);
+			
+			probeSettings.put(probe, probeChecked);
 			
 			tableRow.addView(probeButton, 200, 200);
 			
@@ -252,85 +263,17 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 
 		ll.addView(tableLayout);
         
-        TextView probeErrorMessage = new TextView(this);
-        probeErrorMessage.setText("Lab may not function if required probes are not selected.");
-        probeErrorMessage.setTextColor(Color.parseColor("#FF0000"));
-        probeErrorMessage.setId(id);
-        probeErrorTextId = id;
-        id++;
-        ll.addView(probeErrorMessage);
-
-        ArrayList<String> context_labels = new ArrayList<String>();
-        int toHighlight = 0;
-		try {
-			context_labels.add("Select...");
-			for(int i=0; i<contextsFromServer.length(); i++){
-				String label = contextsFromServer.getJSONObject(i).getString("context_label");
-	        	if(label.equalsIgnoreCase(settings_context_label))
-	        		toHighlight = i;
-	        	context_labels.add(label);
-	        }
-	        context_labels.add("Create a new context");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		TextView context = new TextView(this);
-		context.setPadding(0, 30, 0, 0);
-        context.setText("Context");
-        ll.addView(context);
-        
-        final Spinner spinner = new Spinner(this);
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, context_labels);
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerArrayAdapter);
-
-        spinner.setSelection(toHighlight+1); //+1 since we start with "Select..."
-        spinner.setId(id);
-        id++;
-        spinner.setOnItemSelectedListener(this);
-        ll.addView(spinner);
-        
-        TextView contextErrorMessage = new TextView(this);
-        contextErrorMessage.setText("");
-        contextErrorMessage.setId(id);
-        contextErrorTextId = id;
-        id++;
-        ll.addView(contextErrorMessage);
-        
-        TextView editContext = new TextView(this);
-        editContext.setText("(Edit context)");
-        editContext.setId(id);
-        editContextId = id;
-        id++;
-        editContext.setOnTouchListener(this);
-        ll.addView(editContext);
-        
-        int saveButtonId = id;
-        int cancelButtonId = saveButtonId + 1;
-        
 	    TableLayout buttonsLayout = new TableLayout(this);
         TableRow buttonsRow = new TableRow(this);
-	    buttonsRow.setPadding(20,50,40,0);
+	    //buttonsRow.setPadding(20,50,40,0);
 	    
-	    Button saveButton = new Button(this);
-	    saveButton.setText( "Save");
-	    saveButton.setId(saveButtonId);
-	    saveButton.setOnClickListener(this);
+	    Button nextButton = new Button(this);
+	    nextButton.setText("Next");
+	    nextButton.setId(nextButtonId);
+	    nextButton.setOnClickListener(this);
 	    
-	    Button cancelButton = new Button(this);	    
-	    cancelButton.setText( "Cancel");
-	    cancelButton.setId(cancelButtonId);
-	    cancelButton.setOnClickListener(this);
-	    
-	    buttonIds[0] = saveButtonId;
-	    //buttonIds[1] = exploreButtonId;
-	    buttonIds[1] = cancelButtonId;
-	    
-	    buttonsRow.addView(saveButton);
-	    //buttonsRow.addView(exploreButton);
-	    buttonsRow.addView(cancelButton);
-	    buttonsRow.setGravity(Gravity.CENTER);
+	    buttonsRow.addView(nextButton);
+	    buttonsRow.setGravity(Gravity.RIGHT);
 
 	    buttonsLayout.addView(buttonsRow);
 	    ll.addView(buttonsLayout);
@@ -343,74 +286,14 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 	
 	@Override
 	public void onClick(View v) {
-		try{	
-			if(v.getId() == buttonIds[0] || v.getId() == buttonIds[1]){
-				
-				boolean requiredSelected = true;
-				for(int ids: requiredIdsList){
-					CheckBox tempCheckBox = (CheckBox) findViewById(ids);
-					boolean state = tempCheckBox.isChecked() ? true : false;
-					if(!state){
-						requiredSelected = false;
-					}
-				}
-				if(!requiredSelected){
-					TextView probeError = (TextView) findViewById(probeErrorTextId);
-					probeError.setText("Lab may not function if required probes are not selected.");
-					probeError.setTextColor(Color.parseColor("#FF0000"));
-				}
-				
-					
-				if(settings_context_label != null){
-					
-					String probe_id_raw = "";
-					String probe_id = "";
-					llsiJson = new JSONObject();
-					
-					llsiJson.put("app_id", app_id);
-					llsiJson.put("lab_id", lab_id);
-					for(int i=0; i<checkBoxes.size(); i++) {
-						
-						
-						CheckBox checkBox = checkBoxes.get(i);
-						
-						probe_id_raw = (String) checkBox.getText();
-						Log.v(TAG, "probe: " + probe_id_raw);
-						probe_id = "";
-						
-						String[] initial_tokens = probe_id_raw.split(" for ");
-						String[] tokens = initial_tokens[0].split(" ");
-					
-						for(int k = 0; k<tokens.length; k++){
-							if(tokens[k].contains("Required"))
-								continue;
-							char firstLetter = Character.toLowerCase(tokens[k].charAt(0));
-							probe_id += firstLetter + tokens[k].substring(1, tokens[k].length()) + "_";
-						}
-						probe_id = probe_id.substring(0, probe_id.length()-1);
-						
-					
-						int checked = checkBox.isChecked() ? 1 : 0;
-						llsiJson.put(probe_id, checked);
-					
-						llsiJson.put("settings_context_label", settings_context_label);
-					}
-					
-					connection = new Connection(this);
-					saveFlag = true;
-					connection.execute(llsiJson).get(1000, TimeUnit.MILLISECONDS);
-					saveFlag = false;
-					finish();
-				} else{
-					TextView contextError = (TextView) findViewById(contextErrorTextId);
-					contextError.setText("Please select a context.");
-					contextError.setTextColor(Color.parseColor("#FF0000"));
-				}
-			} else if(v.getId() == buttonIds[1]){
-				finish();
-			} 			
-		} catch(Exception e){
-			e.printStackTrace();
+		if(v.getId() == nextButtonId){
+			Intent intent = new Intent(this, LivingLabSettingsContextActivity.class);
+			LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
+			intent.putExtra("lab", labItem);
+			intent.putExtra("probeSettings", probeSettings);
+			intent.putExtra("context_label", settings_context_label);
+			intent.putExtra("contextsFromServer", contextsFromServer.toString());
+			startActivity(intent);
 		}
 	}
 	
@@ -432,14 +315,6 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 	        		contextsFromServer = (JSONArray) result.get("contexts");
 	        		settingsFromServer = (JSONArray) result.get("settings");
 	        		probesFromServer = (JSONObject) result.getJSONObject("probes");
-        		} else if(saveFlag){
-	        		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
-	        		
-	        		String uuid = prefs.getUUID();
-	        		llsiJson.put("datastore_owner", uuid); 
-	        		llsiJson.put("context_setting_flag", 1); //1 - setting
-	        		String result = pds.saveAccessControlData(llsiJson);
-	        		Log.v(TAG, "data: " + llsiJson.toString());
         		} 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -454,38 +329,40 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
     }
 
 	@Override
-	public boolean onTouch(View v, MotionEvent arg1) { 
-		if(v.getId() == editContextId){
-			Intent activityIntent = new Intent(LivingLabSettingsActivity.this, LivingLabContextActivity.class);
-			LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
-        	activityIntent.putExtra("lab", labItem);
-        	activityIntent.putExtra("contexts", contextsFromServer.toString());
-        	
-        	activityIntent.putExtra("context_label", settings_context_label);
-			LivingLabSettingsActivity.this.startActivity(activityIntent);
+	public void onCheckedChanged(CompoundButton probeButton, boolean isChecked) {
+		switch(probeButton.getId()){
+			case activityProbeId:
+				probeSettings.put("Activity Probe", isChecked);
+				break;
+			case smsProbeId:
+				probeSettings.put("Sms Probe", isChecked);
+				break;				
+			case calllogProbeId:
+				probeSettings.put("Call Log Probe", isChecked);
+				break;	
+			case bluetoothProbeId:
+				probeSettings.put("Bluetooth Probe", isChecked);
+				break;	
+			case wifiProbeId:
+				probeSettings.put("Wifi Probe", isChecked);
+				break;	
+			case simplelocationProbeId:
+				probeSettings.put("Simple Location Probe", isChecked);
+				break;	
+			case screenProbeId:
+				probeSettings.put("Screen Probe", isChecked);
+				break;	
+			case runningapplicationsProbeId:
+				probeSettings.put("Running Applications Probe", isChecked);
+				break;	
+			case hardwareinfoProbeId:
+				probeSettings.put("Hardware Info Probe", isChecked);
+				break;	
+			case appusageProbeId:
+				probeSettings.put("App Usage Probe", isChecked);
+				break;	
 		}
-		return false;
-	}
-
-	@Override
-	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		String context = arg0.getSelectedItem().toString();
-		if(!context.equalsIgnoreCase("Select..."))
-				settings_context_label = context;
-    	if(settings_context_label != null){
-	    	if(settings_context_label.equalsIgnoreCase("Create a new context")){
-	    		Intent activityIntent = new Intent(LivingLabSettingsActivity.this, LivingLabContextActivity.class);
-				LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
-	        	activityIntent.putExtra("lab", labItem);
-				LivingLabSettingsActivity.this.startActivity(activityIntent);
-	    	}
-    	}
 		
-	}
-
-	@Override
-	public void onNothingSelected(AdapterView<?> arg0) {
 	}
 	
 	private String getContextLabel(int context_label_id) throws JSONException{
@@ -498,6 +375,7 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 		return label;
 	}
 	
-
-	
+	@Override
+	public void onBackPressed() {
+	}
 }

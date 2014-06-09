@@ -2,9 +2,11 @@ package edu.mit.mitmobile2.livinglabs;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.android.gms.drive.DriveFolder.OnCreateFolderCallback;
 import com.google.gson.JsonArray;
@@ -28,19 +30,22 @@ public class LivingLabOpenPDSPipeline extends OpenPDSPipeline {
 		
 		JsonObject filteredPipelineJsonObject = filterPipelineData(gson.toJsonTree(this).getAsJsonObject(), getEnabledProbes());
 		LivingLabOpenPDSPipeline filteredPipeline = (LivingLabOpenPDSPipeline) gson.fromJson(filteredPipelineJsonObject, LivingLabOpenPDSPipeline.class);
-		
-		for (JsonElement dataRequest : filteredPipeline.data) {
-			manager.requestData(this, dataRequest);
-		}
-		
-		for (String action : schedules.keySet()) {
-			manager.registerPipelineAction(this, action, schedules.get(action));
-		}
+//		
+//		Note: Getting an error below -- filteredPipeline seems to be empty!	
+		//to put the following code back eventually.
+//		for (JsonElement dataRequest : filteredPipeline.data) {
+//			manager.requestData(this, dataRequest);
+//		}
+//		
+//		for (String action : schedules.keySet()) {
+//			manager.registerPipelineAction(this, action, schedules.get(action));
+//		}
 	}
 
 	@Override
 	public void updatePipelines() {
 		try{
+			Log.v(TAG, "updatePipelines");
 			LivingLabFunfPDS pds = new LivingLabFunfPDS(manager);	
 			Map<String, Pipeline> pipelines = pds.getPipelines();
 
@@ -55,18 +60,27 @@ public class LivingLabOpenPDSPipeline extends OpenPDSPipeline {
 	private HashSet<String> getEnabledProbes() {
 		LivingLabsAccessControlDB livingLabSettingsDB = LivingLabsAccessControlDB.getInstance(manager);
 		HashSet<String> probesToEnable = new HashSet<String>();
-		ArrayList<LivingLabSettingItem> llsiArray;
+//		ArrayList<LivingLabSettingItem> llsiArray;
 		try {
-			llsiArray = livingLabSettingsDB.retrieveLivingLabSettingItem();
+//			llsiArray = livingLabSettingsDB.retrieveLivingLabSettingItem();
+//			
+//			for (LivingLabSettingItem llsi : llsiArray) {
+//				probesToEnable.addAll(llsi.getEnabledProbes());
+//			}
 			
-			for (LivingLabSettingItem llsi : llsiArray) {
-				probesToEnable.addAll(llsi.getEnabledProbes());
-			}
+			JSONObject probesObject = livingLabSettingsDB.retrieveLivingLabProbeItem();
+	        Iterator<?> keys = probesObject.keys();
+
+	        while(keys.hasNext()){
+	            probesToEnable.add(keys.next().toString());
+	        }
+			
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
+		Log.v(TAG, "enabled probes: " + probesToEnable.toString());
 		return probesToEnable;	
 	}
 	
@@ -93,7 +107,7 @@ public class LivingLabOpenPDSPipeline extends OpenPDSPipeline {
 					newPipelineConfig.add(entry.getKey(), finalProbesArray);
 				}
 			}
-			
+			Log.v(TAG, "filterPipelineData: " + newPipelineConfig.toString());
 			return newPipelineConfig;
 		}
 		return null;
