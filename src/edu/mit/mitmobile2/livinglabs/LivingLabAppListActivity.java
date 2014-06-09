@@ -57,19 +57,12 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 		mLivingLabsListView.setAdapter(new LivingLabArrayAdapter(this, R.layout.living_lab_row, R.id.livingLabRowTitle, labs));	
 
 		Log.v(TAG, "The " + mLivingLabsListView.getCount() + " labs are:");
-		for(int i=0; i<mLivingLabsListView.getCount(); i++){
-			LivingLabItem labItem = (LivingLabItem) mLivingLabsListView.getItemAtPosition(i);
-			Log.v(TAG, labItem.getName());
-			SharedPreferences.Editor labFirstVisitEditor = isFirstVisitOfLab.edit();
-			labFirstVisitEditor.putBoolean(labItem.getName(), true);
-			labFirstVisitEditor.commit();
-		}
 		mLivingLabsListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
 				LivingLabItem labItem = (LivingLabItem) listView.getItemAtPosition(position);
 				Intent labIntent = null;
-				boolean firstVisitOfLabFlag = isFirstVisitOfLab.getBoolean(labItem.getName(), false);
+				boolean firstVisitOfLabFlag = isFirstVisitOfLab.getBoolean(labItem.getName(), true);
 				
 				if(firstVisitOfLabFlag){
 					SharedPreferences.Editor editor = isFirstVisitOfLab.edit();

@@ -12,6 +12,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.mit.media.funf.probe.builtin.ActivityProbe;
+import edu.mit.media.funf.probe.builtin.BluetoothProbe;
+import edu.mit.media.funf.probe.builtin.CallLogProbe;
+import edu.mit.media.funf.probe.builtin.HardwareInfoProbe;
+import edu.mit.media.funf.probe.builtin.RunningApplicationsProbe;
+import edu.mit.media.funf.probe.builtin.ScreenProbe;
+import edu.mit.media.funf.probe.builtin.SimpleLocationProbe;
+import edu.mit.media.funf.probe.builtin.SmsProbe;
+import edu.mit.media.funf.probe.builtin.WifiProbe;
+
 public class LivingLabSettingItem implements Serializable {
 	private static final long serialVersionUID = -7377069315139664175L; //??
 	public long sql_id = -1;  // not to confuse with any other "id"
@@ -22,19 +32,19 @@ public class LivingLabSettingItem implements Serializable {
 
 	private String mSettingsContextLabel;
 	
-	private static Map<String, String> PROBE_MAPPING;
+	private static Map<String, Class> PROBE_MAPPING;
 	
 	static {
-		PROBE_MAPPING = new HashMap<String, String>();
-		PROBE_MAPPING.put("activity_probe", "ActivityProbe");
-		PROBE_MAPPING.put("sms_probe", "SmsProbe");
-		PROBE_MAPPING.put("call_log_probe", "CallLogProbe");
-		PROBE_MAPPING.put("bluetooth_probe", "BluetoothProbe");
-		PROBE_MAPPING.put("wifi_probe", "WifiProbe");
-		PROBE_MAPPING.put("simple_location_probe", "SimpleLocationProbe");
-		PROBE_MAPPING.put("screen_probe", "ScreenProbe");
-		PROBE_MAPPING.put("running_applications_probe", "RunningApplicationsProbe");
-		PROBE_MAPPING.put("hardware_info_probe", "HardwareInfoProbe");
+		PROBE_MAPPING = new HashMap<String, Class>();
+		PROBE_MAPPING.put("activity_probe", ActivityProbe.class);
+		PROBE_MAPPING.put("sms_probe", SmsProbe.class);
+		PROBE_MAPPING.put("call_log_probe", CallLogProbe.class);
+		PROBE_MAPPING.put("bluetooth_probe", BluetoothProbe.class);
+		PROBE_MAPPING.put("wifi_probe", WifiProbe.class);
+		PROBE_MAPPING.put("simple_location_probe", SimpleLocationProbe.class);
+		PROBE_MAPPING.put("screen_probe", ScreenProbe.class);
+		PROBE_MAPPING.put("running_applications_probe", RunningApplicationsProbe.class);
+		PROBE_MAPPING.put("hardware_info_probe", HardwareInfoProbe.class);
 	}
 	
 	private static String probeNameFromColumn(String column) {
@@ -87,7 +97,7 @@ public class LivingLabSettingItem implements Serializable {
 			String key = keysIterator.next();
 			
 			if (PROBE_MAPPING.containsKey(key) && labSettingJson.optInt(key) == 1) {
-				mEnabledProbes.add(PROBE_MAPPING.get(key));
+				mEnabledProbes.add(PROBE_MAPPING.get(key).getCanonicalName());
 			}
 		}
 		

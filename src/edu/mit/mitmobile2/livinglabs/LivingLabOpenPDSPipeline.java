@@ -2,18 +2,13 @@ package edu.mit.mitmobile2.livinglabs;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.android.gms.drive.DriveFolder.OnCreateFolderCallback;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import android.util.Log;
 import edu.mit.media.funf.FunfManager;
 import edu.mit.media.funf.pipeline.Pipeline;
 import edu.mit.media.openpds.client.funf.OpenPDSPipeline;
@@ -28,24 +23,15 @@ public class LivingLabOpenPDSPipeline extends OpenPDSPipeline {
 		this.manager = manager;
 		this.gson = manager.getGsonBuilder().create();
 		
-		JsonObject filteredPipelineJsonObject = filterPipelineData(gson.toJsonTree(this).getAsJsonObject(), getEnabledProbes());
-		LivingLabOpenPDSPipeline filteredPipeline = (LivingLabOpenPDSPipeline) gson.fromJson(filteredPipelineJsonObject, LivingLabOpenPDSPipeline.class);
-//		
-//		Note: Getting an error below -- filteredPipeline seems to be empty!	
-		//to put the following code back eventually.
-//		for (JsonElement dataRequest : filteredPipeline.data) {
-//			manager.requestData(this, dataRequest);
-//		}
-//		
-//		for (String action : schedules.keySet()) {
-//			manager.registerPipelineAction(this, action, schedules.get(action));
-//		}
+		// Clean up the data requests based 
+		data = filterDataRequests(data,  getEnabledProbes());
+		
+		super.onCreate(manager);
 	}
 
 	@Override
 	public void updatePipelines() {
 		try{
-			Log.v(TAG, "updatePipelines");
 			LivingLabFunfPDS pds = new LivingLabFunfPDS(manager);	
 			Map<String, Pipeline> pipelines = pds.getPipelines();
 
@@ -60,56 +46,32 @@ public class LivingLabOpenPDSPipeline extends OpenPDSPipeline {
 	private HashSet<String> getEnabledProbes() {
 		LivingLabsAccessControlDB livingLabSettingsDB = LivingLabsAccessControlDB.getInstance(manager);
 		HashSet<String> probesToEnable = new HashSet<String>();
-//		ArrayList<LivingLabSettingItem> llsiArray;
+		ArrayList<LivingLabSettingItem> llsiArray;
 		try {
-//			llsiArray = livingLabSettingsDB.retrieveLivingLabSettingItem();
-//			
-//			for (LivingLabSettingItem llsi : llsiArray) {
-//				probesToEnable.addAll(llsi.getEnabledProbes());
-//			}
+			llsiArray = livingLabSettingsDB.retrieveLivingLabSettingItem();
 			
-			JSONObject probesObject = livingLabSettingsDB.retrieveLivingLabProbeItem();
-	        Iterator<?> keys = probesObject.keys();
-
-	        while(keys.hasNext()){
-	            probesToEnable.add(keys.next().toString());
-	        }
-			
+			if (llsiArray != null) {
+				for (LivingLabSettingItem llsi : llsiArray) {
+					probesToEnable.addAll(llsi.getEnabledProbes());
+				}
+			}
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		Log.v(TAG, "enabled probes: " + probesToEnable.toString());
 		return probesToEnable;	
 	}
 	
-	private JsonObject filterPipelineData(JsonObject pipelineJsonObject, HashSet<String> enabledProbes) {
-		if (pipelineJsonObject != null && pipelineJsonObject.has("name") && pipelineJsonObject.has("config")) {
-			JsonObject pipelineConfig = pipelineJsonObject.getAsJsonObject("config");
-			JsonObject newPipelineConfig = new JsonObject();
-
-			JsonArray finalProbesArray = new JsonArray();
-			for (Map.Entry<String,JsonElement> entry : pipelineConfig.entrySet()) {
-				if(!entry.getKey().equalsIgnoreCase("data")){
-					newPipelineConfig.add(entry.getKey(), entry.getValue());
-				} else {
-					JsonArray probesArray = entry.getValue().getAsJsonArray();
-					for(int i=0; i<probesArray.size(); i++){
-						JsonObject tempProbe = probesArray.get(i).getAsJsonObject();
-
-						for (String probe : enabledProbes) {
-							if (tempProbe.get("@type").toString().contains(probe)) {
-								finalProbesArray.add(tempProbe);
-							}
-						}
-					}
-					newPipelineConfig.add(entry.getKey(), finalProbesArray);
-				}
+	private static List<JsonElement> filterDataRequests(List<JsonElement> data, HashSet<String> enabledProbes) {
+		ArrayList<JsonElement> filteredData = new ArrayList<JsonElement>();
+		for (JsonElement dataRequest : data) {
+			JsonObject dataRequestJsonObject = dataRequest.getAsJsonObject();
+			if (enabledProbes.contains(dataRequestJsonObject.get("@type"))) {
+				filteredData.add(dataRequest);
 			}
-			Log.v(TAG, "filterPipelineData: " + newPipelineConfig.toString());
-			return newPipelineConfig;
 		}
-		return null;
+		
+		return filteredData;
 	}
 }
