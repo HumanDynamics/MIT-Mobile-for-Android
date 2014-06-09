@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -46,7 +47,9 @@ public class LivingLabsWalkthroughActivity extends Activity implements OnClickLi
         
         
         ImageView labScreenshot = new ImageView(this);
-        labScreenshot.setImageDrawable(getResources().getDrawable(R.drawable.livinglab_activity_probe)); //placeholder image for now.
+        //labScreenshot.setImageDrawable(getResources().getDrawable(R.drawable.livinglab_activity_probe)); //placeholder image for now.
+        labScreenshot.setImageDrawable(getResources().getDrawable(R.drawable.livinglab_socialhealthtracker)); //placeholder image for now.
+        labScreenshot.setScaleType(ScaleType.FIT_XY); 
         labScreenshot.setVisibility(View.VISIBLE);
         ll.addView(labScreenshot);
         

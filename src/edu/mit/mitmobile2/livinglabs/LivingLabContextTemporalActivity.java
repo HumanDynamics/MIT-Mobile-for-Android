@@ -83,7 +83,8 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
 		try {
 			llsiJson = new JSONObject(getIntent().getSerializableExtra("llsiJson").toString());
-			context_label = llsiJson.getString("settings_context_label");
+			if(llsiJson.has("settings_context_label"))
+				context_label = llsiJson.getString("settings_context_label");
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}

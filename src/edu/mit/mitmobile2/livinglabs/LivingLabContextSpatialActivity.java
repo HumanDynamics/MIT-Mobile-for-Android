@@ -93,7 +93,8 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		try {
 			llsiJson = new JSONObject(getIntent().getSerializableExtra("llsiJson").toString());
 			llciJson = new JSONObject(getIntent().getSerializableExtra("llciJson").toString());
-			context_label = llsiJson.getString("settings_context_label");
+			if(llsiJson.has("settings_context_label"))
+				context_label = llsiJson.getString("settings_context_label");
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
@@ -126,19 +127,22 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 			ArrayList<String> searchDataInput = new ArrayList<String>();
 			searchDataInput.add(context_label);
 			try {
-		        places = contextFromServer.getString("context_places");
+				if(contextFromServer.has("context_places")){
+			        places = contextFromServer.getString("context_places");
 
-		        Pattern p = Pattern.compile("\\((.*?)\\)",Pattern.DOTALL);
-				Matcher matcher = p.matcher(places);
-				while(matcher.find()) {
-					String[] geo = matcher.group(1).split(",");
-					double lat = Double.parseDouble(geo[0]);
-					double lng = Double.parseDouble(geo[1]);
-					LatLng latlng = new LatLng(lat, lng);
-					
-					arrayPoints.add(latlng);
-					drawCircles(arrayPoints);
+			        Pattern p = Pattern.compile("\\((.*?)\\)",Pattern.DOTALL);
+					Matcher matcher = p.matcher(places);
+					while(matcher.find()) {
+						String[] geo = matcher.group(1).split(",");
+						double lat = Double.parseDouble(geo[0]);
+						double lng = Double.parseDouble(geo[1]);
+						LatLng latlng = new LatLng(lat, lng);
+						
+						arrayPoints.add(latlng);
+						drawCircles(arrayPoints);
+					}
 				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
