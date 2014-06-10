@@ -55,9 +55,9 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 		
 		mLivingLabsListView = (ListView) findViewById(R.id.livingLabsListView);
 		mLivingLabsListView.setAdapter(new LivingLabArrayAdapter(this, R.layout.living_lab_row, R.id.livingLabRowTitle, labs));	
-
-		Log.v(TAG, "The " + mLivingLabsListView.getCount() + " labs are:");
+		
 		mLivingLabsListView.setOnItemClickListener(new OnItemClickListener() {
+			
 			@Override
 			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
 				LivingLabItem labItem = (LivingLabItem) listView.getItemAtPosition(position);

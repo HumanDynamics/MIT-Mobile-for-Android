@@ -43,6 +43,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -100,6 +101,15 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		}
 
 		setContentView(R.layout.living_lab_context_spatial);
+		
+		TextView labelText = (TextView) findViewById(R.id.livinglabContextHeaderTextView);
+		labelText.setText(Html.fromHtml("<b>Specify Location(s)</b>"));
+		
+		TextView locationMessageText = (TextView) findViewById(R.id.livinglabContextLocationMessage);
+		locationMessageText.setText(Html.fromHtml("To indicate location, tap the map. To delete all circles, " + 
+				"touch and press the map for a few seconds.<br/><br/>" + 
+				"Note: For your privacy, labs will <b>not have access</b> to locations you specify here."));
+		
 		
 		contextsFromServer = getIntent().getStringExtra("contextsFromServer");
 		JSONObject contextFromServer = new JSONObject();
@@ -161,22 +171,28 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		switch(v.getId()){
 		case R.id.livinglabContextFinishSpatialButton:
 			places = arrayPoints.toString();
-			try{
-				llciJson.put("context_places", places);
-				
-				accesscontrolObject.put("setting_object", llsiJson);
-				accesscontrolObject.put("context_object", llciJson);
-				connection = new Connection(this);
-				saveFlag = true;
-				connection.execute(accesscontrolObject).get(1000, TimeUnit.MILLISECONDS);
-				saveFlag = false;
-
-			} catch (Exception e) {
-				e.printStackTrace();
+			if(!arrayPoints.isEmpty()){
+				try{
+					llciJson.put("context_places", places);
+					
+					accesscontrolObject.put("setting_object", llsiJson);
+					accesscontrolObject.put("context_object", llciJson);
+					connection = new Connection(this);
+					saveFlag = true;
+					connection.execute(accesscontrolObject).get(1000, TimeUnit.MILLISECONDS);
+					saveFlag = false;
+	
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Intent labIntent = new Intent(LivingLabContextSpatialActivity.this, LivingLabActivity.class);
+				labIntent.putExtra("lab", labItem);
+				startActivity(labIntent);
+			} else {
+				TextView errorTextView = (TextView)findViewById(R.id.livinglabContextLocationError);
+				errorTextView.setText("Please select a location.");
+				errorTextView.setTextColor(Color.RED);
 			}
-			Intent labIntent = new Intent(LivingLabContextSpatialActivity.this, LivingLabActivity.class);
-			labIntent.putExtra("lab", labItem);
-			startActivity(labIntent);
 			break;
 		}
 	}

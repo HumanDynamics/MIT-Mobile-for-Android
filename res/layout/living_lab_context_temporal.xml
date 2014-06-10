@@ -1,261 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:fillViewport="true" >
-<LinearLayout 
-    android:id="@+id/livingLabContextLinearLayout"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/livinglabContextHeaderTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Define a context"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <View
-  		android:layout_width="1dp"
-  		android:layout_height="13dp">
-	</View>
+	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:fillViewport="true" >
+		
+		<LinearLayout 
+			android:id="@+id/livingLabContextLinearLayout"
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" >
 
-    <LinearLayout 
-            android:layout_width="fill_parent" 
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            
-    <TextView
-        android:id="@+id/livinglabContextLabelTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Label"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+			<TextView
+				android:id="@+id/livinglabContextHeaderTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=""
+				android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <EditText
-        android:id="@+id/livinglabContextLabelEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Work, Home, ..."
-        android:textSize="14dp" />
+			<View
+				android:layout_width="1dp"
+				android:layout_height="13dp">
 
-        <View
-  		android:layout_width="1dp"
-  		android:layout_height="15dp">
-	</View>   
-    
-	    <TextView
-        android:id="@+id/livinglabContextLabelError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceSmall" />  
-	        
-    <View
-  		android:layout_width="1dp"
-  		android:layout_height="15dp">
-	</View>       
-    
-    </LinearLayout>
-
-    <View
-  		android:layout_width="1dp"
-  		android:layout_height="15dp">
-	</View>
-    
-    <!--  
-    <TextView
-        android:id="@+id/livinglabContextDurationTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Duration"
-        android:textAppearance="?android:attr/textAppearanceMedium" /> -->
+			</View>
+			
+			<TextView
+				android:id="@+id/livinglabContextLabelTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=""
+				android:textAppearance="?android:attr/textAppearanceMedium" />
 
     
-    <LinearLayout 
-            android:layout_width="fill_parent" 
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            
-    <TextView
-        android:id="@+id/livinglabContextDurationFromTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="From"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+    	<View
+			android:layout_width="1dp"
+			android:layout_height="15dp">
+		</View>    
+    
+		<LinearLayout 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">    
 
-    <EditText
-        android:id="@+id/livinglabContextDurationStartEditText"
-        android:layout_width="130dip"
-        android:layout_height="wrap_content"
-        android:textSize="14dp"/>
-    
-    <TextView
-        android:id="@+id/livinglabContextDurationToTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="To"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+    		<EditText
+				android:id="@+id/livinglabContextLabelEditText"
+				android:layout_width="230dip"
+				android:layout_height="wrap_content"
+				android:hint="Work, Home, ..."
+				android:textSize="14dp"/>
 
-    <EditText
-        android:id="@+id/livinglabContextDurationEndEditText"
-        android:layout_width="130dip"
-        android:layout_height="wrap_content"
-        android:textSize="14dp"/>    
-    
-    </LinearLayout>
-    
-    <View
-  		android:layout_width="1dp"
-  		android:layout_height="15dp">
-	</View>
+			<View
+				android:layout_width="1dp"
+				android:layout_height="15dp">
+			</View>   
+
+			<TextView
+				android:id="@+id/livinglabContextLabelError"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=""
+				android:textAppearance="?android:attr/textAppearanceSmall" />  
+
+			<View
+				android:layout_width="1dp"
+				android:layout_height="15dp">
+			</View>       
+
+		</LinearLayout>
+
+		<View
+			android:layout_width="1dp"
+			android:layout_height="15dp">
+		</View>
+
+		<TextView
+			android:id="@+id/livinglabContextDurationTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text=""
+			android:textAppearance="?android:attr/textAppearanceMedium" /> 
+
+		<LinearLayout 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<TextView
+				android:id="@+id/livinglabContextDurationFromTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=""
+				android:textAppearance="?android:attr/textAppearanceMedium" />
+
+			<EditText
+				android:id="@+id/livinglabContextDurationStartEditText"
+				android:layout_width="130dip"
+				android:layout_height="wrap_content"
+				android:textSize="14dp"/>
+
+			<TextView
+				android:id="@+id/livinglabContextDurationToTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=""
+				android:textAppearance="?android:attr/textAppearanceMedium" />
+
+			<EditText
+				android:id="@+id/livinglabContextDurationEndEditText"
+				android:layout_width="130dip"
+				android:layout_height="wrap_content"
+				android:textSize="14dp"/>    
+
+		</LinearLayout>
+
+		<View
+			android:layout_width="1dp"
+			android:layout_height="15dp">
+		</View>
+		
+		<CheckBox
+			android:id="@+id/livinglabContextAllowAllTimes"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Allow collection at all times" />	
+			
+		<View
+			android:layout_width="1dp"
+			android:layout_height="15dp">
+		</View>			
 	
-    <LinearLayout 
-    	android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+		<TableLayout 
+			android:id="@+id/livinglabContextDurationDayLayout"
+			android:layout_width="fill_parent"	
+			android:layout_height="fill_parent" >
+
+			<TableRow
+				android:id="@+id/livinglabContextDurationDayRow1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+        		android:weightSum="4">
+
+				<ToggleButton 
+					android:id="@+id/livinglabContextDurationDaySunday"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textOn="SUN"
+					android:textOff="SUN"
+					android:layout_weight="1"/>
+
+				<ToggleButton 
+					android:id="@+id/livinglabContextDurationDayMonday"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textOn="MON"
+					android:textOff="MON"
+					android:layout_weight="1"/>
+
+				<ToggleButton 
+					android:id="@+id/livinglabContextDurationDayTuesday"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textOn="TUE"
+					android:textOff="TUE"
+					android:layout_weight="1"/> 
+
+				<ToggleButton 
+					android:id="@+id/livinglabContextDurationDayWednesday"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:textOn="WED"
+					android:textOff="WED"
+					android:layout_weight="1"/>
+	
+			</TableRow>    
+
+			<TableRow
+				android:id="@+id/livinglabContextDurationDayRow2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:weightSum="3">
+
+				<ToggleButton 
+					android:id="@+id/livinglabContextDurationDayThursday"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:textOn="THU"
+					android:textOff="THU"
+					android:layout_weight="1"/>
+
+				<ToggleButton 
+					android:id="@+id/livinglabContextDurationDayFriday"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:textOn="FRI"
+					android:textOff="FRI"
+					android:layout_weight="1"/>
+
+				<ToggleButton 
+					android:id="@+id/livinglabContextDurationDaySaturday"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:textOn="SAT"
+					android:textOff="SAT"
+					android:layout_weight="1"/> 
+
+			</TableRow>     
     
-        <CheckBox
-        android:id="@+id/livinglabContextDurationDaySunday"
-        android:layout_height="wrap_content"
-   		android:layout_width="wrap_content"
-        android:text="S" />
-        
-		<CheckBox
-        android:id="@+id/livinglabContextDurationDayMonday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="M" />  
-        
-		<CheckBox
-        android:id="@+id/livinglabContextDurationDayTuesday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="T" />
-		
-		<CheckBox
-        android:id="@+id/livinglabContextDurationDayWednesday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="W" />
-		
-		<CheckBox
-        android:id="@+id/livinglabContextDurationDayThursday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="T" />
-		
-		<CheckBox
-        android:id="@+id/livinglabContextDurationDayFriday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="F" />
-		
-		<CheckBox
-        android:id="@+id/livinglabContextDurationDaySaturday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="S" />
+			<TableRow
+				android:id="@+id/livinglabContextTemporalRow3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:weightSum="2">
+
+				<CheckBox
+					android:id="@+id/livinglabContextDurationDayWeekday"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Weekdays" 
+					android:layout_weight="1"/>
+
+				<CheckBox
+					android:id="@+id/livinglabContextDurationDayWeekend"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Weekend" 
+					android:layout_weight="1"/>  
+
+			</TableRow>  
     
+			<TableRow
+				android:id="@+id/livinglabContextTemporalRow4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:weightSum="1">    
+
+				<TextView
+					android:id="@+id/livinglabContextDurationDayError"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text=""
+					android:textAppearance="?android:attr/textAppearanceSmall" /> 
+					 
+			</TableRow>
+
+			<TableRow
+				android:id="@+id/livinglabContextTemporalRow5"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" 
+				android:weightSum="3">
+
+				<Button
+					android:id="@+id/livinglabContextSetLocationButton"
+					android:text="Define Location"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"/>
+
+				<Button
+					android:id="@+id/livinglabContextDeleteButton"
+					android:text="Delete"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"/>
+
+				<Button
+					android:id="@+id/livinglabContextFinishTemporalButton"
+					android:text="Finish"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"/>  
+
+			</TableRow>             
+
+    	</TableLayout>
+
 	</LinearLayout>
-	
-        <LinearLayout 
-    	android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-    
-        <CheckBox
-        android:id="@+id/livinglabContextDurationDayWeekday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Weekday" />
-        
-		<CheckBox
-        android:id="@+id/livinglabContextDurationDayWeekend"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Weekend" />  
 
-    
-	</LinearLayout>
-	
-    
-	    <TextView
-        android:id="@+id/livinglabContextDurationDayError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceSmall" />  
-	        
-    <View
-  		android:layout_width="1dp"
-  		android:layout_height="15dp">
-	</View>    
-
-    
-   
-    <TextView
-        android:id="@+id/livinglabContextLocationTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Location"
-        android:textAppearance="?android:attr/textAppearanceMedium" />  
-          
-        <View
-  		android:layout_width="1dp"
-  		android:layout_height="15dp">
-	</View>   
-	
-	    <TextView
-        android:id="@+id/livinglabContextLocationMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="This location will not be shared with app providers."
-        android:textAppearance="?android:attr/textAppearanceSmall" />  
-	        
-    <View
-  		android:layout_width="1dp"
-  		android:layout_height="15dp">
-	</View>          
-        
-    <fragment
-        android:id="@+id/livinglabContextMap"
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="1.0"/>
-
-        <LinearLayout 
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="3"
-            android:gravity="center_horizontal">
-    
-    <Button
-        android:id="@+id/livinglabContextSetLocationButton"
-        android:text="Set Location"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
-    
-        <Button
-        android:id="@+id/livinglabContextDeleteButton"
-        android:text="Delete"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
-        
-        <Button
-        android:id="@+id/livinglabContextFinishTemporalButton"
-        android:text="Finish"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>        
-        
-        </LinearLayout>
-
-</LinearLayout>
 </ScrollView>

@@ -4,6 +4,7 @@ import edu.mit.mitmobile2.objs.LivingLabItem;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,17 +42,11 @@ public class LivingLabsWalkthroughActivity extends Activity implements OnClickLi
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText("Welcome to MIT Living Lab! Below is a screeshot of how the " + labItem.getName() + " lab will eventually look like.");
+        labText.setText(Html.fromHtml("<h3>Welcome to MIT Living Lab!</h3><br/><br/><b>" + labItem.getName() + "</b>" + 
+        		" is going to collect data from your phone and display visualizations based on the data. <br/><br/>" +
+        		"In this walkthrough, you will be able to specify what data can be collected."));
         labText.setTextSize(14);
         ll.addView(labText);
-        
-        
-        ImageView labScreenshot = new ImageView(this);
-        //labScreenshot.setImageDrawable(getResources().getDrawable(R.drawable.livinglab_activity_probe)); //placeholder image for now.
-        labScreenshot.setImageDrawable(getResources().getDrawable(R.drawable.livinglab_socialhealthtracker)); //placeholder image for now.
-        labScreenshot.setScaleType(ScaleType.FIT_XY); 
-        labScreenshot.setVisibility(View.VISIBLE);
-        ll.addView(labScreenshot);
         
         Button nextButton = new Button(this);
 	    nextButton.setText( "Next");
@@ -72,7 +67,7 @@ public class LivingLabsWalkthroughActivity extends Activity implements OnClickLi
 			LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
 			intent.putExtra("lab", labItem);
 			startActivity(intent);
-			finish(); //use noHistory??
+			//finish(); //use noHistory??
 		}
 	}
 	

@@ -2,10 +2,13 @@ package edu.mit.mitmobile2.livinglabs;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -48,13 +51,19 @@ public class LivingLabOpenPDSPipeline extends OpenPDSPipeline {
 		HashSet<String> probesToEnable = new HashSet<String>();
 		ArrayList<LivingLabSettingItem> llsiArray;
 		try {
-			llsiArray = livingLabSettingsDB.retrieveLivingLabSettingItem();
-			
-			if (llsiArray != null) {
-				for (LivingLabSettingItem llsi : llsiArray) {
-					probesToEnable.addAll(llsi.getEnabledProbes());
-				}
-			}
+//			llsiArray = livingLabSettingsDB.retrieveLivingLabSettingItem();
+//			
+//			if (llsiArray != null) {
+//				for (LivingLabSettingItem llsi : llsiArray) {
+//					probesToEnable.addAll(llsi.getEnabledProbes());
+//				}
+//			}
+			JSONObject probesObject = livingLabSettingsDB.retrieveLivingLabProbeItem();
+	        Iterator<String> keys = probesObject.keys();
+
+	        while(keys.hasNext()){
+	            probesToEnable.add(keys.next().toString());
+	        }
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

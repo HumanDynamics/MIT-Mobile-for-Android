@@ -3,6 +3,7 @@ package edu.mit.mitmobile2.livinglabs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -58,19 +60,16 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 	
 	private boolean loadFlag = false;
 	
-	private int nextButtonId = 1;
-	private final int activityProbeId = 2;
-	private final int smsProbeId = 3;
-	private final int calllogProbeId = 4;
-	private final int bluetoothProbeId = 5;
-	private final int wifiProbeId = 6;
-	private final int simplelocationProbeId = 7;
-	private final int screenProbeId = 8;
-	private final int runningapplicationsProbeId = 9;
-	private final int hardwareinfoProbeId = 10;
-	private final int appusageProbeId = 11;
-	
+	private int selectAllButtonId = 1;
+	private int nextButtonId = 2;
+	private int nextButtonTextId = 3;
+
+	private JSONObject probesMap = new JSONObject();
+	private ArrayList<Integer> probesIds = new ArrayList<Integer>();
+
 	private HashMap<String, Boolean> probeSettings = new HashMap<String, Boolean>();
+	
+	private LivingLabsAccessControlDB mLivingLabAccessControlDB;
 	
 	
 	@Override
@@ -87,6 +86,9 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 			return;
 		}
 		
+		populateProbesMap();
+		
+		mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
         app_id = "Living Lab";       		
         LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
         
@@ -99,7 +101,7 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText("Select data for " + lab_id + " to use. Indicated functionality may not work if associated data not selected.");
+        labText.setText(Html.fromHtml("Select data for <b>" + lab_id + "</b> to use.<br/><br/>Indicated functionality may not work if associated data not selected."));
         labText.setTextSize(16);
         ll.addView(labText);
         
@@ -134,15 +136,10 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 					}		
 				}
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
-        
-        int id = 0;
-        
-    	
-        
+
         ArrayList<String> searchDataInput = new ArrayList<String>();
         searchDataInput.add(app_id);
         searchDataInput.add(lab_id);
@@ -154,11 +151,13 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 			connection = new Connection(this);
 			connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
 			loadFlag = false;
+			LivingLabsAccessControlDB.saveLivingLabProbeItem(probesFromServer);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
         
 		TableLayout tableLayout = new TableLayout(this);
+		tableLayout.setColumnShrinkable(1, true);
 		TableLayout.LayoutParams layoutRow = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 
 		TableRow tableRow = null;
@@ -213,25 +212,15 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 			String iconName = "";
 			int probeId = 0;
 			
-			if(probe.equalsIgnoreCase("Call Log Probe")){
-				iconName = "livinglab_calllog_probe";
-				probeId = calllogProbeId;
-			}
-			else if(probe.equalsIgnoreCase("Screen Probe")){
-				iconName = "livinglab_screen_probe";
-				probeId = screenProbeId;
-			}
-			else if(probe.equalsIgnoreCase("Activity Probe")){
-				iconName = "livinglab_activity_probe";
-				probeId = activityProbeId;
-			}
-			else if(probe.equalsIgnoreCase("Sms Probe")){
-				iconName = "livinglab_sms_probe";
-				probeId = smsProbeId;
-			}
-			else if(probe.equalsIgnoreCase("Bluetooth Probe")){
-				iconName = "livinglab_bluetooth_probe";
-				probeId = bluetoothProbeId;
+			try {
+				iconName = (String) ((JSONObject) probesMap.get(probe)).get("icon");
+				probeId = (Integer) ((JSONObject) probesMap.get(probe)).get("id");
+				probesIds.add(probeId); //accumulate the ids
+				
+				Log.v(TAG, "going to assign probeId: " + probeId);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
 			int iconValue = getResources().getIdentifier(iconName , "drawable", getPackageName());
@@ -252,10 +241,12 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 			
 			TableRow.LayoutParams layoutPurpose = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 			TextView probePurpose = new TextView(this);
-	        probePurpose.setText(" for " + purposes.get(probe).toString());
+	        probePurpose.setText(Html.fromHtml("<b>" + probe.split(" Probe")[0] +"</b>: " + purposes.get(probe).toString()));
 	        probePurpose.setLayoutParams(layoutPurpose);
 	        probePurpose.setGravity(Gravity.CENTER);
 	        tableRow.setGravity(Gravity.CENTER);
+	       
+	        
 	        
 			tableRow.addView(probePurpose);
 			tableLayout.addView(tableRow);
@@ -264,19 +255,47 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 		ll.addView(tableLayout);
         
 	    TableLayout buttonsLayout = new TableLayout(this);
+	    buttonsLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.FILL_PARENT, TableLayout.LayoutParams.FILL_PARENT));
+        
         TableRow buttonsRow = new TableRow(this);
 	    //buttonsRow.setPadding(20,50,40,0);
+        buttonsRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+        
+        LinearLayout.LayoutParams buttonLayoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+        buttonLayoutParams.weight = 1;
 	    
+        
+        Button selectAllButton = new Button(this);
+        selectAllButton.setText("Select all data");
+        selectAllButton.setId(selectAllButtonId);
+        selectAllButton.setOnClickListener(this);
+        buttonLayoutParams.gravity = Gravity.LEFT;
+        selectAllButton.setLayoutParams(buttonLayoutParams);
+        
 	    Button nextButton = new Button(this);
 	    nextButton.setText("Next");
 	    nextButton.setId(nextButtonId);
 	    nextButton.setOnClickListener(this);
+	    buttonLayoutParams.gravity = Gravity.RIGHT;
+	    nextButton.setLayoutParams(buttonLayoutParams);
 	    
+	    
+	    buttonsRow.setWeightSum(2);
+	    buttonsRow.addView(selectAllButton);
 	    buttonsRow.addView(nextButton);
-	    buttonsRow.setGravity(Gravity.RIGHT);
+	    buttonsRow.setGravity(Gravity.CENTER);
 
 	    buttonsLayout.addView(buttonsRow);
 	    ll.addView(buttonsLayout);
+
+        TextView nextButtonText = new TextView(this);
+        nextButtonText.setText("Click next to proceed.");
+        nextButtonText.setTextColor(Color.BLUE);
+        nextButtonText.setTextSize(12);
+        nextButtonText.setVisibility(View.GONE);
+        nextButtonText.setId(nextButtonTextId);
+        ll.addView(nextButtonText);
         
 	    ScrollView sv = new ScrollView(this);
 	    sv.addView(ll);
@@ -286,7 +305,29 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 	
 	@Override
 	public void onClick(View v) {
-		if(v.getId() == nextButtonId){
+		if(v.getId() == selectAllButtonId){
+			try{
+				Iterator<String> keys = probesMap.keys();
+		        while(keys.hasNext()){
+		            JSONObject probeDetails = probesMap.getJSONObject(keys.next());
+		            
+		            int probeIdValue = probeDetails.getInt("id");
+		            if(probesIds.contains(probeIdValue))
+		            	selectProbe(probeIdValue);
+		        }
+		        TextView nextButtonTextView = (TextView) findViewById(nextButtonTextId);
+		        nextButtonTextView.setVisibility(View.VISIBLE);
+	        } catch(Exception e){
+	        	e.printStackTrace();
+	        }
+			
+		} else if(v.getId() == nextButtonId){
+			try {
+				LivingLabsAccessControlDB.saveLivingLabProbeItem(probesFromServer);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
 			Intent intent = new Intent(this, LivingLabSettingsContextActivity.class);
 			LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
 			intent.putExtra("lab", labItem);
@@ -295,6 +336,12 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 			intent.putExtra("contextsFromServer", contextsFromServer.toString());
 			startActivity(intent);
 		}
+	}
+	
+	public void selectProbe(int probeId){
+		Log.v(TAG, "probeId: " + probeId);
+		ToggleButton probeButton = (ToggleButton) findViewById(probeId);
+		probeButton.setChecked(true);
 	}
 	
 	private class Connection extends AsyncTask<JSONObject, Object, Object> {
@@ -330,39 +377,18 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 
 	@Override
 	public void onCheckedChanged(CompoundButton probeButton, boolean isChecked) {
-		switch(probeButton.getId()){
-			case activityProbeId:
-				probeSettings.put("Activity Probe", isChecked);
-				break;
-			case smsProbeId:
-				probeSettings.put("Sms Probe", isChecked);
-				break;				
-			case calllogProbeId:
-				probeSettings.put("Call Log Probe", isChecked);
-				break;	
-			case bluetoothProbeId:
-				probeSettings.put("Bluetooth Probe", isChecked);
-				break;	
-			case wifiProbeId:
-				probeSettings.put("Wifi Probe", isChecked);
-				break;	
-			case simplelocationProbeId:
-				probeSettings.put("Simple Location Probe", isChecked);
-				break;	
-			case screenProbeId:
-				probeSettings.put("Screen Probe", isChecked);
-				break;	
-			case runningapplicationsProbeId:
-				probeSettings.put("Running Applications Probe", isChecked);
-				break;	
-			case hardwareinfoProbeId:
-				probeSettings.put("Hardware Info Probe", isChecked);
-				break;	
-			case appusageProbeId:
-				probeSettings.put("App Usage Probe", isChecked);
-				break;	
-		}
-		
+		try{
+			Iterator<String> keys = probesMap.keys();
+	        while(keys.hasNext()){
+	        	String probeName = keys.next();
+	            JSONObject probeDetails = probesMap.getJSONObject(probeName);
+	            if(probeButton.getId() == probeDetails.getInt("id")){
+	            	probeSettings.put(probeName, isChecked);
+	            }
+	        }
+        } catch(Exception e){
+        	e.printStackTrace();
+        }
 	}
 	
 	private String getContextLabel(int context_label_id) throws JSONException{
@@ -377,5 +403,53 @@ public class LivingLabSettingsProbesActivity extends Activity implements OnClick
 	
 	@Override
 	public void onBackPressed() {
+	}
+	
+	public void populateProbesMap(){
+		try{
+			probesMap.put("Activity Probe", new JSONObject() {{
+		        put("id",4);
+		        put("icon", "livinglab_activity_probe");
+		    }});
+			probesMap.put("Sms Probe", new JSONObject() {{
+		        put("id",5);
+		        put("icon", "livinglab_sms_probe");
+		    }});
+			probesMap.put("Call Log Probe", new JSONObject() {{
+		        put("id",6);
+		        put("icon", "livinglab_calllog_probe");
+		    }});
+			probesMap.put("Bluetooth Probe", new JSONObject() {{
+		        put("id",7);
+		        put("icon", "livinglab_bluetooth_probe");
+		    }});
+			probesMap.put("Wifi Probe", new JSONObject() {{
+		        put("id",8);
+		        put("icon", "livinglab_screen_probe");
+		    }});
+			probesMap.put("Simple Location Probe", new JSONObject() {{
+		        put("id",9);
+		        put("icon", "livinglab_location_probe");
+		    }});
+			probesMap.put("Screen Probe", new JSONObject() {{
+		        put("id",10);
+		        put("icon", "livinglab_screen_probe");
+		    }});
+			probesMap.put("Running Applications Probe", new JSONObject() {{
+		        put("id",11);
+		        put("icon", "livinglab_screen_probe");
+		    }});
+			probesMap.put("Hardware Info Probe", new JSONObject() {{
+		        put("id",12);
+		        put("icon", "livinglab_screen_probe");
+		    }});
+			probesMap.put("App Usage Probe", new JSONObject() {{
+		        put("id",13);
+		        put("icon", "livinglab_screen_probe");
+		    }});
+
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }

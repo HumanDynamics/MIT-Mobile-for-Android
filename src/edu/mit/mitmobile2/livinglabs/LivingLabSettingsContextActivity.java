@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
@@ -96,7 +97,6 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
         
         try {
 	        labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
-	        //Log.v(TAG, getIntent().getSerializableExtra("probeSettings").toString());
 	        probeSettings = (HashMap<String, Boolean>) getIntent().getSerializableExtra("probeSettings");
 	        
 	        Serializable temp_context_label = getIntent().getSerializableExtra("context_label");
@@ -116,28 +116,19 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText("Choose context to share selected data with " + lab_id + ". Alternatively, create new context.");
+        labText.setText(Html.fromHtml("A <b>context</b> is a set of <i>time</i> and <i>location</i> parameters for which the lab will collect your data. <br/><br/>"+
+        						"Define or pick one for <b>" + lab_id + "</b>"));
         labText.setTextSize(14);
         ll.addView(labText);
         
         RelativeLayout rl = new RelativeLayout(this);
         rl.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,RelativeLayout.LayoutParams.FILL_PARENT));
-
-		Button newContextButton = new Button(this);
-		newContextButton.setId(newContextId);
-	    Spannable buttonLabel = new SpannableString(" Create New Context");
-	    buttonLabel.setSpan(new ImageSpan(getApplicationContext(), R.drawable.menu_add_bookmark,ImageSpan.ALIGN_BOTTOM), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-	    newContextButton.setText(buttonLabel);
-	    newContextButton.setOnClickListener(this);
-	    
-		ll.addView(newContextButton);
 		
 		RadioButton[] contextRadioButtons = new RadioButton[contextsFromServer.length()];
 		RadioGroup contextRadioButtonsGroup = new RadioGroup(this); 
 		contextRadioButtonsGroup.setOrientation(RadioGroup.VERTICAL);
 
 		int numContexts = contextsFromServer.length();
-		editContextButtonId = contextId + numContexts;
 		for(int i=0; i<numContexts; i++){
 			String contextLabel = "";
 			try {
@@ -155,40 +146,62 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-			
-			ImageButton editContextButton = new ImageButton(this);
-			editContextButton.setImageDrawable(getResources().getDrawable(R.drawable.menu_settings));
-			editContextButton.setId(editContextButtonId);
-			contextButtonIdsNames.put(editContextButtonId, contextLabel);
-			editContextButtonId++;
-			editContextButton.setOnClickListener(this);
-			contextRadioButtonsGroup.addView(editContextButton);
 		}
 		contextRadioButtonsGroup.check(selectedContextId);
 		contextRadioButtonsGroup.setOnCheckedChangeListener(this);
 		ll.addView(contextRadioButtonsGroup);
+
 		
-		contextErrorId = editContextButtonId;
+        TextView progressText = new TextView(this);
+        progressText.setText("Choose one of the following three buttons to proceed.");
+        progressText.setTextColor(Color.BLUE);
+        progressText.setTextSize(12);
+        ll.addView(progressText);
+        
+	    TableLayout buttonsLayout = new TableLayout(this);
+	    buttonsLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.FILL_PARENT, TableLayout.LayoutParams.FILL_PARENT));
+        TableRow buttonsRow = new TableRow(this);
+	    //buttonsRow.setPadding(20,50,40,0);
+        buttonsRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+        LinearLayout.LayoutParams buttonLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.FILL_PARENT);
+        
+		Button newContextButton = new Button(this);
+		newContextButton.setId(newContextId);
+		newContextButton.setText("Define new context");
+	    newContextButton.setOnClickListener(this);
+	    buttonLayoutParams.weight = 1;
+	    newContextButton.setLayoutParams(buttonLayoutParams);
+	    
+		editContextButtonId = contextId + numContexts;
+		Button editContextButton = new Button(this);
+		editContextButton.setId(editContextButtonId);
+		editContextButton.setText("Edit selected context");
+	    editContextButton.setOnClickListener(this);
+	    buttonLayoutParams.weight = 1;
+	    editContextButton.setLayoutParams(buttonLayoutParams);
+	    
+	    Button finishButton = new Button(this);
+	    finishButton.setText("Finish");
+	    finishButton.setId(finishButtonId);
+	    finishButton.setOnClickListener(this);
+	    buttonLayoutParams.weight = 1;
+		finishButton.setLayoutParams(buttonLayoutParams);
+		
+		buttonsRow.setWeightSum(3);
+	    buttonsRow.addView(newContextButton);
+	    buttonsRow.addView(editContextButton);
+	    buttonsRow.addView(finishButton);
+	    buttonsRow.setGravity(Gravity.CENTER);
+		
+		contextErrorId = editContextButtonId + 1;
         TextView contextErrorText = new TextView(this);
         contextErrorText.setText("Please select a context or create a new one.");
         contextErrorText.setTextSize(12);
         contextErrorText.setId(contextErrorId);
         contextErrorText.setTextColor(Color.RED);
         contextErrorText.setVisibility(View.GONE);
-        ll.addView(contextErrorText);        
-        
-
-	    TableLayout buttonsLayout = new TableLayout(this);
-        TableRow buttonsRow = new TableRow(this);
-	    buttonsRow.setPadding(20,50,40,0);
-	    
-	    Button finishButton = new Button(this);
-	    finishButton.setText("Finish");
-	    finishButton.setId(finishButtonId);
-	    finishButton.setOnClickListener(this);
-	    
-	    buttonsRow.addView(finishButton);
-	    buttonsRow.setGravity(Gravity.CENTER);
+        ll.addView(contextErrorText);   
 
 	    buttonsLayout.addView(buttonsRow);
 	    ll.addView(buttonsLayout);
@@ -231,8 +244,10 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 					labIntent.putExtra("lab", labItem);
 					startActivity(labIntent);
 				}
-			} else if(contextButtonIdsNames.containsKey(v.getId())){
-				llsiJson.put("settings_context_label", contextButtonIdsNames.get(v.getId()));
+			} //else if(contextButtonIdsNames.containsKey(v.getId())){
+			else if(v.getId() == editContextButtonId){
+				//llsiJson.put("settings_context_label", contextButtonIdsNames.get(v.getId()));
+				llsiJson.put("settings_context_label", settings_context_label);
 				
 				Intent intent = new Intent(this, LivingLabContextTemporalActivity.class);
 				LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
@@ -288,9 +303,6 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	        		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 	        		
 	        		String uuid = prefs.getUUID();
-	        		//llsiJson.put("datastore_owner", uuid); 
-	        		//llsiJson.put("context_setting_flag", 1); //1 - setting
-	        		
 	        		JSONObject accesscontrolObject = new JSONObject();
 	        		accesscontrolObject.put("datastore_owner", uuid); 
 	        		accesscontrolObject.put("setting_object", llsiJson); 

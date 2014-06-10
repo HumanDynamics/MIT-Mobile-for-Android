@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,8 +31,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.ToggleButton;
 
 
 public class LivingLabContextTemporalActivity extends Activity implements OnClickListener, OnTouchListener, OnCheckedChangeListener {
@@ -50,8 +53,11 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 			R.id.livinglabContextDurationDaySaturday};
 	
 	private boolean weekdayFlag = false, weekendFlag = false;
-	private CheckBox weekdayCheckBox, weekendCheckBox, suCheckBox, mCheckBox, tCheckBox, wCheckBox, rCheckBox, fCheckBox, saCheckBox;
-
+	private CheckBox weekdayCheckBox, weekendCheckBox;
+	private ToggleButton sundayButton, mondayButton, tuesdayButton, wednesdayButton, thursdayButton, fridayButton, saturdayButton;
+	private CheckBox allowAllTimesCheckBox;
+	
+	
 	private View contextMapView, locationTitleView, locationMessageView;
 	
 	private HashMap<String, Boolean> probeSettings;
@@ -89,19 +95,33 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 			e1.printStackTrace();
 		}
 		
+		
 		ArrayList<LivingLabVisualizationItem> visualization = labItem.getVisualizations();
         lab_id = labItem.getName();
 
 		setContentView(R.layout.living_lab_context_temporal);
 		
-		probeSettings = (HashMap<String, Boolean>) getIntent().getSerializableExtra("probeSettings");
+		TextView progressText = (TextView) findViewById(R.id.livinglabContextHeaderTextView);
+		if(context_label != null)
+			progressText.setText(Html.fromHtml("<b>Edit the context</b>"));
+		else{
+			progressText.setText(Html.fromHtml("<b>Define a context</b>"));
+		}
 		
-		contextMapView = findViewById(R.id.livinglabContextMap);
-		contextMapView.setVisibility(View.GONE);
-		locationTitleView = findViewById(R.id.livinglabContextLocationTextView);
-		locationTitleView.setVisibility(View.GONE);
-		locationMessageView = findViewById(R.id.livinglabContextLocationMessage);
-		locationMessageView.setVisibility(View.GONE);
+		
+		TextView labelText = (TextView) findViewById(R.id.livinglabContextLabelTextView);
+		labelText.setText(Html.fromHtml("Label"));
+		
+		TextView durationText = (TextView) findViewById(R.id.livinglabContextDurationTextView);
+		durationText.setText(Html.fromHtml("Limit to a specified time range or allow collection all the time."));
+		
+		TextView fromText = (TextView) findViewById(R.id.livinglabContextDurationFromTextView);
+		fromText.setText(Html.fromHtml("From"));
+		
+		TextView toText = (TextView) findViewById(R.id.livinglabContextDurationToTextView);
+		toText.setText(Html.fromHtml("To"));
+		
+		probeSettings = (HashMap<String, Boolean>) getIntent().getSerializableExtra("probeSettings");
 		
 		contextsFromServer = getIntent().getStringExtra("contextsFromServer");
 		JSONObject contextFromServer = new JSONObject();
@@ -119,16 +139,18 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 	        }
 		}
 		
+		allowAllTimesCheckBox = (CheckBox)findViewById(R.id.livinglabContextAllowAllTimes);
+		
 		weekdayCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekday);
 		weekendCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekend);
-		suCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDaySunday);
-		mCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayMonday);
-		tCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayTuesday);
-		wCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWednesday);
-		rCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayThursday);
-		fCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayFriday);
-		saCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDaySaturday);
 		
+		sundayButton = (ToggleButton)findViewById(R.id.livinglabContextDurationDaySunday);
+		mondayButton = (ToggleButton)findViewById(R.id.livinglabContextDurationDayMonday);
+		tuesdayButton = (ToggleButton)findViewById(R.id.livinglabContextDurationDayTuesday);
+		wednesdayButton = (ToggleButton)findViewById(R.id.livinglabContextDurationDayWednesday);
+		thursdayButton = (ToggleButton)findViewById(R.id.livinglabContextDurationDayThursday);
+		fridayButton = (ToggleButton)findViewById(R.id.livinglabContextDurationDayFriday);
+		saturdayButton = (ToggleButton)findViewById(R.id.livinglabContextDurationDaySaturday);
 
 		boolean context_prefill_success = false;
 		if(context_label != null){
@@ -145,14 +167,19 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 				durationDaysError.setTextColor(Color.parseColor("#FF0000"));
 
 
+				String context_duration_start = contextFromServer.getString("context_duration_start");
+				String context_duration_end = contextFromServer.getString("context_duration_end");
 				EditText durationStartEditText = (EditText) findViewById(R.id.livinglabContextDurationStartEditText);
-				durationStartEditText.setText(contextFromServer.getString("context_duration_start"));
+				durationStartEditText.setText(context_duration_start);
 				durationStartEditText.setOnTouchListener(this);
 
 
 				EditText durationEndEditText = (EditText) findViewById(R.id.livinglabContextDurationEndEditText);
-				durationEndEditText.setText(contextFromServer.getString("context_duration_end"));
+				durationEndEditText.setText(context_duration_end);
 				durationEndEditText.setOnTouchListener(this);
+				
+				if(context_duration_start.trim().equalsIgnoreCase("0 : 0") && context_duration_end.trim().equalsIgnoreCase("23 : 59"))
+					allowAllTimesCheckBox.setChecked(true);
 
 				String days = contextFromServer.getString("context_duration_days");
 				Log.v(TAG, days);
@@ -168,8 +195,9 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 				for(int i=0; i<days_array.length; i++){
 					int day_value = days_array[i];
 					if(day_value == 1){
-						CheckBox dayCheckBox = (CheckBox)findViewById(daysViews[i]);
-						dayCheckBox.setChecked(true);
+						//CheckBox dayCheckBox = (CheckBox)findViewById(daysViews[i]);
+						ToggleButton dayToggleButton = (ToggleButton)findViewById(daysViews[i]);
+						dayToggleButton.setChecked(true);
 					}
 				}
 
@@ -180,7 +208,13 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 					weekendCheckBox.setChecked(true);
 					
 				Button delete = (Button) findViewById(R.id.livinglabContextDeleteButton);
-				delete.setOnClickListener(this);
+				if(!contextFromServer.getString("context_label").equalsIgnoreCase("MIT") && !contextFromServer.getString("context_label").equalsIgnoreCase("Alltime-Everywhere")){
+					delete.setOnClickListener(this);
+				} else {
+					TableRow tempTableRow = (TableRow) findViewById(R.id.livinglabContextTemporalRow5);
+					tempTableRow.setWeightSum(2);
+					delete.setVisibility(View.GONE);
+				}
 
 				context_prefill_success = true;
 			} catch (JSONException e) {
@@ -188,6 +222,8 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 			}
 		} else { //new context!
 			Button delete = (Button) findViewById(R.id.livinglabContextDeleteButton);
+			TableRow tempTableRow = (TableRow) findViewById(R.id.livinglabContextTemporalRow5);
+			tempTableRow.setWeightSum(2);
 			delete.setVisibility(View.GONE);
 		}
 
@@ -209,17 +245,19 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 			durationEndEditText.setOnTouchListener(this);
 			
 		}
-
+		
+		
+		allowAllTimesCheckBox.setOnCheckedChangeListener(this);
 		//weekday/weekend processing
 		weekdayCheckBox.setOnCheckedChangeListener(this);
 		weekendCheckBox.setOnCheckedChangeListener(this);
-		suCheckBox.setOnCheckedChangeListener(this);
-		mCheckBox.setOnCheckedChangeListener(this);
-		tCheckBox.setOnCheckedChangeListener(this);
-		wCheckBox.setOnCheckedChangeListener(this);
-		tCheckBox.setOnCheckedChangeListener(this);
-		fCheckBox.setOnCheckedChangeListener(this);
-		saCheckBox.setOnCheckedChangeListener(this);
+		sundayButton.setOnCheckedChangeListener(this);
+		mondayButton.setOnCheckedChangeListener(this);
+		tuesdayButton.setOnCheckedChangeListener(this);
+		wednesdayButton.setOnCheckedChangeListener(this);
+		thursdayButton.setOnCheckedChangeListener(this);
+		fridayButton.setOnCheckedChangeListener(this);
+		saturdayButton.setOnCheckedChangeListener(this);
 		
 		TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextDurationDayError);
 		durationDaysError.setTextColor(Color.parseColor("#0000FF"));
@@ -228,10 +266,6 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		setLocationButton.setOnClickListener(this);
 		Button finishButton = (Button) findViewById(R.id.livinglabContextFinishTemporalButton);
 		finishButton.setOnClickListener(this);
-
-		TextView locationMessage = (TextView)findViewById(R.id.livinglabContextLocationMessage);
-		locationMessage.setTextColor(Color.parseColor("#0000FF"));
-
 	}
 
 
@@ -408,39 +442,41 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		Log.v(TAG, Integer.toString(buttonView.getId()));
-		CheckBox suCheckBox, mCheckBox, tCheckBox, wCheckBox, rCheckBox, fCheckBox, saCheckBox, weekdayCheckBox, weekendCheckBox;
+		CheckBox weekdayCheckBox, weekendCheckBox;
+		ToggleButton sundayButton, mondayButton, tuesdayButton, wednesdayButton, thursdayButton, fridayButton, saturdayButton;
 		boolean weekdaysChecked, weekendsChecked;
 		switch(buttonView.getId()){
-		case R.id.livinglabContextDurationDayWeekday:
-			mCheckBox = (CheckBox)findViewById(daysViews[1]);
-			tCheckBox = (CheckBox)findViewById(daysViews[2]);
-			wCheckBox = (CheckBox)findViewById(daysViews[3]);
-			rCheckBox = (CheckBox)findViewById(daysViews[4]);
-			fCheckBox = (CheckBox)findViewById(daysViews[5]);
-			weekdaysChecked = mCheckBox.isChecked() && tCheckBox.isChecked() && wCheckBox.isChecked() && rCheckBox.isChecked() && fCheckBox.isChecked();
+		case R.id.livinglabContextDurationDayWeekday:			
+			mondayButton = (ToggleButton)findViewById(daysViews[1]);
+			tuesdayButton = (ToggleButton)findViewById(daysViews[2]);
+			wednesdayButton = (ToggleButton)findViewById(daysViews[3]);
+			thursdayButton = (ToggleButton)findViewById(daysViews[4]);
+			fridayButton = (ToggleButton)findViewById(daysViews[5]);
+			weekdaysChecked = mondayButton.isChecked() && tuesdayButton.isChecked() && wednesdayButton.isChecked() && thursdayButton.isChecked() && fridayButton.isChecked();
 			if(weekdaysChecked != isChecked){
-				mCheckBox.setChecked(isChecked);
-				tCheckBox.setChecked(isChecked);
-				wCheckBox.setChecked(isChecked);
-				rCheckBox.setChecked(isChecked);
-				fCheckBox.setChecked(isChecked);
+				mondayButton.setChecked(isChecked);
+				tuesdayButton.setChecked(isChecked);
+				wednesdayButton.setChecked(isChecked);
+				thursdayButton.setChecked(isChecked);
+				fridayButton.setChecked(isChecked);
 			}
 			break;
 		case R.id.livinglabContextDurationDayWeekend:
-			suCheckBox = (CheckBox)findViewById(daysViews[0]);
-			saCheckBox = (CheckBox)findViewById(daysViews[6]);
-			weekendsChecked = suCheckBox.isChecked() && saCheckBox.isChecked();
-			if(weekendsChecked != isChecked)
-				suCheckBox.setChecked(isChecked);
-				saCheckBox.setChecked(isChecked);		
+			sundayButton = (ToggleButton)findViewById(daysViews[0]);
+			saturdayButton = (ToggleButton)findViewById(daysViews[6]);
+			weekendsChecked = sundayButton.isChecked() && saturdayButton.isChecked();
+			if(weekendsChecked != isChecked){
+				sundayButton.setChecked(isChecked);
+				saturdayButton.setChecked(isChecked);	
+			}
 			break;
 		case R.id.livinglabContextDurationDaySunday:
 		case R.id.livinglabContextDurationDaySaturday:	
-			suCheckBox = (CheckBox)findViewById(daysViews[0]);
-			saCheckBox = (CheckBox)findViewById(daysViews[6]);
+			sundayButton = (ToggleButton)findViewById(daysViews[0]);
+			saturdayButton = (ToggleButton)findViewById(daysViews[6]);
 			weekendCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekend);
 			
-			weekendsChecked = suCheckBox.isChecked() && saCheckBox.isChecked();
+			weekendsChecked = sundayButton.isChecked() && saturdayButton.isChecked();
 			if(weekendsChecked != weekendCheckBox.isChecked())
 				weekendCheckBox.setChecked(!weekendCheckBox.isChecked());
 			break;
@@ -449,19 +485,26 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		case R.id.livinglabContextDurationDayWednesday:
 		case R.id.livinglabContextDurationDayThursday:
 		case R.id.livinglabContextDurationDayFriday:
-			mCheckBox = (CheckBox)findViewById(daysViews[1]);
-			tCheckBox = (CheckBox)findViewById(daysViews[2]);
-			wCheckBox = (CheckBox)findViewById(daysViews[3]);
-			rCheckBox = (CheckBox)findViewById(daysViews[4]);
-			fCheckBox = (CheckBox)findViewById(daysViews[5]);
+			mondayButton = (ToggleButton)findViewById(daysViews[1]);
+			tuesdayButton = (ToggleButton)findViewById(daysViews[2]);
+			wednesdayButton = (ToggleButton)findViewById(daysViews[3]);
+			thursdayButton = (ToggleButton)findViewById(daysViews[4]);
+			fridayButton = (ToggleButton)findViewById(daysViews[5]);			
 			weekdayCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekday);
 		
-			boolean daysChecked = mCheckBox.isChecked() && tCheckBox.isChecked() && wCheckBox.isChecked() && rCheckBox.isChecked() && fCheckBox.isChecked();
+			boolean daysChecked = mondayButton.isChecked() && tuesdayButton.isChecked() && wednesdayButton.isChecked() && thursdayButton.isChecked() && fridayButton.isChecked();
 			if(daysChecked != weekdayCheckBox.isChecked()){
 				weekdayCheckBox.setChecked(!weekdayCheckBox.isChecked());
 				Log.v(TAG, "days checked: " + daysChecked);
 				Log.v(TAG, "weekday checked: " + weekdayCheckBox.isChecked());
 			}
+			break;
+		case R.id.livinglabContextAllowAllTimes:
+			EditText startEditText = (EditText)findViewById(R.id.livinglabContextDurationStartEditText);
+			startEditText.setText("0 : 0");
+			EditText endEditText = (EditText)findViewById(R.id.livinglabContextDurationEndEditText);
+			endEditText.setText("23 : 59");
+			
 			break;
 		}
 		
@@ -505,13 +548,13 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		String durationEnd = durationEndText.getText().toString();
 
 		int[] duration_days_value = new int[7];
-		duration_days_value[0] = ((CheckBox)findViewById(R.id.livinglabContextDurationDaySunday)).isChecked()? 1 : 0;
-		duration_days_value[1] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayMonday)).isChecked()? 1 : 0;
-		duration_days_value[2] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayTuesday)).isChecked()? 1 : 0;
-		duration_days_value[3] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayWednesday)).isChecked()? 1 : 0;
-		duration_days_value[4] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayThursday)).isChecked()? 1 : 0;
-		duration_days_value[5] = ((CheckBox)findViewById(R.id.livinglabContextDurationDayFriday)).isChecked()? 1 : 0;
-		duration_days_value[6] = ((CheckBox)findViewById(R.id.livinglabContextDurationDaySaturday)).isChecked()? 1 : 0;
+		duration_days_value[0] = ((ToggleButton)findViewById(R.id.livinglabContextDurationDaySunday)).isChecked()? 1 : 0;
+		duration_days_value[1] = ((ToggleButton)findViewById(R.id.livinglabContextDurationDayMonday)).isChecked()? 1 : 0;
+		duration_days_value[2] = ((ToggleButton)findViewById(R.id.livinglabContextDurationDayTuesday)).isChecked()? 1 : 0;
+		duration_days_value[3] = ((ToggleButton)findViewById(R.id.livinglabContextDurationDayWednesday)).isChecked()? 1 : 0;
+		duration_days_value[4] = ((ToggleButton)findViewById(R.id.livinglabContextDurationDayThursday)).isChecked()? 1 : 0;
+		duration_days_value[5] = ((ToggleButton)findViewById(R.id.livinglabContextDurationDayFriday)).isChecked()? 1 : 0;
+		duration_days_value[6] = ((ToggleButton)findViewById(R.id.livinglabContextDurationDaySaturday)).isChecked()? 1 : 0;
 
 		for(int i=0; i<duration_days_value.length; i++){
 			if(duration_days_value[i] == 1)
