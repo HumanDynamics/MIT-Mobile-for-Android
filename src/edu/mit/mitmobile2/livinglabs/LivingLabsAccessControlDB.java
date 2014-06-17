@@ -1,6 +1,8 @@
 package edu.mit.mitmobile2.livinglabs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
@@ -15,11 +17,35 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import edu.mit.media.funf.probe.builtin.ActivityProbe;
+import edu.mit.media.funf.probe.builtin.BluetoothProbe;
+import edu.mit.media.funf.probe.builtin.CallLogProbe;
+import edu.mit.media.funf.probe.builtin.HardwareInfoProbe;
+import edu.mit.media.funf.probe.builtin.RunningApplicationsProbe;
+import edu.mit.media.funf.probe.builtin.ScreenProbe;
+import edu.mit.media.funf.probe.builtin.SimpleLocationProbe;
+import edu.mit.media.funf.probe.builtin.SmsProbe;
+import edu.mit.media.funf.probe.builtin.WifiProbe;
 import edu.mit.media.openpds.client.PreferencesWrapper;
 import edu.mit.mitmobile2.objs.LivingLabContextItem;
 import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 
 public class LivingLabsAccessControlDB {
+	
+	public static Map<String, Class> PROBE_MAPPING;
+	
+	static {
+		PROBE_MAPPING = new HashMap<String, Class>();
+		PROBE_MAPPING.put("activity_probe", ActivityProbe.class);
+		PROBE_MAPPING.put("sms_probe", SmsProbe.class);
+		PROBE_MAPPING.put("call_log_probe", CallLogProbe.class);
+		PROBE_MAPPING.put("bluetooth_probe", BluetoothProbe.class);
+		PROBE_MAPPING.put("wifi_probe", WifiProbe.class);
+		PROBE_MAPPING.put("simple_location_probe", SimpleLocationProbe.class);
+		PROBE_MAPPING.put("screen_probe", ScreenProbe.class);
+		PROBE_MAPPING.put("running_applications_probe", RunningApplicationsProbe.class);
+		PROBE_MAPPING.put("hardware_info_probe", HardwareInfoProbe.class);
+	}
 	
 	private static final String TAG = "LivingLabsAccessControlDB";
 	private static final int DATABASE_VERSION = 1;

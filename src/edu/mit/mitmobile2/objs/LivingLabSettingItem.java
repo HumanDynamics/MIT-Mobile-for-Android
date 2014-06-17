@@ -31,7 +31,6 @@ public class LivingLabSettingItem implements Serializable {
 	private HashSet<String> mEnabledProbes;
 
 	private String mSettingsContextLabel;
-	
 	private static Map<String, Class> PROBE_MAPPING;
 	
 	static {

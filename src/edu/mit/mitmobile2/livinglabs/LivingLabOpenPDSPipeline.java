@@ -49,20 +49,15 @@ public class LivingLabOpenPDSPipeline extends OpenPDSPipeline {
 	private HashSet<String> getEnabledProbes() {
 		LivingLabsAccessControlDB livingLabSettingsDB = LivingLabsAccessControlDB.getInstance(manager);
 		HashSet<String> probesToEnable = new HashSet<String>();
-		ArrayList<LivingLabSettingItem> llsiArray;
 		try {
-//			llsiArray = livingLabSettingsDB.retrieveLivingLabSettingItem();
-//			
-//			if (llsiArray != null) {
-//				for (LivingLabSettingItem llsi : llsiArray) {
-//					probesToEnable.addAll(llsi.getEnabledProbes());
-//				}
-//			}
 			JSONObject probesObject = livingLabSettingsDB.retrieveLivingLabProbeItem();
 	        Iterator<String> keys = probesObject.keys();
 
 	        while(keys.hasNext()){
-	            probesToEnable.add(keys.next().toString());
+	        	String probeName = keys.next().toString();
+	        	if (LivingLabsAccessControlDB.PROBE_MAPPING.containsKey(probeName)) {
+	        		probesToEnable.add(LivingLabsAccessControlDB.PROBE_MAPPING.get(probeName).getCanonicalName());
+	        	}
 	        }
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
@@ -76,7 +71,7 @@ public class LivingLabOpenPDSPipeline extends OpenPDSPipeline {
 		ArrayList<JsonElement> filteredData = new ArrayList<JsonElement>();
 		for (JsonElement dataRequest : data) {
 			JsonObject dataRequestJsonObject = dataRequest.getAsJsonObject();
-			if (enabledProbes.contains(dataRequestJsonObject.get("@type"))) {
+			if (enabledProbes.contains(dataRequestJsonObject.get("@type").getAsString())) {
 				filteredData.add(dataRequest);
 			}
 		}
