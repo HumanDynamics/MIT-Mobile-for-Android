@@ -32,6 +32,12 @@ import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 
 public class LivingLabsAccessControlDB {
 	
+	/*
+	 * vs 0: settings, context and syncing with the server
+	 * vs 1: probes table
+	 * 
+	 */
+	
 	public static Map<String, Class> PROBE_MAPPING;
 	
 	static {
@@ -48,7 +54,7 @@ public class LivingLabsAccessControlDB {
 	}
 	
 	private static final String TAG = "LivingLabsAccessControlDB";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "livinglabsaccesscontrol.db";
 	private static final String LIVINGLABS_SETTINGS_TABLE = "livinglabs_settings";
 	private static final String LIVINGLABS_CONTEXT_TABLE = "livinglabs_context";
@@ -547,6 +553,7 @@ public class LivingLabsAccessControlDB {
 			
 			db.execSQL("DROP TABLE IF EXISTS " + LIVINGLABS_SETTINGS_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + LIVINGLABS_CONTEXT_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + LIVINGLABS_PROBES_TABLE);
 			
 			
 			db.execSQL("CREATE TABLE IF NOT EXISTS " + LIVINGLABS_SETTINGS_TABLE + " ("
@@ -590,10 +597,7 @@ public class LivingLabsAccessControlDB {
 					+ SCREEN_PROBE + " INTEGER, "
 					+ RUNNING_APPLICATIONS_PROBE + " INTEGER, "
 					+ HARDWARE_INFO_PROBE + " INTEGER, "
-					+ APP_USAGE_PROBE + " INTEGER "
-					
-					//+ " PRIMARY KEY ("
-					//+ CONTEXT_LABEL + ")"					
+					+ APP_USAGE_PROBE + " INTEGER "				
 					+ ");");
 			
 			db.execSQL("INSERT INTO " + LIVINGLABS_CONTEXT_TABLE + " ("
@@ -606,37 +610,55 @@ public class LivingLabsAccessControlDB {
 					+ "'MIT', '10 : 00', '18 : 00','[0,1,1,1,1,1,0]',''"
 					+ ");");
 			
-			db.execSQL("INSERT INTO " + LIVINGLABS_PROBES_TABLE + " ("
-					+ ACTIVITY_PROBE + ", "
-					+ SMS_PROBE + ", "
-					+ CALL_LOG_PROBE + ", "
-					+ BLUETOOTH_PROBE + ", "
-					+ WIFI_PROBE + ", "
-					+ SIMPLE_LOCATION_PROBE + ", "
-					+ SCREEN_PROBE + ", "
-					+ RUNNING_APPLICATIONS_PROBE + ", "
-					+ HARDWARE_INFO_PROBE + ", "
-					+ APP_USAGE_PROBE
-					+ ") VALUES ("
-					+ "0,0,0,0,0,0,0,0,0,0"
-					+ ");");
-					
-			loadParams = new JSONObject();
-			try {
-				pds = new LivingLabFunfPDS(context);
-				connection = new Connection(context);
-				connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			// no old versions exists
+
+			
+			if(newVersion == 2){
+				db.execSQL("CREATE TABLE IF NOT EXISTS " + LIVINGLABS_PROBES_TABLE + " ("
+						+ ACTIVITY_PROBE + " INTEGER, "
+						+ SMS_PROBE + " INTEGER, "
+						+ CALL_LOG_PROBE + " INTEGER, "
+						+ BLUETOOTH_PROBE + " INTEGER, "
+						+ WIFI_PROBE + " INTEGER, "
+						+ SIMPLE_LOCATION_PROBE + " INTEGER, "
+						+ SCREEN_PROBE + " INTEGER, "
+						+ RUNNING_APPLICATIONS_PROBE + " INTEGER, "
+						+ HARDWARE_INFO_PROBE + " INTEGER, "
+						+ APP_USAGE_PROBE + " INTEGER "				
+						+ ");");
+				
+				db.execSQL("INSERT INTO " + LIVINGLABS_PROBES_TABLE + " ("
+						+ ACTIVITY_PROBE + ", "
+						+ SMS_PROBE + ", "
+						+ CALL_LOG_PROBE + ", "
+						+ BLUETOOTH_PROBE + ", "
+						+ WIFI_PROBE + ", "
+						+ SIMPLE_LOCATION_PROBE + ", "
+						+ SCREEN_PROBE + ", "
+						+ RUNNING_APPLICATIONS_PROBE + ", "
+						+ HARDWARE_INFO_PROBE + ", "
+						+ APP_USAGE_PROBE
+						+ ") VALUES ("
+						+ "0,0,0,0,0,0,0,0,0,0"
+						+ ");");
+						
+				loadParams = new JSONObject();
+				try {
+					pds = new LivingLabFunfPDS(context);
+					connection = new Connection(context);
+					connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
+		
 	}
 	public SQLiteDatabase getWritableDatabase() {
 		// TODO Auto-generated method stub
