@@ -15,18 +15,21 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class LivingLabAppListActivity extends NewModuleActivity {
 	private static final String TAG = "LivingLabAppListActivity";
-	private ListView mLivingLabsListView;
+	private ListView mLivingLabsListView, mLivingLabsGlobalSettingsListView;
 	//private Map<LivingLabItem, Boolean> labFirstVisit = new HashMap<LivingLabItem, Boolean>();
 	SharedPreferences isFirstVisitOfLab;
 	
@@ -56,6 +59,15 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 		mLivingLabsListView = (ListView) findViewById(R.id.livingLabsListView);
 		mLivingLabsListView.setAdapter(new LivingLabArrayAdapter(this, R.layout.living_lab_row, R.id.livingLabRowTitle, labs));	
 		
+		View rootView = mLivingLabsListView.getRootView();
+	    rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
+	    
+	    TextView livinglabHeaderTextView = (TextView) findViewById(R.id.livinglabHeaderTextView);
+	    livinglabHeaderTextView.setText(Html.fromHtml("<h4>Your Living Labs</h4>"));
+	    
+	    TextView livinglabGlobalSettingsTextView = (TextView) findViewById(R.id.livinglabGlobalSettingsTextView);
+	    livinglabGlobalSettingsTextView.setText(Html.fromHtml("<br/><h4>Global Settings</h4>"));
+		
 		mLivingLabsListView.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override
@@ -83,7 +95,27 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 				startActivity(labIntent);
 			}
 		});
+		
+		List<String> global_settings = new ArrayList<String>();
+		global_settings.add("Data Collection");
+		
+		mLivingLabsGlobalSettingsListView = (ListView) findViewById(R.id.livingLabsGlobalSettingsListView);
+		mLivingLabsGlobalSettingsListView.setAdapter(new ArrayAdapter(this, R.layout.living_lab_global_settings_row, R.id.livingLabGlobalSettingsRowTitle, global_settings));	
 
+		mLivingLabsGlobalSettingsListView.setOnItemClickListener(new OnItemClickListener() {
+			
+			@Override
+			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
+				Log.v(TAG, "clicked");
+				String global_setting = listView.getItemAtPosition(position).toString();
+				Log.v(TAG, global_setting);
+				Intent labIntent = null;
+				if(global_setting.equalsIgnoreCase("Data Collection")){
+					labIntent = new Intent(LivingLabAppListActivity.this, LivingLabGlobalSettingsActivity.class);
+					startActivity(labIntent);
+				}
+			}
+		});
 	}
 	
 	@Override

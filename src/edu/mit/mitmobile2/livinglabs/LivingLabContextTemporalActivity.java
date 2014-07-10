@@ -70,6 +70,8 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 	private boolean duration_days_value_flag = false;
 	
 	private LivingLabItem labItem = null;
+	
+	private int textId = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -103,23 +105,25 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		
 		TextView progressText = (TextView) findViewById(R.id.livinglabContextHeaderTextView);
 		if(context_label != null)
-			progressText.setText(Html.fromHtml("<b>Edit the context</b>"));
+			progressText.setText(Html.fromHtml("<h4>" + lab_id + ": Edit Context</h4>"));
 		else{
-			progressText.setText(Html.fromHtml("<b>Define a context</b>"));
+			progressText.setText(Html.fromHtml("<h4>" + lab_id + ": Create Context</h4>"));
 		}
+		progressText.setId(textId);
 		
 		
 		TextView labelText = (TextView) findViewById(R.id.livinglabContextLabelTextView);
-		labelText.setText(Html.fromHtml("Label"));
+		labelText.setText(Html.fromHtml("<b>Label</b>"));
 		
 		TextView durationText = (TextView) findViewById(R.id.livinglabContextDurationTextView);
-		durationText.setText(Html.fromHtml("Limit to a specified time range or allow collection all the time."));
+		//durationText.setText(Html.fromHtml("Limit to a specified time range or allow collection all the time."));
+		durationText.setText(Html.fromHtml("<b>Time Range</b>"));
 		
 		TextView fromText = (TextView) findViewById(R.id.livinglabContextDurationFromTextView);
-		fromText.setText(Html.fromHtml("From"));
+		fromText.setText(Html.fromHtml("<b>From</b>"));
 		
 		TextView toText = (TextView) findViewById(R.id.livinglabContextDurationToTextView);
-		toText.setText(Html.fromHtml("To"));
+		toText.setText(Html.fromHtml("<b>To</b>"));
 		
 		probeSettings = (HashMap<String, Boolean>) getIntent().getSerializableExtra("probeSettings");
 		
@@ -140,6 +144,9 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		}
 		
 		allowAllTimesCheckBox = (CheckBox)findViewById(R.id.livinglabContextAllowAllTimes);
+		
+		TextView daysText = (TextView) findViewById(R.id.livinglabContextDurationDaysTextView);
+		daysText.setText(Html.fromHtml("<b>Days of the Week</b>"));
 		
 		weekdayCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekday);
 		weekendCheckBox = (CheckBox)findViewById(R.id.livinglabContextDurationDayWeekend);
@@ -266,6 +273,10 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		setLocationButton.setOnClickListener(this);
 		Button finishButton = (Button) findViewById(R.id.livinglabContextFinishTemporalButton);
 		finishButton.setOnClickListener(this);
+		
+	    View textIdView = findViewById(textId);
+	    View rootView = textIdView.getRootView();
+	    rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
 	}
 
 
@@ -521,13 +532,15 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 					PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 					String uuid = prefs.getUUID();
 					accesscontrolObject.put("datastore_owner", uuid); 
-					pds.saveAccessControlData(accesscontrolObject);
+//					pds.saveAccessControlData(accesscontrolObject);
+					pds.accessControlData(accesscontrolObject, "store");
 				} else if(deleteFlag){
 					PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 					String uuid = prefs.getUUID();
 					
 					accesscontrolObject.put("datastore_owner", uuid); 
-					pds.deleteAccessControlData(accesscontrolObject);
+//					pds.deleteAccessControlData(accesscontrolObject);
+					pds.accessControlData(accesscontrolObject, "delete");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -583,8 +596,8 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		}
 	}
 	
-	@Override
-	public void onBackPressed() {
-	}
+//	@Override
+//	public void onBackPressed() {
+//	}
 
 }

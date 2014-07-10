@@ -426,7 +426,8 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 	        		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 	        		String uuid = prefs.getUUID();
 	        		loadParams.put("datastore_owner", uuid); 
-	        		JSONObject result = new JSONObject(pds.loadAccessControlData(loadParams));
+//	        		JSONObject result = new JSONObject(pds.loadAccessControlData(loadParams));
+	        		JSONObject result = new JSONObject(pds.accessControlData(loadParams, "load"));
 	        		
 	        		Log.v(TAG, result.toString());
 	        		contextsFromServer = (JSONArray) result.get("contexts");
@@ -438,7 +439,8 @@ public class LivingLabSettingsActivity extends Activity implements OnClickListen
 	        		String uuid = prefs.getUUID();
 	        		llsiJson.put("datastore_owner", uuid); 
 	        		llsiJson.put("context_setting_flag", 1); //1 - setting
-	        		String result = pds.saveAccessControlData(llsiJson);
+//	        		String result = pds.saveAccessControlData(llsiJson);
+	        		String result = pds.accessControlData(llsiJson, "store");
 	        		Log.v(TAG, "data: " + llsiJson.toString());
         		} 
 			} catch (Exception e) {

@@ -444,7 +444,8 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 					llciJson.put("datastore_owner", uuid); 
 					llciJson.put("context_setting_flag", 0); //0 - context
 					
-					String result = pds.saveAccessControlData(llciJson);
+//					String result = pds.saveAccessControlData(llciJson);
+					pds.accessControlData(llciJson, "store");
 				} else if(deleteFlag){
 					PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 	
@@ -452,7 +453,8 @@ public class LivingLabContextActivity extends Activity implements OnClickListene
 					llciJson.put("datastore_owner", uuid); 
 					llciJson.put("context_setting_flag", 0); //0 - context
 					
-					String result = pds.deleteAccessControlData(llciJson);
+//					String result = pds.deleteAccessControlData(llciJson);
+					pds.accessControlData(llciJson, "delete");
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

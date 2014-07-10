@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import edu.mit.media.openpds.client.PreferencesWrapper;
 import edu.mit.mitmobile2.objs.LivingLabItem;
+import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 
 import android.app.Activity;
 import android.content.Context;
@@ -74,6 +75,8 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 	private LivingLabItem labItem = null;
 	
 	private String places = null;
+	
+	private int textId = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,9 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		
 		app_id = "Living Lab";    
 		labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
+		
+		ArrayList<LivingLabVisualizationItem> visualization = labItem.getVisualizations();
+        lab_id = labItem.getName();
 		try {
 			llsiJson = new JSONObject(getIntent().getSerializableExtra("llsiJson").toString());
 			llciJson = new JSONObject(getIntent().getSerializableExtra("llciJson").toString());
@@ -103,13 +109,14 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		setContentView(R.layout.living_lab_context_spatial);
 		
 		TextView labelText = (TextView) findViewById(R.id.livinglabContextHeaderTextView);
-		labelText.setText(Html.fromHtml("<b>Specify Location(s)</b>"));
+		labelText.setText(Html.fromHtml("<h4>" + lab_id + ": Set Location</h4>"));
 		
 		TextView locationMessageText = (TextView) findViewById(R.id.livinglabContextLocationMessage);
-		locationMessageText.setText(Html.fromHtml("To indicate location, tap the map. To delete all circles, " + 
-				"touch and press the map for a few seconds.<br/><br/>" + 
+		locationMessageText.setText(Html.fromHtml("Set a location by tapping the map. " + 
+				"You can set more than one location. To delete all locations, " + 
+				"press and hold the map for a few seconds." + 
 				"Note: For your privacy, labs will <b>not have access</b> to locations you specify here."));
-		
+		locationMessageText.setId(textId);
 		
 		contextsFromServer = getIntent().getStringExtra("contextsFromServer");
 		JSONObject contextFromServer = new JSONObject();
@@ -160,8 +167,12 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 
 		Button finishButton = (Button) findViewById(R.id.livinglabContextFinishSpatialButton);
 		finishButton.setOnClickListener(this);
-		TextView locationMessage = (TextView)findViewById(R.id.livinglabContextLocationMessage);
-		locationMessage.setTextColor(Color.parseColor("#0000FF"));
+//		TextView locationMessage = (TextView)findViewById(R.id.livinglabContextLocationMessage);
+//		locationMessage.setTextColor(Color.parseColor("#0000FF"));
+		
+	    View textIdView = findViewById(textId);
+	    View rootView = textIdView.getRootView();
+	    rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
 	}
 
 
@@ -210,7 +221,8 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 
 					accesscontrolObject.put("datastore_owner", uuid); 
 
-					pds.saveAccessControlData(accesscontrolObject);
+//					pds.saveAccessControlData(accesscontrolObject);
+					pds.accessControlData(accesscontrolObject, "store");
 				} 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -334,8 +346,8 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 	
 	}
 
-	@Override
-	public void onBackPressed() {
-	}
+//	@Override
+//	public void onBackPressed() {
+//	}
 
 }

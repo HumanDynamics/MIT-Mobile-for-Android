@@ -145,20 +145,24 @@ public class LivingLabFunfPDS extends FunfPDS {
 		return pipelines;
 	}
 
-	public String getAccessControlStoreUrl() {
-		return buildAbsoluteApiUrl("/accesscontrol/store/");
-	}
-
-	public String getAccessControlDeleteUrl() {
-		return buildAbsoluteApiUrl("/accesscontrol/delete/");
-	}
+//	public String getAccessControlStoreUrl() {
+//		return buildAbsoluteApiUrl("/accesscontrol/store/");
+//	}
+//
+//	public String getAccessControlDeleteUrl() {
+//		return buildAbsoluteApiUrl("/accesscontrol/delete/");
+//	}
+//	
+//	public String getAccessControlLoadUrl() {
+//		return buildAbsoluteApiUrl("/accesscontrol/load/");
+//	}
+//	
+//	public String getAccessControlGlobalUrl() {
+//		return buildAbsoluteApiUrl("/accesscontrol/global/");
+//	}
 	
-	public String getAccessControlLoadUrl() {
-		return buildAbsoluteApiUrl("/accesscontrol/load/");
-	}
-	
-	public String saveAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
-		HttpPost httppost = new HttpPost(getAccessControlStoreUrl());
+	public String accessControlData(JSONObject object, String function) throws ClientProtocolException, IOException {          
+		HttpPost httppost = new HttpPost(buildAbsoluteApiUrl("/accesscontrol/" + function + "/"));
 
 		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
 		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
@@ -173,36 +177,68 @@ public class LivingLabFunfPDS extends FunfPDS {
 
 	}
 	
-	public String loadAccessControlData(JSONObject object) throws ClientProtocolException, IOException, JSONException { 
-		
-		HttpPost httppost = new HttpPost(getAccessControlLoadUrl());
-
-		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
-		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
-		entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
-		httppost.setEntity(entity); 
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-
-		ResponseHandler<String> responseHandler=new BasicResponseHandler();
-		String response = httpClient.execute(httppost, responseHandler); 
-		
-		return response;
-	}
-	
-	public String deleteAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
-		HttpPost httppost = new HttpPost(getAccessControlDeleteUrl());
-
-		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
-		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
-		entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
-		httppost.setEntity(entity); 
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-
-		ResponseHandler<String> responseHandler=new BasicResponseHandler();
-		String response = httpClient.execute(httppost, responseHandler); 
-
-		return response;
-
-	}
+//	public String saveAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
+//		HttpPost httppost = new HttpPost(getAccessControlStoreUrl());
+//
+//		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
+//		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
+//		entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
+//		httppost.setEntity(entity); 
+//		DefaultHttpClient httpClient = new DefaultHttpClient();
+//
+//		ResponseHandler<String> responseHandler=new BasicResponseHandler();
+//		String response = httpClient.execute(httppost, responseHandler); 
+//
+//		return response;
+//
+//	}
+//	
+//	public String loadAccessControlData(JSONObject object) throws ClientProtocolException, IOException, JSONException { 
+//		
+//		HttpPost httppost = new HttpPost(getAccessControlLoadUrl());
+//
+//		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
+//		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
+//		entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
+//		httppost.setEntity(entity); 
+//		DefaultHttpClient httpClient = new DefaultHttpClient();
+//
+//		ResponseHandler<String> responseHandler=new BasicResponseHandler();
+//		String response = httpClient.execute(httppost, responseHandler); 
+//		
+//		return response;
+//	}
+//	
+//	public String deleteAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
+//		HttpPost httppost = new HttpPost(getAccessControlDeleteUrl());
+//
+//		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
+//		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
+//		entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
+//		httppost.setEntity(entity); 
+//		DefaultHttpClient httpClient = new DefaultHttpClient();
+//
+//		ResponseHandler<String> responseHandler=new BasicResponseHandler();
+//		String response = httpClient.execute(httppost, responseHandler); 
+//
+//		return response;
+//
+//	}
+//	
+//	public String globalAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
+//		HttpPost httppost = new HttpPost(getAccessControlGlobalUrl());
+//
+//		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
+//		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
+//		entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
+//		httppost.setEntity(entity); 
+//		DefaultHttpClient httpClient = new DefaultHttpClient();
+//
+//		ResponseHandler<String> responseHandler=new BasicResponseHandler();
+//		String response = httpClient.execute(httppost, responseHandler); 
+//
+//		return response;
+//
+//	}
 
 }

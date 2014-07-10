@@ -15,12 +15,11 @@
 				android:id="@+id/livinglabContextHeaderTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text=""
-				android:textAppearance="?android:attr/textAppearanceLarge" />
+				android:text=""/>
 
 			<View
 				android:layout_width="1dp"
-				android:layout_height="13dp">
+				android:layout_height="5dp">
 
 			</View>
 			
@@ -28,8 +27,7 @@
 				android:id="@+id/livinglabContextLabelTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text=""
-				android:textAppearance="?android:attr/textAppearanceMedium" />
+				android:text=""/>
 
     
     	<View
@@ -77,8 +75,7 @@
 			android:id="@+id/livinglabContextDurationTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text=""
-			android:textAppearance="?android:attr/textAppearanceMedium" /> 
+			android:text=""/> 
 
 		<LinearLayout 
 			android:layout_width="fill_parent" 
@@ -89,8 +86,7 @@
 				android:id="@+id/livinglabContextDurationFromTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text=""
-				android:textAppearance="?android:attr/textAppearanceMedium" />
+				android:text=""/>
 
 			<EditText
 				android:id="@+id/livinglabContextDurationStartEditText"
@@ -102,8 +98,7 @@
 				android:id="@+id/livinglabContextDurationToTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text=""
-				android:textAppearance="?android:attr/textAppearanceMedium" />
+				android:text=""/>
 
 			<EditText
 				android:id="@+id/livinglabContextDurationEndEditText"
@@ -122,12 +117,18 @@
 			android:id="@+id/livinglabContextAllowAllTimes"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Allow collection at all times" />	
+			android:text="All Day" />	
 			
 		<View
 			android:layout_width="1dp"
 			android:layout_height="15dp">
-		</View>			
+		</View>		
+		
+		<TextView
+				android:id="@+id/livinglabContextDurationDaysTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=""/>	
 	
 		<TableLayout 
 			android:id="@+id/livinglabContextDurationDayLayout"
@@ -251,7 +252,7 @@
 
 				<Button
 					android:id="@+id/livinglabContextSetLocationButton"
-					android:text="Define Location"
+					android:text="Set Location"
 					android:layout_width="0dp"
 					android:layout_height="match_parent"
 					android:layout_weight="1"/>

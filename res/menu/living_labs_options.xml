@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item  
+        android:id="@+id/about_lab"  
+        android:title="About"/>  
+
+    <item  
+        android:id="@+id/settings_lab"  
+        android:title="Settings"/>  
+
+    <item  
+        android:id="@+id/credits_lab"  
+        android:title="Credits"/>   
+</menu>

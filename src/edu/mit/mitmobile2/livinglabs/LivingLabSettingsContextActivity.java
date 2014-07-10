@@ -63,6 +63,7 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	
 	private String context_label = "";
 	
+	private int textId = 0;
 	private int finishButtonId = 1;
 	private int newContextId = 2;
 	
@@ -116,9 +117,10 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText(Html.fromHtml("A <b>context</b> is a set of <i>time</i> and <i>location</i> parameters for which the lab will collect your data. <br/><br/>"+
-        						"Define or pick one for <b>" + lab_id + "</b>"));
+        labText.setText(Html.fromHtml("<h4>" + lab_id + ": Context</h4>"+ "<b>Context</b> is a combination of time span and location. " +
+        "Choose a pre-defined context as-is, edit them, or create your own to specify when, where, and what data <b> " + lab_id + "</b> can use."));
         labText.setTextSize(14);
+        labText.setId(textId);
         ll.addView(labText);
         
         RelativeLayout rl = new RelativeLayout(this);
@@ -209,6 +211,10 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	    ScrollView sv = new ScrollView(this);
 	    sv.addView(ll);
 	    setContentView(sv);
+	    
+	    View textIdView = findViewById(textId);
+	    View rootView = textIdView.getRootView();
+	    rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
     }
 	
 	@Override
@@ -309,7 +315,8 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	        		accesscontrolObject.put("context_object", null); 
 	        		
 	        		//String result = pds.saveAccessControlData(llsiJson);
-	        		pds.saveAccessControlData(accesscontrolObject);
+//	        		pds.saveAccessControlData(accesscontrolObject);
+	        		pds.accessControlData(accesscontrolObject, "store");
 	        		Log.v(TAG, "data: " + llsiJson.toString());
         		} 
 			} catch (Exception e) {
@@ -328,8 +335,8 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 		settings_context_label = ((RadioButton) findViewById(arg1)).getText().toString();
 	}
 	
-	@Override
-	public void onBackPressed() {
-	}
+//	@Override
+//	public void onBackPressed() {
+//	}
 	
 }

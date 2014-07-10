@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -17,11 +18,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class LivingLabArrayAdapter extends ArrayAdapter<LivingLabItem> {
 
+	private static String TAG = "LivingLabArrayAdapter";
 	private LayoutInflater mLayoutInflater;
 	SharedPreferences isFirstVisitOfLab;
 	private Context context;
@@ -59,11 +62,45 @@ public class LivingLabArrayAdapter extends ArrayAdapter<LivingLabItem> {
 				    editor.putBoolean(labItem.getName(), false);
 				    editor.commit();
 					labIntent = new Intent(getContext(), LivingLabsWalkthroughActivity.class);
+					labIntent.putExtra("lab", labItem);
+					getContext().startActivity(labIntent);
 				} else {
-					labIntent = new Intent(getContext(), LivingLabSettingsProbesActivity.class);
+					Log.v(TAG, "going to this settings");
+//					labIntent = new Intent(getContext(), LivingLabSettingsProbesActivity.class);
+					
+					PopupMenu popup = new PopupMenu(getContext(), v);  
+		            popup.getMenuInflater().inflate(R.menu.living_labs_options, popup.getMenu());  
+		            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {  
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							Intent labIntent = null;
+							
+							switch (item.getItemId()) {
+					        case R.id.about_lab:
+					        	labIntent = new Intent(getContext(), LivingLabsAboutActivity.class);
+								labIntent.putExtra("lab", labItem);
+								getContext().startActivity(labIntent);
+					            return true;
+					        case R.id.settings_lab:
+					        	labIntent = new Intent(getContext(), LivingLabSettingsProbesActivity.class);
+								labIntent.putExtra("lab", labItem);
+								getContext().startActivity(labIntent);
+					            return true;
+					        case R.id.credits_lab:
+					        	labIntent = new Intent(getContext(), LivingLabsCreditsActivity.class);
+								labIntent.putExtra("lab", labItem);
+								getContext().startActivity(labIntent);
+					        	return true;
+					        default:
+					            return false;
+					    }
+						}  
+		            });  
+
+		            popup.show();//showing popup menu  
 				}
-				labIntent.putExtra("lab", labItem);
-				getContext().startActivity(labIntent);
+//				labIntent.putExtra("lab", labItem);
+//				getContext().startActivity(labIntent);
 			}
 		});
 		

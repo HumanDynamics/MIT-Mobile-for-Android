@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class LivingLabsWalkthroughActivity extends Activity implements OnClickListener{
+public class LivingLabsCreditsActivity extends Activity implements OnClickListener{
 	private static final String TAG = "WalkthroughActivity";
 	private LivingLabFunfPDS pds;
 	private int textId = 0;
@@ -43,19 +43,21 @@ public class LivingLabsWalkthroughActivity extends Activity implements OnClickLi
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText(Html.fromHtml("<h4>Welcome to " + labItem.getName() + "!</h4>" +  labItem.getName() + 
-        		" is going to collect data from your phone and display visualizations based on the data. <br/><br/>" +
-        		"In this walkthrough, you will be able to specify what data can be collected."));
+//        labText.setText(Html.fromHtml("<h3>Welcome to MIT Living Lab!</h3><br/><br/><b>" + labItem.getName() + "</b>" + 
+//        		" is going to collect data from your phone and display visualizations based on the data. <br/><br/>" +
+//        		"In this walkthrough, you will be able to specify what data can be collected."));
+        
+        labText.setText(Html.fromHtml("<b> " + labItem.getName() + "</b> has been developed by: " + labItem.getCredits()));
         labText.setTextSize(14);
         labText.setId(textId);
         ll.addView(labText);
         
-        Button nextButton = new Button(this);
-	    nextButton.setText( "Next");
-	    nextButton.setId(nextButtonId);
-	    nextButton.setOnClickListener(this);
-	    
-	    ll.addView(nextButton);
+//        Button nextButton = new Button(this);
+//	    nextButton.setText( "Next");
+//	    nextButton.setId(nextButtonId);
+//	    nextButton.setOnClickListener(this);
+//	    
+//	    ll.addView(nextButton);
 	    
         ScrollView sv = new ScrollView(this);
 	    sv.addView(ll);

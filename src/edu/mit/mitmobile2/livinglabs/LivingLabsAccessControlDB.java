@@ -77,7 +77,7 @@ public class LivingLabsAccessControlDB {
 	private static final String SCREEN_PROBE = "screen_probe";
 	private static final String RUNNING_APPLICATIONS_PROBE = "running_applications_probe";
 	private static final String HARDWARE_INFO_PROBE = "hardware_info_probe";
-	private static final String APP_USAGE_PROBE = "app_usage";
+	private static final String APP_USAGE_PROBE = "app_usage_probe";
 	
 	private static final String SETTINGS_CONTEXT_LABEL = "settings_context_label";
 	
@@ -99,7 +99,7 @@ public class LivingLabsAccessControlDB {
 	private static JSONObject loadParams, probesFromServer;
 	private static LivingLabFunfPDS pds;
 	private static Connection connection;
-	private Context context;
+	private static Context context;
 	
 	/********************************************************************/
 	public static LivingLabsAccessControlDB getInstance(Context context) {
@@ -241,26 +241,38 @@ public class LivingLabsAccessControlDB {
 		
 		ContentValues llpiValues = new ContentValues();
 		
-		int activity_probe_value = llpi.getBoolean("activity_probe") ? 1 : 0;
-		llpiValues.put(ACTIVITY_PROBE, activity_probe_value);
-		int sms_probe_value = llpi.getBoolean("sms_probe") ? 1 : 0;
-		llpiValues.put(SMS_PROBE, sms_probe_value);
-		int call_log_probe_value = llpi.getBoolean("call_log_probe") ? 1 : 0;
-		llpiValues.put(CALL_LOG_PROBE, call_log_probe_value);
-		int bluetooth_probe_value = llpi.getBoolean("bluetooth_probe") ? 1 : 0;
-		llpiValues.put(BLUETOOTH_PROBE, bluetooth_probe_value);
-		int wifi_probe_value = llpi.getBoolean("wifi_probe") ? 1 : 0;
-		llpiValues.put(WIFI_PROBE, wifi_probe_value);
-		int simple_location_probe_value = llpi.getBoolean("simple_location_probe") ? 1 : 0;
-		llpiValues.put(SIMPLE_LOCATION_PROBE, simple_location_probe_value);
-		int screen_probe_value = llpi.getBoolean("screen_probe") ? 1 : 0;
-		llpiValues.put(SCREEN_PROBE, screen_probe_value);
-		int running_applications_probe_value = llpi.getBoolean("running_applications_probe") ? 1 : 0;
-		llpiValues.put(RUNNING_APPLICATIONS_PROBE, running_applications_probe_value);
-		int hardware_info_probe_value = llpi.getBoolean("hardware_info_probe") ? 1 : 0;
-		llpiValues.put(HARDWARE_INFO_PROBE, hardware_info_probe_value);
-		int app_usage_probe_value = llpi.getBoolean("app_usage_probe") ? 1 : 0;
-		llpiValues.put(APP_USAGE_PROBE, app_usage_probe_value);
+//		int activity_probe_value = llpi.getBoolean("activity_probe") ? 1 : 0;
+//		llpiValues.put(ACTIVITY_PROBE, activity_probe_value);
+//		int sms_probe_value = llpi.getBoolean("sms_probe") ? 1 : 0;
+//		llpiValues.put(SMS_PROBE, sms_probe_value);
+//		int call_log_probe_value = llpi.getBoolean("call_log_probe") ? 1 : 0;
+//		llpiValues.put(CALL_LOG_PROBE, call_log_probe_value);
+//		int bluetooth_probe_value = llpi.getBoolean("bluetooth_probe") ? 1 : 0;
+//		llpiValues.put(BLUETOOTH_PROBE, bluetooth_probe_value);
+//		int wifi_probe_value = llpi.getBoolean("wifi_probe") ? 1 : 0;
+//		llpiValues.put(WIFI_PROBE, wifi_probe_value);
+//		int simple_location_probe_value = llpi.getBoolean("simple_location_probe") ? 1 : 0;
+//		llpiValues.put(SIMPLE_LOCATION_PROBE, simple_location_probe_value);
+//		int screen_probe_value = llpi.getBoolean("screen_probe") ? 1 : 0;
+//		llpiValues.put(SCREEN_PROBE, screen_probe_value);
+//		int running_applications_probe_value = llpi.getBoolean("running_applications_probe") ? 1 : 0;
+//		llpiValues.put(RUNNING_APPLICATIONS_PROBE, running_applications_probe_value);
+//		int hardware_info_probe_value = llpi.getBoolean("hardware_info_probe") ? 1 : 0;
+//		llpiValues.put(HARDWARE_INFO_PROBE, hardware_info_probe_value);
+//		int app_usage_probe_value = llpi.getBoolean("app_usage_probe") ? 1 : 0;
+//		llpiValues.put(APP_USAGE_PROBE, app_usage_probe_value);
+		
+		String[] probes = {"activity_probe", "sms_probe", "call_log_probe", "bluetooth_probe", "wifi_probe", "simple_location_probe",
+				"screen_probe", "running_applications_probe", "hardware_info_probe", "app_usage_probe"};
+		
+		for(int i=0; i<probes.length; i++){
+			int value = 0;
+			if(llpi.has(probes[i])){
+				if(llpi.getBoolean(probes[i]))
+					value = 1;
+			}
+			llpiValues.put(probes[i], value);
+		}
 		
 		long row_id;
 		int rows;
@@ -587,28 +599,7 @@ public class LivingLabsAccessControlDB {
 					+ CONTEXT_LABEL + ")"					
 				+ ");");
 			
-			db.execSQL("CREATE TABLE IF NOT EXISTS " + LIVINGLABS_PROBES_TABLE + " ("
-					+ ACTIVITY_PROBE + " INTEGER, "
-					+ SMS_PROBE + " INTEGER, "
-					+ CALL_LOG_PROBE + " INTEGER, "
-					+ BLUETOOTH_PROBE + " INTEGER, "
-					+ WIFI_PROBE + " INTEGER, "
-					+ SIMPLE_LOCATION_PROBE + " INTEGER, "
-					+ SCREEN_PROBE + " INTEGER, "
-					+ RUNNING_APPLICATIONS_PROBE + " INTEGER, "
-					+ HARDWARE_INFO_PROBE + " INTEGER, "
-					+ APP_USAGE_PROBE + " INTEGER "				
-					+ ");");
-			
-			db.execSQL("INSERT INTO " + LIVINGLABS_CONTEXT_TABLE + " ("
-					+ CONTEXT_LABEL + ", "
-					+ CONTEXT_DURATION_START + ", "
-					+ CONTEXT_DURATION_END + ", "
-					+ CONTEXT_DURATION_DAYS + ", "
-					+ CONTEXT_PLACES
-					+ ") VALUES ("
-					+ "'MIT', '10 : 00', '18 : 00','[0,1,1,1,1,1,0]',''"
-					+ ");");
+			probesTableHandling(db);
 			
 			
 
@@ -619,43 +610,7 @@ public class LivingLabsAccessControlDB {
 
 			
 			if(newVersion == 2){
-				db.execSQL("CREATE TABLE IF NOT EXISTS " + LIVINGLABS_PROBES_TABLE + " ("
-						+ ACTIVITY_PROBE + " INTEGER, "
-						+ SMS_PROBE + " INTEGER, "
-						+ CALL_LOG_PROBE + " INTEGER, "
-						+ BLUETOOTH_PROBE + " INTEGER, "
-						+ WIFI_PROBE + " INTEGER, "
-						+ SIMPLE_LOCATION_PROBE + " INTEGER, "
-						+ SCREEN_PROBE + " INTEGER, "
-						+ RUNNING_APPLICATIONS_PROBE + " INTEGER, "
-						+ HARDWARE_INFO_PROBE + " INTEGER, "
-						+ APP_USAGE_PROBE + " INTEGER "				
-						+ ");");
-				
-				db.execSQL("INSERT INTO " + LIVINGLABS_PROBES_TABLE + " ("
-						+ ACTIVITY_PROBE + ", "
-						+ SMS_PROBE + ", "
-						+ CALL_LOG_PROBE + ", "
-						+ BLUETOOTH_PROBE + ", "
-						+ WIFI_PROBE + ", "
-						+ SIMPLE_LOCATION_PROBE + ", "
-						+ SCREEN_PROBE + ", "
-						+ RUNNING_APPLICATIONS_PROBE + ", "
-						+ HARDWARE_INFO_PROBE + ", "
-						+ APP_USAGE_PROBE
-						+ ") VALUES ("
-						+ "0,0,0,0,0,0,0,0,0,0"
-						+ ");");
-						
-				loadParams = new JSONObject();
-				try {
-					pds = new LivingLabFunfPDS(context);
-					connection = new Connection(context);
-					connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				probesTableHandling(db);
 			}
 		}
 		
@@ -664,7 +619,45 @@ public class LivingLabsAccessControlDB {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+	private static void probesTableHandling(SQLiteDatabase db){
+		db.execSQL("CREATE TABLE IF NOT EXISTS " + LIVINGLABS_PROBES_TABLE + " ("
+				+ ACTIVITY_PROBE + " INTEGER, "
+				+ SMS_PROBE + " INTEGER, "
+				+ CALL_LOG_PROBE + " INTEGER, "
+				+ BLUETOOTH_PROBE + " INTEGER, "
+				+ WIFI_PROBE + " INTEGER, "
+				+ SIMPLE_LOCATION_PROBE + " INTEGER, "
+				+ SCREEN_PROBE + " INTEGER, "
+				+ RUNNING_APPLICATIONS_PROBE + " INTEGER, "
+				+ HARDWARE_INFO_PROBE + " INTEGER, "
+				+ APP_USAGE_PROBE + " INTEGER "				
+				+ ");");
+		
+		db.execSQL("INSERT INTO " + LIVINGLABS_PROBES_TABLE + " ("
+				+ ACTIVITY_PROBE + ", "
+				+ SMS_PROBE + ", "
+				+ CALL_LOG_PROBE + ", "
+				+ BLUETOOTH_PROBE + ", "
+				+ WIFI_PROBE + ", "
+				+ SIMPLE_LOCATION_PROBE + ", "
+				+ SCREEN_PROBE + ", "
+				+ RUNNING_APPLICATIONS_PROBE + ", "
+				+ HARDWARE_INFO_PROBE + ", "
+				+ APP_USAGE_PROBE
+				+ ") VALUES ("
+				+ "0,0,0,0,0,0,0,0,0,0"
+				+ ");");
+				
+		loadParams = new JSONObject();
+		try {
+			pds = new LivingLabFunfPDS(context);
+			connection = new Connection(context);
+			connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	private static class Connection extends AsyncTask<JSONObject, Object, Object> {
 		 
 		private Context mContext;
@@ -677,7 +670,8 @@ public class LivingLabsAccessControlDB {
 	    		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 	    		String uuid = prefs.getUUID();
 	    		loadParams.put("datastore_owner", uuid); 
-	    		JSONObject result = new JSONObject(pds.loadAccessControlData(loadParams));
+//	    		JSONObject result = new JSONObject(pds.loadAccessControlData(loadParams));
+	    		JSONObject result = new JSONObject(pds.accessControlData(loadParams, "load"));
 	    		
 	    		Log.v(TAG, result.toString());
 	    		probesFromServer = (JSONObject) result.getJSONObject("probes");
