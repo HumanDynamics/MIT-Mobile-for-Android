@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -62,28 +62,18 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
 				LivingLabItem labItem = (LivingLabItem) listView.getItemAtPosition(position);
 				Intent labIntent = null;
-				boolean firstVisitOfLabFlag = isFirstVisitOfLab.getBoolean(labItem.getName(), true);
-				
-				if(firstVisitOfLabFlag){
-					SharedPreferences.Editor editor = isFirstVisitOfLab.edit();
-				    editor.putBoolean(labItem.getName(), false);
-				    editor.commit();
-				    
-				    labIntent = new Intent(LivingLabAppListActivity.this, LivingLabsWalkthroughActivity.class);
+
+				if(labItem.getName().equalsIgnoreCase("settings")){
+					labItem = (LivingLabItem) listView.getItemAtPosition(0);
+					labIntent = new Intent(LivingLabAppListActivity.this, LivingLabSettingsProbesActivity.class);
 				} else {
-					if(labItem.getName().equalsIgnoreCase("settings")){
-						labItem = (LivingLabItem) listView.getItemAtPosition(0);
-						labIntent = new Intent(LivingLabAppListActivity.this, LivingLabSettingsProbesActivity.class);
-					} else {
-						labIntent = new Intent(LivingLabAppListActivity.this, LivingLabActivity.class);
-					}
+					labIntent = new Intent(LivingLabAppListActivity.this, LivingLabActivity.class);
 				}
-				
+
 				labIntent.putExtra("lab", labItem);
 				startActivity(labIntent);
 			}
 		});
-
 	}
 	
 	@Override

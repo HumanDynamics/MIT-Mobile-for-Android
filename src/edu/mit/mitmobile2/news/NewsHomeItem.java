@@ -14,7 +14,7 @@ import android.widget.ImageView.ScaleType;
 import edu.mit.mitmobile2.AttributesParser;
 import edu.mit.mitmobile2.LoadingUIHelper;
 import edu.mit.mitmobile2.LockingScrollView;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.SliderInterface;
 import edu.mit.mitmobile2.objs.NewsItem;
 

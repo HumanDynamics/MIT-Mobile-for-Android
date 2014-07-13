@@ -8,6 +8,7 @@ import edu.mit.media.openpds.client.UserInfoTask;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.NewModuleFragmentActivity;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import android.support.v4.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;

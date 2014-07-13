@@ -27,7 +27,7 @@ import edu.mit.mitmobile2.LockingScrollView;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.SimpleSpinnerAdapter;
 import edu.mit.mitmobile2.TwoLineActionRow;
 import edu.mit.mitmobile2.libraries.LibraryModel.FormResult;

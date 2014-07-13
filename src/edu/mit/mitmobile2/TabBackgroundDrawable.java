@@ -12,7 +12,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 public class TabBackgroundDrawable extends StateListDrawable {
 

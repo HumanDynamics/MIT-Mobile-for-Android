@@ -49,7 +49,7 @@ import edu.mit.mitmobile2.MITPlainSecondaryTitleBar;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.OnMITMenuItemListener;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.RemoteImageView;
 import edu.mit.mitmobile2.SliderInterface;
 import edu.mit.mitmobile2.SliderListNewModuleActivity;

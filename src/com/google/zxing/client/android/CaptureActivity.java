@@ -19,7 +19,7 @@ package com.google.zxing.client.android;
 import edu.mit.mitmobile2.MITTitleBar;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.qrreader.QRReaderModule;
 
 import java.io.ByteArrayOutputStream;
@@ -73,7 +73,7 @@ import com.google.zxing.client.android.result.ResultHandlerFactory;
 
 import edu.mit.mitmobile2.Module;
 import edu.mit.mitmobile2.ModuleActivity;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.qrreader.QRReaderHelpActivity;
 import edu.mit.mitmobile2.qrreader.QRReaderHistoryActivity;
 import edu.mit.mitmobile2.qrreader.QRReaderModule;

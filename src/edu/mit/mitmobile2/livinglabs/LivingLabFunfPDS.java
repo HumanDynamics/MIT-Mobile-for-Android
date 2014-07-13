@@ -31,6 +31,7 @@ import edu.mit.media.funf.pipeline.Pipeline;
 import edu.mit.media.funf.util.LogUtil;
 import edu.mit.media.openpds.client.funf.FunfPDS;
 import edu.mit.media.openpds.client.funf.OpenPDSPipeline;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 
 public class LivingLabFunfPDS extends FunfPDS {

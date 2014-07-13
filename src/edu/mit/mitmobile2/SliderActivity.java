@@ -17,7 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 abstract public class SliderActivity extends ModuleActivity {
 	public static final String KEY_POSITION = "start_position";

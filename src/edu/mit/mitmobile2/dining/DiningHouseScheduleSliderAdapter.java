@@ -20,7 +20,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import edu.mit.mitmobile2.DividerView;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.dining.DiningMealIterator.MealOrEmptyDay;
 import edu.mit.mitmobile2.dining.DiningModel.DiningDietaryFlag;
 import edu.mit.mitmobile2.dining.DiningModel.HouseDiningHall;

@@ -16,7 +16,7 @@ import android.widget.ListView;
 import edu.mit.mitmobile2.LockingScrollView;
 import edu.mit.mitmobile2.MITMenuItem;
 import edu.mit.mitmobile2.NewModule;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.SimpleArrayAdapter;
 import edu.mit.mitmobile2.SliderInterface;
 import edu.mit.mitmobile2.SliderListNewModuleActivity;

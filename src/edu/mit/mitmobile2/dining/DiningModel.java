@@ -40,7 +40,7 @@ import android.widget.TextView;
 import edu.mit.mitmobile2.AttributesParser;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.NaturalSort;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.objs.MapItem;
 import edu.mit.mitmobile2.objs.MapPoint;
 

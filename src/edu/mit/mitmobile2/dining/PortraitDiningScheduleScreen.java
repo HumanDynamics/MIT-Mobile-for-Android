@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import edu.mit.mitmobile2.DividerView;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.SliderView;
 import edu.mit.mitmobile2.SliderView.Adapter;
 import edu.mit.mitmobile2.SliderView.OnSeekListener;

@@ -44,7 +44,7 @@ import com.esri.core.symbol.SimpleLineSymbol;
 
 import edu.mit.mitmobile2.AttributesParser;
 import edu.mit.mitmobile2.MobileWebApi;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.objs.MapItem;
 import edu.mit.mitmobile2.objs.MapPoint;
 

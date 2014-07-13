@@ -3,7 +3,7 @@ package edu.mit.mitmobile2.tour;
 import android.content.Context;
 import android.util.AttributeSet;
 import edu.mit.mitmobile2.ActionRow;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 public class TourStartHelpActionRow extends ActionRow {
 

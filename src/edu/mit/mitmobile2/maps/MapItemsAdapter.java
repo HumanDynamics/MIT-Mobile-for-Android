@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.SimpleArrayAdapter;
 import edu.mit.mitmobile2.TwoLineActionRow;
 import edu.mit.mitmobile2.objs.MapItem;

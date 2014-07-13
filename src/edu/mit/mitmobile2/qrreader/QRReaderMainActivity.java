@@ -14,7 +14,7 @@ import android.widget.ListView;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.FullScreenLoader;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 
 public class QRReaderMainActivity extends NewModuleActivity {

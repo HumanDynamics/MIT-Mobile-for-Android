@@ -30,7 +30,7 @@ import android.widget.LinearLayout.LayoutParams;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.MobileWebApi.JSONObjectResponseListener;
 import edu.mit.mitmobile2.MobileWebApi.ServerResponseException;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.StyledContentHTML;
 import edu.mit.mitmobile2.about.Config;
 

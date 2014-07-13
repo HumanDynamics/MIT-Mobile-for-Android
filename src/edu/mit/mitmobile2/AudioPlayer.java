@@ -24,7 +24,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import edu.mit.mitmobile2.about.Config;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.tour.Tour.TourItem;
 
 public class AudioPlayer implements OnCompletionListener, OnErrorListener {

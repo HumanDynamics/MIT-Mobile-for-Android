@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.widget.ArrayAdapter;
 import edu.mit.mitmobile2.NewModule;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.SearchActivity;
 import edu.mit.mitmobile2.objs.PersonItem;
 import edu.mit.mitmobile2.objs.PersonItem.PersonDetailViewMode;

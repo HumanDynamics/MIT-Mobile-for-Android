@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import edu.mit.mitmobile2.Module;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 public class MIT150Module extends Module {
 

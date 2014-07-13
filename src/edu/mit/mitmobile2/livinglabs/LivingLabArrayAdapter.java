@@ -3,6 +3,7 @@ package edu.mit.mitmobile2.livinglabs;
 import java.util.List;
 
 import edu.mit.mitmobile2.TwoLineActionRow;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import android.content.Context;
 import android.content.Intent;
@@ -67,7 +68,7 @@ public class LivingLabArrayAdapter extends ArrayAdapter<LivingLabItem> {
 			}
 		});
 		
-		//settingsButton.setVisibility(View.GONE);
+		settingsButton.setVisibility(View.GONE);
 		
 		return convertView;
 	}

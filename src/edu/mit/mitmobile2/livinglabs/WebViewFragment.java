@@ -1,6 +1,6 @@
 package edu.mit.mitmobile2.livinglabs;
 
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

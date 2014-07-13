@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import edu.mit.mitmobile2.MITTitleBar.OnMITTitleBarListener;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 public abstract class NewModuleActivity extends Activity {
 

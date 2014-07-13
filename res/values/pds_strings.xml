@@ -25,6 +25,12 @@
     <string name="living_labs_application_list">
 		"[
 			{
+				'name': 'GFSA', 
+				'visualizations': [
+					{ 'title': 'GFSA Main', 'key': 'gfsa', 'answers': [] }
+				]
+			},
+			{
 				'name': 'Social Health Tracker', 
 				'visualizations' : [ 
 					{'title': 'My Social Health', 'key': 'socialHealthRadial', 'answers': ['socialhealth'] },
@@ -70,8 +76,8 @@
 		]"
     </string>
     <string name="main_pipeline_config">        {
-			<!-- "@type": "edu.mit.media.openpds.client.funf.OpenPDSPipeline", -->
-			"@type": "edu.mit.mitmobile2.livinglabs.LivingLabOpenPDSPipeline", 
+			"@type": "edu.mit.media.openpds.client.funf.OpenPDSPipeline", 
+			<!-- "@type": "edu.mit.mitmobile2.livinglabs.LivingLabOpenPDSPipeline", --> 
 			"schedules": {
 				"archive": {
 					"strict": false,

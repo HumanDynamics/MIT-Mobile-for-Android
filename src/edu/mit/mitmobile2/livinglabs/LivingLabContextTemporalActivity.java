@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.mit.media.openpds.client.PreferencesWrapper;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 

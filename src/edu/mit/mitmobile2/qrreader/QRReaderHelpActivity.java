@@ -6,7 +6,7 @@ import android.view.Menu;
 import android.view.View;
 import edu.mit.mitmobile2.Module;
 import edu.mit.mitmobile2.ModuleActivity;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 public class QRReaderHelpActivity  extends ModuleActivity{
 

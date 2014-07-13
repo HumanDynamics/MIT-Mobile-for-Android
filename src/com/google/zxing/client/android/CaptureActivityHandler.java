@@ -16,7 +16,7 @@
 
 package com.google.zxing.client.android;
 
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;

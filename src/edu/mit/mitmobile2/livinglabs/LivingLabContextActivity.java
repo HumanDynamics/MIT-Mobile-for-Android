@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import edu.mit.media.openpds.client.PreferencesWrapper;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 
 import android.app.Activity;

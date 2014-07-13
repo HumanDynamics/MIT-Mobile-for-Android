@@ -6,7 +6,7 @@ import org.json.JSONException;
 import edu.mit.media.openpds.client.PersonalDataStore;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleFragmentActivity;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 import edu.mit.mitmobile2.touchstone.TouchstonePrefsActivity;

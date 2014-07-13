@@ -16,7 +16,7 @@ import edu.mit.mitmobile2.MITPlainSecondaryTitleBar;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.OnMITMenuItemListener;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.SliderNewModuleActivity;
 import edu.mit.mitmobile2.SliderView;
 import edu.mit.mitmobile2.news.NewsSliderCursorAdapter.OnLoadingScreenListener;

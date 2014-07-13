@@ -15,7 +15,7 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 
 import edu.mit.mitmobile2.alerts.NotificationsAlarmReceiver;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 public class SettingsActivity extends Activity {
 

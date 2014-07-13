@@ -30,7 +30,7 @@ import edu.mit.mitmobile2.MITMenuItem;
 import edu.mit.mitmobile2.MobileWebApi;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.TwoLineActionRow;
 import edu.mit.mitmobile2.objs.RouteItem;
 import edu.mit.mitmobile2.shuttles.ShuttleRouteArrayAdapter.SectionListItemView;

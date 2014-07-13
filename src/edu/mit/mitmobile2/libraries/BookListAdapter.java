@@ -5,7 +5,7 @@ import java.util.List;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.SimpleArrayAdapter;
 
 public class BookListAdapter extends SimpleArrayAdapter<BookItem> {

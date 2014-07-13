@@ -2,7 +2,7 @@ package edu.mit.mitmobile2.tour;
 
 import java.util.ArrayList;
 
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 import android.content.ContentResolver;
 import android.content.Context;

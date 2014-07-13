@@ -1,7 +1,7 @@
 package edu.mit.mitmobile2.tour;
 
 import edu.mit.mitmobile2.AttributesParser;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 
 import android.content.Context;
 import android.widget.ImageView;

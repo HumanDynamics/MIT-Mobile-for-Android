@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.webkit.WebView;
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
-import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.livinglabs.gfsa.R;
 import edu.mit.mitmobile2.StyledContentHTML;
 
 public class SimpleSingleWebViewActivity extends NewModuleActivity {
