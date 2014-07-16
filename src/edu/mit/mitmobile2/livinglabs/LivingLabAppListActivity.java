@@ -2,15 +2,24 @@ package edu.mit.mitmobile2.livinglabs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.livinglabs.R;
+import edu.mit.mitmobile2.objs.LivingLabDataItem;
 import edu.mit.mitmobile2.objs.LivingLabItem;
+import edu.mit.mitmobile2.objs.LivingLabSettingItem;
+import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.content.Intent;
@@ -50,7 +59,6 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 			Log.e("LivingLabAppListActivity", "Error Constructing Labs List", e);
 			return;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -96,6 +104,12 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 			}
 		});
 		
+		try {
+			unionProbesFromLabs(labs);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
 		List<String> global_settings = new ArrayList<String>();
 		global_settings.add("Data Collection");
 		
@@ -106,9 +120,7 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 			
 			@Override
 			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
-				Log.v(TAG, "clicked");
 				String global_setting = listView.getItemAtPosition(position).toString();
-				Log.v(TAG, global_setting);
 				Intent labIntent = null;
 				if(global_setting.equalsIgnoreCase("Data Collection")){
 					labIntent = new Intent(LivingLabAppListActivity.this, LivingLabGlobalSettingsActivity.class);
@@ -125,7 +137,6 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 	
 	@Override
 	protected NewModule getNewModule() {
-		// TODO Auto-generated method stub
 		return new LivingLabsModule();
 	}
 	@Override
@@ -134,8 +145,6 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 	}
 	@Override
 	protected void onOptionSelected(String optionId) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override
@@ -147,5 +156,67 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 	public void livingLabSettings(){
 		Log.v(TAG, "LivingLabSettings");
 	}
+	
+	private void unionProbesFromLabs(List<LivingLabItem> labs) throws JSONException{
+		Map<String, Set<String>> purposes = new HashMap<String, Set<String>>();
+		Set<String> allProbesSet = new HashSet<String>();
+		for(LivingLabItem labItem : labs){
+	        ArrayList<LivingLabVisualizationItem> visualization = labItem.getVisualizations();
+	        
+	        for(int i=0; i<visualization.size(); i++){
+	        	LivingLabVisualizationItem visualizationItem = visualization.get(i);
+	        	
+	        	try {
+					Set<LivingLabDataItem> probeSet = visualizationItem.getData();
+					for(LivingLabDataItem probe : probeSet){
+						String tempData = probe.getKey();
+						
+						Set<String> existingPurposes = purposes.get(tempData);
+						String tempDataString = tempDataToString(tempData);
+						if(existingPurposes == null){
+							Set<String> tempPurposes = new HashSet<String>();
+							tempPurposes.addAll(probe.getPurposes());
+							purposes.put(tempDataString, tempPurposes);
+						} else{
+							Set<String> tempPurposes = existingPurposes;
+							tempPurposes.addAll(probe.getPurposes());
+							purposes.put(tempDataString, tempPurposes);
+						}
+						
+	
+						if(tempData.contains("Probe")){					
+							allProbesSet.add(tempDataString);
+						}		
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+	        }
+		}
+		
+		JSONObject llsiObject = new JSONObject();
+		
+		llsiObject.put("app_id", "Living Lab");
+		llsiObject.put("lab_id", "all");
+		for(String probe: allProbesSet){
+			llsiObject.put(probe, 1);
+		}
+		
+		LivingLabSettingItem llsi = new LivingLabSettingItem(llsiObject);
+		
+		LivingLabsAccessControlDB mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
+		mLivingLabAccessControlDB.saveLivingLabSettingItem(llsi);
+	}
+	
+	private String tempDataToString(String tempData){
+		StringTokenizer tempDataTokenizer = new StringTokenizer(tempData, " ");
+		StringBuilder tempDataBuilder = new StringBuilder();
+		while(tempDataTokenizer.hasMoreTokens()){
+			tempDataBuilder.append(tempDataTokenizer.nextToken().toLowerCase() + "_");
+		}
+		String tempDataString = tempDataBuilder.toString().substring(0, tempDataBuilder.toString().length() - 1);
+		return tempDataString;
+	}
+		
 
 }

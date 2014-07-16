@@ -63,11 +63,7 @@ public class LivingLabsAccessControlDB {
 	// settings table field names
 	private static final String APP_ID = "app_id";
 	private static final String LAB_ID = "lab_id";
-	//private static final String SERVICE_ID = "service_id";
 
-	
-	//private static final String ENABLED = "enabled";
-	
 	private static final String ACTIVITY_PROBE = "activity_probe";
 	private static final String SMS_PROBE = "sms_probe";
 	private static final String CALL_LOG_PROBE = "call_log_probe";
@@ -120,7 +116,7 @@ public class LivingLabsAccessControlDB {
 		this.context = context;
 	}
 	
-	private String[] whereArgsSettings(LivingLabSettingItem llsItem) {
+	private static String[] whereArgsSettings(LivingLabSettingItem llsItem) {
 		String app_id = (String) llsItem.getAppId();
 		String lab_id = (String) llsItem.getLabId();
 		String[] args = new String[2];
@@ -169,7 +165,7 @@ public class LivingLabsAccessControlDB {
 		mLLSettingsDBHelper.getWritableDatabase().endTransaction();
 	}
 	/********************************************************************/
-	synchronized void saveLivingLabSettingItem(LivingLabSettingItem llsi) {
+	synchronized static void saveLivingLabSettingItem(LivingLabSettingItem llsi) {
 		
 		SQLiteDatabase db = mLLSettingsDBHelper.getWritableDatabase();
 		
@@ -235,44 +231,59 @@ public class LivingLabsAccessControlDB {
 		
 	}	
 	
-	synchronized static void saveLivingLabProbeItem(JSONObject llpi) throws JSONException {
-		
-		SQLiteDatabase db = mLLSettingsDBHelper.getWritableDatabase();
+	synchronized static JSONObject saveLivingLabProbeItem(String global_type) throws JSONException {
 		
 		ContentValues llpiValues = new ContentValues();
-		
-//		int activity_probe_value = llpi.getBoolean("activity_probe") ? 1 : 0;
-//		llpiValues.put(ACTIVITY_PROBE, activity_probe_value);
-//		int sms_probe_value = llpi.getBoolean("sms_probe") ? 1 : 0;
-//		llpiValues.put(SMS_PROBE, sms_probe_value);
-//		int call_log_probe_value = llpi.getBoolean("call_log_probe") ? 1 : 0;
-//		llpiValues.put(CALL_LOG_PROBE, call_log_probe_value);
-//		int bluetooth_probe_value = llpi.getBoolean("bluetooth_probe") ? 1 : 0;
-//		llpiValues.put(BLUETOOTH_PROBE, bluetooth_probe_value);
-//		int wifi_probe_value = llpi.getBoolean("wifi_probe") ? 1 : 0;
-//		llpiValues.put(WIFI_PROBE, wifi_probe_value);
-//		int simple_location_probe_value = llpi.getBoolean("simple_location_probe") ? 1 : 0;
-//		llpiValues.put(SIMPLE_LOCATION_PROBE, simple_location_probe_value);
-//		int screen_probe_value = llpi.getBoolean("screen_probe") ? 1 : 0;
-//		llpiValues.put(SCREEN_PROBE, screen_probe_value);
-//		int running_applications_probe_value = llpi.getBoolean("running_applications_probe") ? 1 : 0;
-//		llpiValues.put(RUNNING_APPLICATIONS_PROBE, running_applications_probe_value);
-//		int hardware_info_probe_value = llpi.getBoolean("hardware_info_probe") ? 1 : 0;
-//		llpiValues.put(HARDWARE_INFO_PROBE, hardware_info_probe_value);
-//		int app_usage_probe_value = llpi.getBoolean("app_usage_probe") ? 1 : 0;
-//		llpiValues.put(APP_USAGE_PROBE, app_usage_probe_value);
+		JSONObject llpiValuesReturn = new JSONObject();
 		
 		String[] probes = {"activity_probe", "sms_probe", "call_log_probe", "bluetooth_probe", "wifi_probe", "simple_location_probe",
 				"screen_probe", "running_applications_probe", "hardware_info_probe", "app_usage_probe"};
-		
-		for(int i=0; i<probes.length; i++){
-			int value = 0;
-			if(llpi.has(probes[i])){
-				if(llpi.getBoolean(probes[i]))
-					value = 1;
+		if(global_type == null){
+			ArrayList<String> searchDataInput = new ArrayList<String>();
+			searchDataInput.add("Living Lab");
+			searchDataInput.add("all");
+			
+			LivingLabSettingItem llsi = retrieveLivingLabSettingItem(searchDataInput);
+			
+			llpiValues.put(probes[0], llsi.getActivityProbe());
+			llpiValues.put(probes[1], llsi.getSMSProbe());
+			llpiValues.put(probes[2], llsi.getCallLogProbe());
+			llpiValues.put(probes[3], llsi.getBluetoothProbe());
+			llpiValues.put(probes[4], llsi.getWifiProbe());
+			llpiValues.put(probes[5], llsi.getSimpleLocationProbe());
+			llpiValues.put(probes[6], llsi.getScreenProbe());
+			llpiValues.put(probes[7], llsi.getRunningApplicationsProbe());
+			llpiValues.put(probes[8], llsi.getHardwareInfoProbe());
+			llpiValues.put(probes[9], llsi.getAppUsageProbe());
+			
+			
+			llpiValuesReturn.put(probes[0], llsi.getActivityProbe());
+			llpiValuesReturn.put(probes[1], llsi.getSMSProbe());
+			llpiValuesReturn.put(probes[2], llsi.getCallLogProbe());
+			llpiValuesReturn.put(probes[3], llsi.getBluetoothProbe());
+			llpiValuesReturn.put(probes[4], llsi.getWifiProbe());
+			llpiValuesReturn.put(probes[5], llsi.getSimpleLocationProbe());
+			llpiValuesReturn.put(probes[6], llsi.getScreenProbe());
+			llpiValuesReturn.put(probes[7], llsi.getRunningApplicationsProbe());
+			llpiValuesReturn.put(probes[8], llsi.getHardwareInfoProbe());
+			llpiValuesReturn.put(probes[9], llsi.getAppUsageProbe());			
+			
+		} else if(Boolean.valueOf(global_type)){
+			for(int i=0; i<probes.length; i++){
+				llpiValues.put(probes[i], 1);
+				
+				llpiValuesReturn.put(probes[i], 1);
 			}
-			llpiValues.put(probes[i], value);
+		} else if(!Boolean.valueOf(global_type)){
+			for(int i=0; i<probes.length; i++){
+				llpiValues.put(probes[i], 0);
+				
+				llpiValuesReturn.put(probes[i], 0);
+			}
 		}
+		
+		SQLiteDatabase db = mLLSettingsDBHelper.getWritableDatabase();
+
 		
 		long row_id;
 		int rows;
@@ -282,7 +293,41 @@ public class LivingLabsAccessControlDB {
 		db.close();
 		mLLSettingsDBHelper.close();
 		
+		
+		
+		return llpiValuesReturn;
+		
 	}	
+	
+	synchronized static void loadLivingLabProbeItem(JSONObject llpi) throws JSONException {
+
+		SQLiteDatabase db = mLLSettingsDBHelper.getWritableDatabase();
+
+		ContentValues llpiValues = new ContentValues();
+
+
+		String[] probes = {"activity_probe", "sms_probe", "call_log_probe", "bluetooth_probe", "wifi_probe", "simple_location_probe",
+				"screen_probe", "running_applications_probe", "hardware_info_probe", "app_usage_probe"};
+
+		for(int i=0; i<probes.length; i++){
+			int value = 0;
+			if(llpi.has(probes[i])){
+				if(llpi.getBoolean(probes[i]))
+					value = 1;
+			}
+			llpiValues.put(probes[i], value);
+		}
+
+		long row_id;
+		int rows;
+		row_id = db.insert(LIVINGLABS_PROBES_TABLE, null, llpiValues);
+		//llpi.sql_id = row_id;
+		rows = db.update(LIVINGLABS_PROBES_TABLE, llpiValues, null, null);
+		db.close();
+		mLLSettingsDBHelper.close();
+
+	}
+		
 	/********************************************************************/
 	public Cursor getMapsCursorSettings(ArrayList<String> searchDataInput) {
 		return getMapsCursorSettings(searchDataInput, null);
@@ -436,7 +481,7 @@ public class LivingLabsAccessControlDB {
 		return llciArray;
 	}
 	
-	public JSONObject retrieveLivingLabProbeItem() throws JSONException {
+	public static JSONObject retrieveLivingLabProbeItem() throws JSONException {
 		SQLiteDatabase db = mLLSettingsDBHelper.getReadableDatabase();
 	
 		Cursor cursor = db.query(LIVINGLABS_PROBES_TABLE, null, null, null, null, null, null);
@@ -455,7 +500,7 @@ public class LivingLabsAccessControlDB {
 		return llpObject;
 	}
 	
-	public LivingLabSettingItem retrieveLivingLabSettingItem(ArrayList<String> searchDataInput) throws JSONException {
+	public static LivingLabSettingItem retrieveLivingLabSettingItem(ArrayList<String> searchDataInput) throws JSONException {
 		SQLiteDatabase db = mLLSettingsDBHelper.getReadableDatabase();
 		
 		String[] searchData = searchDataInput.toArray(new String[searchDataInput.size()]);
@@ -494,7 +539,7 @@ public class LivingLabsAccessControlDB {
 	}
 	
 	/********************************************************************/
-	public boolean llsiExists(ArrayList<String> searchDataInput) {
+	public static boolean llsiExists(ArrayList<String> searchDataInput) {
 		
 		SQLiteDatabase db = mLLSettingsDBHelper.getReadableDatabase();
 		
@@ -616,7 +661,6 @@ public class LivingLabsAccessControlDB {
 		
 	}
 	public SQLiteDatabase getWritableDatabase() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	private static void probesTableHandling(SQLiteDatabase db){
@@ -654,7 +698,6 @@ public class LivingLabsAccessControlDB {
 			connection = new Connection(context);
 			connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -670,15 +713,14 @@ public class LivingLabsAccessControlDB {
 	    		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 	    		String uuid = prefs.getUUID();
 	    		loadParams.put("datastore_owner", uuid); 
-//	    		JSONObject result = new JSONObject(pds.loadAccessControlData(loadParams));
 	    		JSONObject result = new JSONObject(pds.accessControlData(loadParams, "load"));
 	    		
 	    		Log.v(TAG, result.toString());
 	    		probesFromServer = (JSONObject) result.getJSONObject("probes");
-	    		saveLivingLabProbeItem(probesFromServer);
+	    		
+	    		loadLivingLabProbeItem(probesFromServer); //not really similar to settings
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             return null;

@@ -18,7 +18,10 @@ import edu.mit.mitmobile2.objs.LivingLabDataItem;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -44,10 +47,9 @@ import android.widget.ToggleButton;
 
  
 public class LivingLabGlobalSettingsActivity extends Activity implements OnClickListener, OnCheckedChangeListener {
-	private static final String TAG = "LLSettingsProbesActivity";
+	private static final String TAG = "LLGlobalSettingsActivity";
     String settings_context_label = null;
     private JSONObject llsiJson, loadParams;
-//    private JSONArray labProbes = new JSONArray();
     
     String app_id, lab_id;
     
@@ -63,9 +65,9 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 	private boolean saveFlag = false;
 	
 	private int textId = 0;
-	private int selectAllButtonId = 1;
-	private int saveButtonId = 2;
-	private int saveButtonTextId = 3;
+	private int deselectAllButtonId = 1;
+	private int selectAllRequiredButtonId = 2;
+	private int selectAllButtonId = 3;
 
 	private JSONObject probesMap = new JSONObject();
 	private ArrayList<Integer> probesIds = new ArrayList<Integer>();
@@ -73,6 +75,8 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 	private HashMap<String, Boolean> probeSettings = new HashMap<String, Boolean>();
 	
 	private LivingLabsAccessControlDB mLivingLabAccessControlDB;
+	
+	private JSONObject mllpiValues = new JSONObject();
 	
 	
 	@Override
@@ -141,7 +145,6 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 					probeChecked = false;
 				}
 			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
             
@@ -152,14 +155,10 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 	        
 	        Switch probeButton = new Switch(this);
 			int probeId = 0;
-			
-			//Log.v(TAG, probesMap.toString());
+
 			try {
-				//Log.v(TAG, "has? " + probesMap.has(probe));
 				probeId = (Integer) ((JSONObject) probesMap.get(probe)).get("id");
 				probesIds.add(probeId); //accumulate the ids
-				
-				//Log.v(TAG, "going to assign probeId: " + probeId);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -167,7 +166,6 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 			probeButton.setChecked(probeChecked);
 			probeButton.setId(probeId);	
 			probeButton.setClickable(false);
-//			probeButton.setOnCheckedChangeListener(this);
 			
 			probeSettings.put(probe, probeChecked);
 			
@@ -175,7 +173,6 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 			
 			TableRow.LayoutParams layoutPurpose = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 			TextView probePurpose = new TextView(this);
-			Log.v(TAG, probe);
 			String[] probe_name_parts = ((String)probe.split("_probe")[0]).split("_");
 			StringBuilder probe_name = new StringBuilder();
 			for(int i=0; i<probe_name_parts.length; i++){
@@ -205,38 +202,35 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
         
         LinearLayout.LayoutParams buttonLayoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
         buttonLayoutParams.weight = 1;
+        buttonLayoutParams.gravity = Gravity.LEFT;
 	    
+        
+        Button deselectAllButton = new Button(this);
+        deselectAllButton.setText("De-select all data");
+        deselectAllButton.setId(deselectAllButtonId);
+        deselectAllButton.setOnClickListener(this);
+        deselectAllButton.setLayoutParams(buttonLayoutParams);
+        
+        Button selectAllRequiredButton = new Button(this);
+        selectAllRequiredButton.setText("Select required data");
+        selectAllRequiredButton.setId(selectAllRequiredButtonId);
+        selectAllRequiredButton.setOnClickListener(this);
+        selectAllRequiredButton.setLayoutParams(buttonLayoutParams);
         
         Button selectAllButton = new Button(this);
-        selectAllButton.setText("De-select all data");
+        selectAllButton.setText("Select all data");
         selectAllButton.setId(selectAllButtonId);
         selectAllButton.setOnClickListener(this);
-        buttonLayoutParams.gravity = Gravity.LEFT;
         selectAllButton.setLayoutParams(buttonLayoutParams);
-        
-//	    Button saveButton = new Button(this);
-//	    saveButton.setText("Save");
-//	    saveButton.setId(saveButtonId);
-//	    saveButton.setOnClickListener(this);
-//	    buttonLayoutParams.gravity = Gravity.RIGHT;
-//	    saveButton.setLayoutParams(buttonLayoutParams);
 	    
-	    
-	    buttonsRow.setWeightSum(2);
+	    buttonsRow.setWeightSum(3);
+	    buttonsRow.addView(deselectAllButton);
+	    buttonsRow.addView(selectAllRequiredButton);
 	    buttonsRow.addView(selectAllButton);
-//	    buttonsRow.addView(saveButton);
 	    buttonsRow.setGravity(Gravity.CENTER);
 
 	    buttonsLayout.addView(buttonsRow);
 	    ll.addView(buttonsLayout);
-
-//        TextView nextButtonText = new TextView(this);
-//        nextButtonText.setText("Click next to proceed.");
-//        nextButtonText.setTextColor(Color.BLUE);
-//        nextButtonText.setTextSize(12);
-//        nextButtonText.setVisibility(View.GONE);
-//        nextButtonText.setId(saveButtonTextId);
-//        ll.addView(nextButtonText);
         
 	    ScrollView sv = new ScrollView(this);
 	    sv.addView(ll);
@@ -250,62 +244,141 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 	
 	@Override
 	public void onClick(View v) {
-		if(v.getId() == selectAllButtonId){
-			try{
-				Iterator<String> keys = probesMap.keys();
-		        while(keys.hasNext()){
-		            JSONObject probeDetails = probesMap.getJSONObject(keys.next());
-		            //Log.v(TAG, probeDetails.toString());
-		            //Log.v(TAG, probesIds.toString());
-		            
-		            int probeIdValue = probeDetails.getInt("id");
-		            if(probesIds.contains(probeIdValue))
-		            	selectProbe(probeIdValue);
-		        }
-//		        TextView nextButtonTextView = (TextView) findViewById(saveButtonTextId);
-//		        nextButtonTextView.setVisibility(View.VISIBLE);
-		        JSONObject probesToSave = prepareProbesForDisabling(probeSettings);
-		        LivingLabsAccessControlDB.saveLivingLabProbeItem(probesToSave);
-		        
-		        connection = new Connection(this);
-				saveFlag = true;
-				connection.execute(llsiJson).get(1000, TimeUnit.MILLISECONDS);
-				saveFlag = false;
-	        } catch(Exception e){
-	        	e.printStackTrace();
-	        }
+		if(v.getId() == deselectAllButtonId){
 			
-		} else if(v.getId() == saveButtonId){
-			try {
-//				LivingLabsAccessControlDB.saveLivingLabProbeItem(probesFromServer);
-//				LivingLabsAccessControlDB.saveLivingLabProbeItem(probesFromServer);				
-				JSONObject probesToSave = prepareProbesForSave(probeSettings);
-				LivingLabsAccessControlDB.saveLivingLabProbeItem(probesToSave);
-				
-				connection = new Connection(this);
-				saveFlag = true;
-				connection.execute(llsiJson).get(1000, TimeUnit.MILLISECONDS);
-				saveFlag = false;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			finish();
-//			Intent intent = new Intent(this, LivingLabSettingsContextActivity.class);
-//			LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
-//			intent.putExtra("lab", labItem);
-//			intent.putExtra("probeSettings", probeSettings);
-//			intent.putExtra("context_label", settings_context_label);
-//			intent.putExtra("contextsFromServer", contextsFromServer.toString());
-//			startActivity(intent);
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			alertDialogBuilder.setTitle("De-Selecting Global Settings");
+
+			alertDialogBuilder
+			    .setMessage("You will not be collecting any data for the app. Continue or Cancel?")
+			    .setCancelable(false)
+			    .setPositiveButton("Continue",new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog,int id) {
+						try{
+							Iterator<String> keys = probesMap.keys();
+					        while(keys.hasNext()){
+					            JSONObject probeDetails = probesMap.getJSONObject(keys.next());
+					            
+					            int probeIdValue = probeDetails.getInt("id");
+					            if(probesIds.contains(probeIdValue))
+					            	selectProbe(probeIdValue, false);
+					        }
+					        mllpiValues = LivingLabsAccessControlDB.saveLivingLabProbeItem("false");
+					        Log.v(TAG, mllpiValues.toString());
+					        
+					        connection = new Connection(LivingLabGlobalSettingsActivity.this);
+							saveFlag = true;
+							connection.execute(llsiJson).get(1000, TimeUnit.MILLISECONDS);
+							saveFlag = false;
+				        } catch(Exception e){
+				        	e.printStackTrace();
+				        }
+					}
+			    })
+				.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						dialog.cancel();
+					}
+				});
+	 
+				AlertDialog alertDialog = alertDialogBuilder.create();
+	 
+				alertDialog.show();
+					
+			
+		} else if(v.getId() == selectAllRequiredButtonId){
+			
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			alertDialogBuilder.setTitle("Selecting all required Global Settings");
+
+			alertDialogBuilder
+			    .setMessage("You will be collecting only data required by the labs installed on your app. Continue or Cancel?")
+			    .setCancelable(false)
+			    .setPositiveButton("Continue",new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog,int id) {
+						try{
+							Iterator<String> keys = probesMap.keys();
+					        while(keys.hasNext()){
+					            JSONObject probeDetails = probesMap.getJSONObject(keys.next());
+					            
+					            int probeIdValue = probeDetails.getInt("id");
+					            //need to select only the required probes
+					            if(probesIds.contains(probeIdValue))
+					            	selectProbe(probeIdValue, false);
+					        }
+					        mllpiValues = LivingLabsAccessControlDB.saveLivingLabProbeItem(null); //akin to settings
+					        
+					        connection = new Connection(LivingLabGlobalSettingsActivity.this);
+							saveFlag = true;
+							connection.execute(llsiJson).get(1000, TimeUnit.MILLISECONDS);
+							saveFlag = false;
+				        } catch(Exception e){
+				        	e.printStackTrace();
+				        }
+					}
+			    })
+				.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						dialog.cancel();
+					}
+				});
+	 
+				AlertDialog alertDialog = alertDialogBuilder.create();
+	 
+				alertDialog.show();
+					
+			
+		} else if(v.getId() == selectAllButtonId){
+			
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			alertDialogBuilder.setTitle("Selecting All Global Settings");
+
+			alertDialogBuilder
+			    .setMessage("You will be collecting all data (even if not required by any installed lab). Continue or cancel?")
+			    .setCancelable(false)
+			    .setPositiveButton("Continue",new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog,int id) {
+						try{
+							Iterator<String> keys = probesMap.keys();
+					        while(keys.hasNext()){
+					            JSONObject probeDetails = probesMap.getJSONObject(keys.next());
+					           
+					            int probeIdValue = probeDetails.getInt("id");
+					            if(probesIds.contains(probeIdValue))
+					            	selectProbe(probeIdValue, true);
+					        }
+//					        JSONObject probesToSave = prepareProbes(probeSettings, "true");
+					        mllpiValues = LivingLabsAccessControlDB.saveLivingLabProbeItem("true");
+					        
+					        connection = new Connection(LivingLabGlobalSettingsActivity.this);
+							saveFlag = true;
+							connection.execute(llsiJson).get(1000, TimeUnit.MILLISECONDS);
+							saveFlag = false;
+				        } catch(Exception e){
+				        	e.printStackTrace();
+				        }
+					}
+			    })
+				.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						dialog.cancel();
+					}
+				});
+	 
+				AlertDialog alertDialog = alertDialogBuilder.create();
+	 
+				alertDialog.show();
+
 		}
 	}
 	
-	public void selectProbe(int probeId){
-//		Log.v(TAG, "probeId: " + probeId);
-//		ToggleButton probeButton = (ToggleButton) findViewById(probeId);
+	public void selectProbe(int probeId, boolean flag){
 		Switch probeButton = (Switch) findViewById(probeId);
-		//probeButton.setChecked(true);
-		probeButton.setChecked(false);
+		
+		if(flag)
+			probeButton.setChecked(true);
+		else
+			probeButton.setChecked(false);
 	}
 	
 	private class Connection extends AsyncTask<JSONObject, Object, Object> {
@@ -322,15 +395,9 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 	        		String uuid = prefs.getUUID();
 	        		JSONObject accesscontrolObject = new JSONObject();
 	        		accesscontrolObject.put("datastore_owner", uuid); 
-//	        		accesscontrolObject.put("global_setting", true);
-//	        		accesscontrolObject.put("setting_object", llsiJson); 
-//	        		accesscontrolObject.put("context_object", null); 
-	        		
-	        		//String result = pds.saveAccessControlData(llsiJson);
-//	        		pds.globalAccessControlData(accesscontrolObject);
-	        		
+	        		accesscontrolObject.put("probes", mllpiValues);
+
 	        		pds.accessControlData(accesscontrolObject, "global");
-	        		//Log.v(TAG, "data: " + llsiJson.toString());
         		} 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -359,20 +426,6 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
         	e.printStackTrace();
         }
 	}
-	
-	private String getContextLabel(int context_label_id) throws JSONException{
-		String label = "New";
-		for(int i=0; i < contextsFromServer.length(); i++){
-			int id_value = contextsFromServer.getJSONObject(i).getInt("id");
-			if(id_value == context_label_id)
-				label = contextsFromServer.getJSONObject(i).getString("context_label");
-		}
-		return label;
-	}
-	
-//	@Override
-//	public void onBackPressed() {
-//	}
 	
 	public void populateProbesMap(){
 		try{
@@ -410,23 +463,5 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 		} catch(Exception e){
 			e.printStackTrace();
 		}
-	}
-	
-	private JSONObject prepareProbesForSave(Map<String, Boolean> probesMap) throws JSONException{
-		JSONObject result = null;
-		
-		for(Entry<String, Boolean> probe: probesMap.entrySet()){
-			result.put(probe.getKey(), probe.getValue());
-		}
-		return result;
-	}
-	
-	private JSONObject prepareProbesForDisabling(Map<String, Boolean> probesMap) throws JSONException{
-		JSONObject result = new JSONObject();
-//		Log.v(TAG, probesMap.toString());
-		for(Entry<String, Boolean> probe: probesMap.entrySet()){
-			result.put(probe.getKey(), false);
-		}
-		return result;
 	}
 }

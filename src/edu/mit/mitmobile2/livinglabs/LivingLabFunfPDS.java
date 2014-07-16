@@ -160,6 +160,7 @@ public class LivingLabFunfPDS extends FunfPDS {
 //	public String getAccessControlGlobalUrl() {
 //		return buildAbsoluteApiUrl("/accesscontrol/global/");
 //	}
+//	
 	
 	public String accessControlData(JSONObject object, String function) throws ClientProtocolException, IOException {          
 		HttpPost httppost = new HttpPost(buildAbsoluteApiUrl("/accesscontrol/" + function + "/"));
@@ -227,6 +228,8 @@ public class LivingLabFunfPDS extends FunfPDS {
 //	
 //	public String globalAccessControlData(JSONObject object) throws ClientProtocolException, IOException {          
 //		HttpPost httppost = new HttpPost(getAccessControlGlobalUrl());
+//		Log.v(TAG, getAccessControlGlobalUrl());
+//		
 //
 //		StringEntity entity = new StringEntity(object.toString(), "UTF-8");
 //		entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
@@ -236,7 +239,7 @@ public class LivingLabFunfPDS extends FunfPDS {
 //
 //		ResponseHandler<String> responseHandler=new BasicResponseHandler();
 //		String response = httpClient.execute(httppost, responseHandler); 
-//
+//		Log.v(TAG, response);
 //		return response;
 //
 //	}

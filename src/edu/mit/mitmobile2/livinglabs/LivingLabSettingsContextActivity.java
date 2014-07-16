@@ -77,6 +77,8 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	private HashMap<String, Boolean> probeSettings;
 	private LivingLabItem labItem = null;
 	
+	private boolean data_aggregation = false;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +106,8 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	        if(temp_context_label != null)
 	        	settings_context_label = temp_context_label.toString();
 	        contextsFromServer = new JSONArray(getIntent().getSerializableExtra("contextsFromServer").toString());
+	        
+	        data_aggregation = (Boolean) getIntent().getSerializableExtra("data_aggregation");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -250,9 +254,7 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 					labIntent.putExtra("lab", labItem);
 					startActivity(labIntent);
 				}
-			} //else if(contextButtonIdsNames.containsKey(v.getId())){
-			else if(v.getId() == editContextButtonId){
-				//llsiJson.put("settings_context_label", contextButtonIdsNames.get(v.getId()));
+			} else if(v.getId() == editContextButtonId){
 				llsiJson.put("settings_context_label", settings_context_label);
 				
 				Intent intent = new Intent(this, LivingLabContextTemporalActivity.class);
@@ -261,8 +263,7 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 				intent.putExtra("llsiJson", llsiJson.toString());
 				intent.putExtra("contextsFromServer", contextsFromServer.toString());
 				intent.putExtra("probeSettings", probeSettings);
-//				
-				//intent.putExtra("context_label", contextButtonIdsNames.get(v.getId()));
+				
 				startActivity(intent);
 			}
 			
@@ -313,9 +314,10 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	        		accesscontrolObject.put("datastore_owner", uuid); 
 	        		accesscontrolObject.put("setting_object", llsiJson); 
 	        		accesscontrolObject.put("context_object", null); 
-	        		
-	        		//String result = pds.saveAccessControlData(llsiJson);
-//	        		pds.saveAccessControlData(accesscontrolObject);
+	        		accesscontrolObject.put("data_aggregation", data_aggregation);
+	        		accesscontrolObject.put("app_id", "Living Lab");
+	        		accesscontrolObject.put("lab_id", lab_id);
+
 	        		pds.accessControlData(accesscontrolObject, "store");
 	        		Log.v(TAG, "data: " + llsiJson.toString());
         		} 
@@ -334,9 +336,5 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	public void onCheckedChanged(RadioGroup arg0, int arg1) {
 		settings_context_label = ((RadioButton) findViewById(arg1)).getText().toString();
 	}
-	
-//	@Override
-//	public void onBackPressed() {
-//	}
 	
 }

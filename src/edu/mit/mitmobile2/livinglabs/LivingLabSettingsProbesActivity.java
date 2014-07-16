@@ -19,6 +19,7 @@ import edu.mit.mitmobile2.NewModule;
 import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.objs.LivingLabDataItem;
 import edu.mit.mitmobile2.objs.LivingLabItem;
+import edu.mit.mitmobile2.objs.LivingLabSettingItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 import android.app.Activity;
 import android.content.Context;
@@ -30,6 +31,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -39,6 +41,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Space;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -46,7 +49,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
  
-public class LivingLabSettingsProbesActivity extends NewModuleActivity  implements OnClickListener, OnCheckedChangeListener {
+public class LivingLabSettingsProbesActivity extends NewModuleActivity implements OnClickListener, OnCheckedChangeListener {
 	private static final String TAG = "LLSettingsProbesActivity";
     String settings_context_label = null;
     private JSONObject llsiJson, loadParams;
@@ -69,6 +72,8 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 	private int selectAllButtonId = 1;
 	private int nextButtonId = 2;
 	private int nextButtonTextId = 3;
+	
+	private int probeId = 4;
 
 	private JSONObject probesMap = new JSONObject();
 	private ArrayList<Integer> probesIds = new ArrayList<Integer>();
@@ -76,6 +81,9 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 	private HashMap<String, Boolean> probeSettings = new HashMap<String, Boolean>();
 	
 	private LivingLabsAccessControlDB mLivingLabAccessControlDB;
+	
+	private boolean aggregationFlag = false;
+	private int aggregationSwitchId = 0;
 	
 	
 	@Override
@@ -152,6 +160,7 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
         ArrayList<String> searchDataInput = new ArrayList<String>();
         searchDataInput.add(app_id);
         searchDataInput.add(lab_id);
+        //change this so we only save if data not present.
 		try {
 			loadFlag = true;
 			loadParams = new JSONObject();
@@ -160,7 +169,7 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 			connection = new Connection(this);
 			connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
 			loadFlag = false;
-			LivingLabsAccessControlDB.saveLivingLabProbeItem(probesFromServer);
+			LivingLabsAccessControlDB.loadLivingLabProbeItem(probesFromServer); //setting
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -178,30 +187,8 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 	            JSONObject settingFromServer;
 				try {
 					settingFromServer = settingsFromServer.getJSONObject(0);
-//	            	if(probe.equalsIgnoreCase("Activity Probe"))
-//	            		probeChecked = settingFromServer.getBoolean("activity_probe");
-//	            	else if(probe.equalsIgnoreCase("Sms Probe"))
-//	            		probeChecked = settingFromServer.getBoolean("sms_probe");
-//	            	else if(probe.equalsIgnoreCase("Call Log Probe"))
-//	            		probeChecked = settingFromServer.getBoolean("call_log_probe");
-//		            else if(probe.equalsIgnoreCase("Bluetooth Probe"))
-//		                probeChecked = settingFromServer.getBoolean("bluetooth_probe");
-//		            else if(probe.equalsIgnoreCase("Wifi Probe"))
-//		                probeChecked = settingFromServer.getBoolean("wifi_probe");
-//		            else if(probe.equalsIgnoreCase("Simple Location Probe"))
-//		                probeChecked = settingFromServer.getBoolean("simple_location_probe");
-//		            else if(probe.equalsIgnoreCase("Screen Probe"))
-//		                probeChecked = settingFromServer.getBoolean("screen_probe");
-//		            else if(probe.equalsIgnoreCase("Running Applications Probe"))
-//		                probeChecked = settingFromServer.getBoolean("running_applications_probe");
-//		            else if(probe.equalsIgnoreCase("Hardware Info Probe"))
-//		                probeChecked = settingFromServer.getBoolean("hardware_info_probe");
-//		            else if(probe.equalsIgnoreCase("App Usage Probe"))
-//		                probeChecked = settingFromServer.getBoolean("app_usage_probe");
-					
 					probeChecked = settingFromServer.getBoolean(probe);
 		               
-	            	Log.v(TAG, "probe: " + probe + ", probeChecked: " + probeChecked);
 	            	int context_label_id = settingFromServer.getInt("context_label_id");
 		            settings_context_label = getContextLabel(context_label_id);
 				} catch (JSONException e) {
@@ -216,35 +203,18 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 			
 	        tableRow.setLayoutParams(layoutRow);
 	        
-//			ToggleButton probeButton = new ToggleButton(this);
-	        Switch probeButton = new Switch(this);
-//			Drawable icon = null;
-//			StringBuilder iconPath = new StringBuilder("@drawable/");
-//			String probeText = "";
-//			String iconName = "";
-			int probeId = 0;
-//			
+	        Switch probeButton = new Switch(this);	
 			try {
-//				iconName = (String) ((JSONObject) probesMap.get(probe)).get("icon");
 				probeId = (Integer) ((JSONObject) probesMap.get(probe)).get("id");
 				probesIds.add(probeId); //accumulate the ids
-				
-				Log.v(TAG, "going to assign probeId: " + probeId);
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			
-//			int iconValue = getResources().getIdentifier(iconName , "drawable", getPackageName());
-//			iconPath.append(iconName);
-//			Log.v(TAG, iconPath.toString());
-//			
-//			icon = Drawable.createFromPath(iconPath.toString());		
-//			//probeButton.setBackgroundDrawable(getResources().getDrawable(iconValue));
-//			probeButton.setCompoundDrawablesWithIntrinsicBounds(0, iconValue, 0, 0);
+			
+
 			probeButton.setChecked(probeChecked);
-//			probeButton.setTextColor(Color.BLUE);
 			probeButton.setId(probeId);	
+			probeId++;
 			probeButton.setOnCheckedChangeListener(this);
 			
 			probeSettings.put(probe, probeChecked);
@@ -260,14 +230,10 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 				probe_name.append(probe_name_parts[i].substring(0,1).toUpperCase() + probe_name_parts[i].substring(1) + " ");
 			}
 			
-//	        probePurpose.setText(Html.fromHtml("<b>" + probe.split(" Probe")[0] +"</b>: <br/>" + purposes.get(probe).toString()));
-			Log.v(TAG, probe_name.toString());
 			probePurpose.setText(Html.fromHtml("<b>" + probe_name.toString() +"</b>: <br/>" + purposes.get(probe).toString()));
 	        probePurpose.setLayoutParams(layoutPurpose);
 	        probePurpose.setGravity(Gravity.CENTER);
 	        tableRow.setGravity(Gravity.CENTER);
-	       
-	        
 	        
 			tableRow.addView(probePurpose);
 			tableLayout.addView(tableRow);
@@ -275,25 +241,38 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 
 		ll.addView(tableLayout);
 		
-		//int dataAggregationId = probeId;
+		Space beforeAggregation = new Space(this);
+		beforeAggregation.setLayoutParams(layoutRow);
+		beforeAggregation.getLayoutParams().height = 20;
+		ll.addView(beforeAggregation);
+		
 		TextView dataAggregationText = new TextView(this);
-		dataAggregationText.setText(Html.fromHtml("Opt-in to data aggregation."));
+		dataAggregationText.setText(Html.fromHtml("<b>Opt-in to data aggregation</b>"));
 		dataAggregationText.setTextSize(14);
-		//dataAggregationText.setId(textId);
-        ll.addView(dataAggregationText);
         
         Switch dataAggregationButton = new Switch(this);
-        ll.addView(dataAggregationButton);
+        dataAggregationButton.setChecked(aggregationFlag);
+        dataAggregationButton.setId(probeId);	
+        aggregationSwitchId = probeId;
+		probeId++;
+		dataAggregationButton.setOnCheckedChangeListener(this);
         
+		tableLayout = new TableLayout(this);
+		tableLayout.setColumnShrinkable(1, true);
+		layoutRow = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		tableRow = new TableRow(this);
+		
+        tableRow.setLayoutParams(layoutRow);
+        tableRow.addView(dataAggregationText);
+        tableRow.addView(dataAggregationButton);
         
-        
-        
-        
+        tableLayout.addView(tableRow);
+        ll.addView(tableLayout);
+
 	    TableLayout buttonsLayout = new TableLayout(this);
 	    buttonsLayout.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.FILL_PARENT, TableLayout.LayoutParams.FILL_PARENT));
         
         TableRow buttonsRow = new TableRow(this);
-	    //buttonsRow.setPadding(20,50,40,0);
         buttonsRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
 
         
@@ -362,10 +341,11 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 			
 		} else if(v.getId() == nextButtonId){
 			try {
-//				LivingLabsAccessControlDB.saveLivingLabProbeItem(probesFromServer);
-//				LivingLabsAccessControlDB.saveLivingLabProbeItem(probesFromServer);				
+				//save locally and go to context.			
 				JSONObject probesToSave = prepareProbesForSave(probeSettings);
-				LivingLabsAccessControlDB.saveLivingLabProbeItem(probesToSave);
+				
+				LivingLabSettingItem llsi = new LivingLabSettingItem(probesToSave);
+				LivingLabsAccessControlDB.saveLivingLabSettingItem(llsi);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -376,13 +356,12 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 			intent.putExtra("probeSettings", probeSettings);
 			intent.putExtra("context_label", settings_context_label);
 			intent.putExtra("contextsFromServer", contextsFromServer.toString());
+			intent.putExtra("data_aggregation", aggregationFlag);
 			startActivity(intent);
 		}
 	}
 	
 	public void selectProbe(int probeId){
-//		Log.v(TAG, "probeId: " + probeId);
-//		ToggleButton probeButton = (ToggleButton) findViewById(probeId);
 		Switch probeButton = (Switch) findViewById(probeId);
 		probeButton.setChecked(true);
 	}
@@ -399,13 +378,12 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 	        		PreferencesWrapper prefs = new PreferencesWrapper(mContext);
 	        		String uuid = prefs.getUUID();
 	        		loadParams.put("datastore_owner", uuid); 
-//	        		JSONObject result = new JSONObject(pds.loadAccessControlData(loadParams));
 	        		JSONObject result = new JSONObject(pds.accessControlData(loadParams, "load"));
-	        		
-	        		Log.v(TAG, result.toString());
+
 	        		contextsFromServer = (JSONArray) result.get("contexts");
 	        		settingsFromServer = (JSONArray) result.get("settings");
 	        		probesFromServer = (JSONObject) result.getJSONObject("probes");
+	        		aggregationFlag = result.getBoolean("data_aggregation");
         		} 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -421,18 +399,22 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 
 	@Override
 	public void onCheckedChanged(CompoundButton probeButton, boolean isChecked) {
-		try{
-			Iterator<String> keys = probesMap.keys();
-	        while(keys.hasNext()){
-	        	String probeName = keys.next();
-	            JSONObject probeDetails = probesMap.getJSONObject(probeName);
-	            if(probeButton.getId() == probeDetails.getInt("id")){
-	            	probeSettings.put(probeName, isChecked);
-	            }
+		if(probeButton.getId() == aggregationSwitchId){
+			aggregationFlag = isChecked;
+		} else{
+			try{
+				Iterator<String> keys = probesMap.keys();
+		        while(keys.hasNext()){
+		        	String probeName = keys.next();
+		            JSONObject probeDetails = probesMap.getJSONObject(probeName);
+		            if(probeButton.getId() == probeDetails.getInt("id")){
+		            	probeSettings.put(probeName, isChecked);
+		            }
+		        }
+	        } catch(Exception e){
+	        	e.printStackTrace();
 	        }
-        } catch(Exception e){
-        	e.printStackTrace();
-        }
+		}
 	}
 	
 	private String getContextLabel(int context_label_id) throws JSONException{
@@ -450,48 +432,7 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 //	}
 	
 	public void populateProbesMap(){
-		try{
-//			probesMap.put("Activity Probe", new JSONObject() {{
-//		        put("id",4);
-//		        put("icon", "livinglab_activity_probe");
-//		    }});
-//			probesMap.put("Sms Probe", new JSONObject() {{
-//		        put("id",5);
-//		        put("icon", "livinglab_sms_probe");
-//		    }});
-//			probesMap.put("Call Log Probe", new JSONObject() {{
-//		        put("id",6);
-//		        put("icon", "livinglab_calllog_probe");
-//		    }});
-//			probesMap.put("Bluetooth Probe", new JSONObject() {{
-//		        put("id",7);
-//		        put("icon", "livinglab_bluetooth_probe");
-//		    }});
-//			probesMap.put("Wifi Probe", new JSONObject() {{
-//		        put("id",8);
-//		        put("icon", "livinglab_screen_probe");
-//		    }});
-//			probesMap.put("Simple Location Probe", new JSONObject() {{
-//		        put("id",9);
-//		        put("icon", "livinglab_location_probe");
-//		    }});
-//			probesMap.put("Screen Probe", new JSONObject() {{
-//		        put("id",10);
-//		        put("icon", "livinglab_screen_probe");
-//		    }});
-//			probesMap.put("Running Applications Probe", new JSONObject() {{
-//		        put("id",11);
-//		        put("icon", "livinglab_screen_probe");
-//		    }});
-//			probesMap.put("Hardware Info Probe", new JSONObject() {{
-//		        put("id",12);
-//		        put("icon", "livinglab_screen_probe");
-//		    }});
-//			probesMap.put("App Usage Probe", new JSONObject() {{
-//		        put("id",13);
-//		        put("icon", "livinglab_screen_probe");
-//		    }});
-			
+		try{			
 			probesMap.put("activity_probe", new JSONObject() {{
 		        put("id",4);
 		    }});
@@ -531,10 +472,12 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 	private JSONObject prepareProbesForSave(Map<String, Boolean> probesMap) throws JSONException{
 		JSONObject result = new JSONObject();
 		
+		result.put("app_id", app_id);
+		result.put("lab_id", lab_id);
 		for(Entry<String, Boolean> probe: probesMap.entrySet()){
-			result.put(probe.getKey(), probe.getValue());
+			result.put(probe.getKey(), probe.getValue()? 1 : 0);
 		}
-		Log.v(TAG, result.toString());
+//		Log.v(TAG, result.toString());
 		return result;
 	}
 	
@@ -550,26 +493,21 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity  implemen
 
 	@Override
 	protected NewModule getNewModule() {
-		// TODO Auto-generated method stub
-		//return null;
 		return new LivingLabsModule();
 	}
 
 	@Override
 	protected boolean isScrollable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	protected void onOptionSelected(String optionId) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	protected boolean isModuleHomeActivity() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

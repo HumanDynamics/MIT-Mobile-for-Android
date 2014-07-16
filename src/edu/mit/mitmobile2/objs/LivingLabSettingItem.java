@@ -75,9 +75,6 @@ public class LivingLabSettingItem implements Serializable {
 		mAppId = labSettingJson.optString("app_id");
 		mLabId = labSettingJson.optString("lab_id");
 		mEnabledProbes = new HashSet<String>();
-		//mServiceId = labSettingJson.optString("service_id");
-		
-		//mEnabled = labSettingJson.optInt("enabled");
 		
 		mActivityProbe = labSettingJson.optInt("activity_probe");
 		mSMSProbe = labSettingJson.optInt("sms_probe");

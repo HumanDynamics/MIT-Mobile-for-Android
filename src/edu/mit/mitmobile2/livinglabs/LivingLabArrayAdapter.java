@@ -65,7 +65,7 @@ public class LivingLabArrayAdapter extends ArrayAdapter<LivingLabItem> {
 					labIntent.putExtra("lab", labItem);
 					getContext().startActivity(labIntent);
 				} else {
-					Log.v(TAG, "going to this settings");
+//					Log.v(TAG, "going to this settings");
 //					labIntent = new Intent(getContext(), LivingLabSettingsProbesActivity.class);
 					
 					PopupMenu popup = new PopupMenu(getContext(), v);  
