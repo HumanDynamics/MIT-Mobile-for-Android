@@ -1,25 +1,17 @@
 package edu.mit.mitmobile2.livinglabs;
 
-import java.net.URI;
-
 import edu.mit.media.openpds.client.PreferencesWrapper;
 import edu.mit.media.openpds.client.RegistryClient;
 import edu.mit.media.openpds.client.UserInfoTask;
 import edu.mit.mitmobile2.NewModule;
-import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.NewModuleFragmentActivity;
 import edu.mit.mitmobile2.livinglabs.gfsa.R;
-import android.support.v4.app.Fragment;
+import edu.mit.mitmobile2.touchstone.TouchstonePrefsActivity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.os.Build;
 
 public class LivingLabsLoginActivity extends NewModuleFragmentActivity {
 	private static final String REDIRECT_URI = "https://linkedpersonaldata.mit.edu/redirect_uri";
@@ -28,6 +20,11 @@ public class LivingLabsLoginActivity extends NewModuleFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.living_labs_login_activity);
+		
+		// NOTE: HACK TO GET THIGNS WORKING (SORTA) FOR GFSA
+		Intent touchstoneIntent = new Intent(this, TouchstonePrefsActivity.class);
+		startActivity(touchstoneIntent);
+		finish();
 
 		if (savedInstanceState == null) {
 			final RegistryClient registry = new RegistryClient(getString(R.string.registry_url), getString(R.string.pds_client_key), getString(R.string.pds_client_secret), getString(R.string.pds_client_scope), getString(R.string.pds_client_basic_auth));
