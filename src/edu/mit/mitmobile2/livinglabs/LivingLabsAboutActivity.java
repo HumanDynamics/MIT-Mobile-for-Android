@@ -1,5 +1,7 @@
 package edu.mit.mitmobile2.livinglabs;
 
+import edu.mit.mitmobile2.NewModule;
+import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import android.app.Activity;
 import android.content.Intent;
@@ -15,7 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class LivingLabsAboutActivity extends Activity implements OnClickListener{
+public class LivingLabsAboutActivity extends NewModuleActivity implements OnClickListener{
 	private static final String TAG = "WalkthroughActivity";
 	private LivingLabFunfPDS pds;
 	private int textId = 0;
@@ -25,6 +27,9 @@ public class LivingLabsAboutActivity extends Activity implements OnClickListener
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.v(TAG, "In Walkthrough Activity");
+		
+		setContentView(R.layout.living_lab_scrollview);
+	    LinearLayout ll = (LinearLayout)findViewById(R.id.livinglabLinearLayout);
 		
 		LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
 		
@@ -37,10 +42,11 @@ public class LivingLabsAboutActivity extends Activity implements OnClickListener
 			finish();
 			return;
 		} 		
-		LinearLayout ll = new LinearLayout(this);
+//		LinearLayout ll = new LinearLayout(this);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setPadding(0, 60, 0, 0);//60dp at top
-        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+//        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+        ll.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.FILL_PARENT, ScrollView.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
 //        labText.setText(Html.fromHtml("<h3>Welcome to MIT Living Lab!</h3><br/><br/><b>" + labItem.getName() + "</b>" + 
@@ -60,9 +66,9 @@ public class LivingLabsAboutActivity extends Activity implements OnClickListener
 //	    
 //	    ll.addView(nextButton);
 	    
-        ScrollView sv = new ScrollView(this);
-	    sv.addView(ll);
-        setContentView(sv);
+//        ScrollView sv = new ScrollView(this);
+//	    sv.addView(ll);
+//        setContentView(sv);
         
 	    View textIdView = findViewById(textId);
 	    View rootView = textIdView.getRootView();
@@ -83,5 +89,29 @@ public class LivingLabsAboutActivity extends Activity implements OnClickListener
 //	@Override
 //	public void onBackPressed() {
 //	}
+	
+	@Override
+	protected NewModule getNewModule() {
+		return new LivingLabsModule();
+	}
+
+	@Override
+	protected boolean isScrollable() {
+		return false;
+	}
+
+	@Override
+	protected void onOptionSelected(String optionId) {
+		
+	}
+
+	@Override
+	protected boolean isModuleHomeActivity() {
+		return false;
+	}
+	
+	public void livingLabSettings(){
+		Log.v(TAG, "LivingLabSettings");
+	}
 
 }

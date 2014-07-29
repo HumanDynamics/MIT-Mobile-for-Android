@@ -31,11 +31,13 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
@@ -85,6 +87,8 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 	private boolean aggregationFlag = false;
 	private int aggregationSwitchId = 0;
 	
+	private boolean probesSetFlag = false;
+	
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +104,13 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 			return;
 		}
 		
+		setContentView(R.layout.living_lab_scrollview);
+	    LinearLayout ll = (LinearLayout)findViewById(R.id.livinglabLinearLayout);
+
+		
+//		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//	    View view = getLayoutInflater().inflate(R.layout.living_lab_scrollview, null);
+	    
 		populateProbesMap();
 		
 		mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
@@ -109,13 +120,14 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
         ArrayList<LivingLabVisualizationItem> visualization = labItem.getVisualizations();
         lab_id = labItem.getName();
         
-        LinearLayout ll = new LinearLayout(this);
+//        LinearLayout ll = new LinearLayout(this);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setPadding(0, 60, 0, 0);//60dp at top
-        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+//        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+        ll.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.FILL_PARENT, ScrollView.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText(Html.fromHtml("<h4>" + lab_id + ": Data</h4>"+ "Turn on data for <b>" + lab_id + "</b>. If you don't, " + lab_id + " will not work as expected."));
+        labText.setText(Html.fromHtml("<h4>" + lab_id + ": Data Permissions</h4>"+ "Turn on the following data for <b>" + lab_id + "</b>. If you don't, " + lab_id + " will not work optimally."));
         labText.setTextSize(14);
         labText.setId(textId);
         ll.addView(labText);
@@ -169,7 +181,10 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 			connection = new Connection(this);
 			connection.execute(loadParams).get(3000, TimeUnit.MILLISECONDS);
 			loadFlag = false;
-			LivingLabsAccessControlDB.loadLivingLabProbeItem(probesFromServer); //setting
+			Log.v(TAG, "probesFromServer: " + probesFromServer);
+			Log.v(TAG, "settingsFromServer: "  + settingsFromServer);
+			//LivingLabsAccessControlDB.loadLivingLabProbeItem(probesFromServer); //setting
+			LivingLabsAccessControlDB.loadLivingLabProbeItem(settingsFromServer.getJSONObject(0)); //setting
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -182,7 +197,7 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 		for(String probe : allProbesSet){
 			
             boolean probeChecked = false;
-            
+//            Log.v(TAG, settingsFromServer.toString());
             if(settingsFromServer.length() > 0){
 	            JSONObject settingFromServer;
 				try {
@@ -212,6 +227,9 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 			}
 			
 
+			probesSetFlag = probesSetFlag || probeChecked;
+			
+			Log.v(TAG, "probesSetFlag: " + probesSetFlag);
 			probeButton.setChecked(probeChecked);
 			probeButton.setId(probeId);	
 			probeId++;
@@ -250,12 +268,22 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 		dataAggregationText.setText(Html.fromHtml("<b>Opt-in to data aggregation</b>"));
 		dataAggregationText.setTextSize(14);
         
-        Switch dataAggregationButton = new Switch(this);
-        dataAggregationButton.setChecked(aggregationFlag);
-        dataAggregationButton.setId(probeId);	
+		
+//		///////
+//        Switch dataAggregationButton = new Switch(this);
+//        dataAggregationButton.setChecked(aggregationFlag);
+//        dataAggregationButton.setId(probeId);	
+//        aggregationSwitchId = probeId;
+//		probeId++;
+//		dataAggregationButton.setOnCheckedChangeListener(this);
+//		///////
+		
+        CheckBox dataAggregationCheckBox = new CheckBox(this);
+        dataAggregationCheckBox.setChecked(aggregationFlag);
+        dataAggregationCheckBox.setId(probeId);	
         aggregationSwitchId = probeId;
 		probeId++;
-		dataAggregationButton.setOnCheckedChangeListener(this);
+		dataAggregationCheckBox.setOnCheckedChangeListener(this);
         
 		tableLayout = new TableLayout(this);
 		tableLayout.setColumnShrinkable(1, true);
@@ -263,8 +291,10 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 		tableRow = new TableRow(this);
 		
         tableRow.setLayoutParams(layoutRow);
+        tableRow.addView(dataAggregationCheckBox);
+//        tableRow.addView(dataAggregationButton);
         tableRow.addView(dataAggregationText);
-        tableRow.addView(dataAggregationButton);
+
         
         tableLayout.addView(tableRow);
         ll.addView(tableLayout);
@@ -288,8 +318,10 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
         selectAllButton.setLayoutParams(buttonLayoutParams);
         
 	    Button nextButton = new Button(this);
-	    nextButton.setText("Next");
+	    nextButton.setText("Continue");
 	    nextButton.setId(nextButtonId);
+	    Log.v(TAG, "flag is again: " + probesSetFlag);
+	    nextButton.setEnabled(probesSetFlag);
 	    nextButton.setOnClickListener(this);
 	    buttonLayoutParams.gravity = Gravity.RIGHT;
 	    nextButton.setLayoutParams(buttonLayoutParams);
@@ -311,13 +343,22 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
         nextButtonText.setId(nextButtonTextId);
         ll.addView(nextButtonText);
         
-	    ScrollView sv = new ScrollView(this);
-	    sv.addView(ll);
-	    setContentView(sv);
+	    //ScrollView sv = new ScrollView(this);
+        //ScrollView sv = (ScrollView) findViewById(R.id.livinglabScrollView);
+//        ScrollView sv = (ScrollView) view.findViewById(R.id.livinglabScrollView);
+//	    sv.addView(ll);
+//	    setContentView(sv);
 	    
 	    View textIdView = findViewById(textId);
 	    View rootView = textIdView.getRootView();
 	    rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
+	    
+//	    try {
+//			checkProbesSet(probesFromServer);
+//		} catch (JSONException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
   
     }
 	
@@ -384,6 +425,8 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 	        		settingsFromServer = (JSONArray) result.get("settings");
 	        		probesFromServer = (JSONObject) result.getJSONObject("probes");
 	        		aggregationFlag = result.getBoolean("data_aggregation");
+	        		
+	        		//checkProbesSet(probesFromServer);
         		} 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -403,6 +446,7 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 			aggregationFlag = isChecked;
 		} else{
 			try{
+				
 				Iterator<String> keys = probesMap.keys();
 		        while(keys.hasNext()){
 		        	String probeName = keys.next();
@@ -411,6 +455,9 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 		            	probeSettings.put(probeName, isChecked);
 		            }
 		        }
+		        
+		        Log.v(TAG, "probeSettings: " + probeSettings.toString());
+				checkProbesSet(probeSettings);
 	        } catch(Exception e){
 	        	e.printStackTrace();
 	        }
@@ -490,6 +537,21 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 		String tempDataString = tempDataBuilder.toString().substring(0, tempDataBuilder.toString().length() - 1);
 		return tempDataString;
 	}
+	
+	private void checkProbesSet(HashMap<String, Boolean> probes) throws JSONException{
+		
+		boolean probesFlag = false;
+		for (Map.Entry<String, Boolean> entry : probes.entrySet()) {
+		    if(entry.getValue()){
+		    	probesFlag = true;
+		    	break;
+		    }
+		}
+		
+		Button nextButton = (Button) findViewById(nextButtonId);
+		nextButton.setEnabled(probesFlag);
+		
+	}
 
 	@Override
 	protected NewModule getNewModule() {
@@ -509,5 +571,9 @@ public class LivingLabSettingsProbesActivity extends NewModuleActivity implement
 	@Override
 	protected boolean isModuleHomeActivity() {
 		return false;
+	}
+	
+	public void livingLabSettings(){
+		Log.v(TAG, "LivingLabSettings");
 	}
 }

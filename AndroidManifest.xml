@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.mit.mitmobile2.livinglabs"
     android:installLocation="auto"
-    android:versionCode="19"
+    android:versionCode="20"
     android:versionName="2.5" >
 
     <!-- targetSdkVersion must remain < 11 in order for the menu to work correctly on 4.0+ devices -->
@@ -609,7 +609,9 @@
         <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabsWalkthroughActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabsAboutActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabsCreditsActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabGlobalSettingsActivity" android:screenOrientation="portrait"></activity>        
+        <activity android:name="edu.mit.mitmobile2.livinglabs.LivingLabGlobalSettingsActivity" android:screenOrientation="portrait"></activity>     
+        <activity android:name="edu.mit.mitmobile2.livinglabs.TestActionBar" android:screenOrientation="portrait"></activity>   
+        <activity android:name="edu.mit.mitmobile2.livinglabs.TestActionBarNew" android:screenOrientation="portrait"></activity>     
 		
 		<!--  Living Labs Services / Receiver -->
 		<service

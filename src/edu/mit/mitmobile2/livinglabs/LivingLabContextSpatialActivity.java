@@ -34,6 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import edu.mit.media.openpds.client.PreferencesWrapper;
+import edu.mit.mitmobile2.NewModule;
+import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 
@@ -53,7 +55,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class LivingLabContextSpatialActivity extends Activity implements OnClickListener, OnMapClickListener, OnMapLongClickListener, OnMarkerClickListener, ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+public class LivingLabContextSpatialActivity extends NewModuleActivity implements OnClickListener, OnMapClickListener, OnMapLongClickListener, OnMarkerClickListener, ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
 	private static final String TAG = "LLContextSpatialActivity";
 	private JSONObject llciJson, llsiJson;
 	
@@ -109,14 +111,19 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		setContentView(R.layout.living_lab_context_spatial);
 		
 		TextView labelText = (TextView) findViewById(R.id.livinglabContextHeaderTextView);
-		labelText.setText(Html.fromHtml("<h4>" + lab_id + ": Set Location</h4>"));
+		labelText.setText(Html.fromHtml("<h4>" + lab_id + ": Define Location</h4> Tap the map to indicate " + 
+				"where MIT-FIT can use your data. " + 
+				"You can specify one or more locations. To delete the locations, " + 
+				"press and hold the map."));
+				//"Note: the locations you specify here will not be shared with " + lab_id + "."));
+		labelText.setId(textId);
 		
-		TextView locationMessageText = (TextView) findViewById(R.id.livinglabContextLocationMessage);
-		locationMessageText.setText(Html.fromHtml("Set a location by tapping the map. " + 
-				"You can set more than one location. To delete all locations, " + 
-				"press and hold the map for a few seconds." + 
-				"Note: For your privacy, labs will <b>not have access</b> to locations you specify here."));
-		locationMessageText.setId(textId);
+//		TextView locationMessageText = (TextView) findViewById(R.id.livinglabContextLocationMessage);
+//		locationMessageText.setText(Html.fromHtml("Tap the map to indicate where MIT-FIT can use your data. " + 
+//				"You can specify one or more locations. To delete the locations, " + 
+//				"press and hold the map." + 
+//				"Note: the locations you specify here will not be shared with " + lab_id + "."));
+//		locationMessageText.setId(textId);
 		
 		contextsFromServer = getIntent().getStringExtra("contextsFromServer");
 		JSONObject contextFromServer = new JSONObject();
@@ -166,6 +173,7 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		}
 
 		Button finishButton = (Button) findViewById(R.id.livinglabContextFinishSpatialButton);
+		finishButton.setEnabled(!arrayPoints.isEmpty()); //if arrayPoints is empty, disable
 		finishButton.setOnClickListener(this);
 //		TextView locationMessage = (TextView)findViewById(R.id.livinglabContextLocationMessage);
 //		locationMessage.setTextColor(Color.parseColor("#0000FF"));
@@ -303,6 +311,9 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		map.clear();
 		arrayPoints.clear();
 		checkClick = false;
+		
+		Button finishButton = (Button) findViewById(R.id.livinglabContextFinishSpatialButton);
+		finishButton.setEnabled(false);
 	}
 
 
@@ -321,6 +332,10 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 		Circle circle = map.addCircle(circleOptions);
 		arrayPoints.add(point); 
 		
+		
+		Button finishButton = (Button) findViewById(R.id.livinglabContextFinishSpatialButton);
+		if(!finishButton.isEnabled())
+			finishButton.setEnabled(true); //enable button after the map is clicked.
 	}
 	
 	public void drawCircles(ArrayList<LatLng> points){
@@ -349,5 +364,29 @@ public class LivingLabContextSpatialActivity extends Activity implements OnClick
 //	@Override
 //	public void onBackPressed() {
 //	}
+	
+	@Override
+	protected NewModule getNewModule() {
+		return new LivingLabsModule();
+	}
+
+	@Override
+	protected boolean isScrollable() {
+		return false;
+	}
+
+	@Override
+	protected void onOptionSelected(String optionId) {
+		
+	}
+
+	@Override
+	protected boolean isModuleHomeActivity() {
+		return false;
+	}
+	
+	public void livingLabSettings(){
+		Log.v(TAG, "LivingLabSettings");
+	}
 
 }

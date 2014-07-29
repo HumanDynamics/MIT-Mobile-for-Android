@@ -14,6 +14,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.mit.media.openpds.client.PreferencesWrapper;
+import edu.mit.mitmobile2.NewModule;
+import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.objs.LivingLabDataItem;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
@@ -46,7 +48,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
  
-public class LivingLabGlobalSettingsActivity extends Activity implements OnClickListener, OnCheckedChangeListener {
+public class LivingLabGlobalSettingsActivity extends NewModuleActivity implements OnClickListener, OnCheckedChangeListener {
 	private static final String TAG = "LLGlobalSettingsActivity";
     String settings_context_label = null;
     private JSONObject llsiJson, loadParams;
@@ -93,17 +95,22 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 			return;
 		}
 		
+		setContentView(R.layout.living_lab_scrollview);
+	    LinearLayout ll = (LinearLayout)findViewById(R.id.livinglabLinearLayout);
+	    
 		populateProbesMap();
 		
 		mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
 		
-        LinearLayout ll = new LinearLayout(this);
+//        LinearLayout ll = new LinearLayout(this);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setPadding(0, 60, 0, 0);//60dp at top
-        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+//        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+        ll.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.FILL_PARENT, ScrollView.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText(Html.fromHtml("<h4> Global Data Settings</h4>"+ "Turn on/off data for all labs here."));
+        labText.setText(Html.fromHtml("<h4> Global Data Settings</h4>"+ "View and manage data collection and use here." + 
+        		" You can turn on all data, turn on just the data required by current labs, or turn off all data."));
         labText.setTextSize(14);
         labText.setId(textId);
         ll.addView(labText);
@@ -132,6 +139,12 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 		TableLayout tableLayout = new TableLayout(this);
 		tableLayout.setColumnShrinkable(1, true);
 		TableLayout.LayoutParams layoutRow = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		int leftMargin=10;
+		int topMargin=2;
+		int rightMargin=10;
+		int bottomMargin=2;
+
+		layoutRow.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
 
 		TableRow tableRow = null;
 		for(String probe : allProbesSet){
@@ -153,23 +166,49 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 			
 	        tableRow.setLayoutParams(layoutRow);
 	        
-	        Switch probeButton = new Switch(this);
+	        
+//	        //////
+//	        
+//	        Switch probeButton = new Switch(this);
+//			int probeId = 0;
+//
+//			try {
+//				probeId = (Integer) ((JSONObject) probesMap.get(probe)).get("id");
+//				probesIds.add(probeId); //accumulate the ids
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
+//
+//			probeButton.setChecked(probeChecked);
+//			probeButton.setId(probeId);	
+//			probeButton.setClickable(false);
+//			
+//			probeSettings.put(probe, probeChecked);
+//			
+//			tableRow.addView(probeButton, 400, 200);
+//			
+//			//////
+			
+			TextView probeSwitch = new TextView(this);
+			
 			int probeId = 0;
-
 			try {
 				probeId = (Integer) ((JSONObject) probesMap.get(probe)).get("id");
 				probesIds.add(probeId); //accumulate the ids
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-
-			probeButton.setChecked(probeChecked);
-			probeButton.setId(probeId);	
-			probeButton.setClickable(false);
+			
+	        
+	        probeSwitch.setId(probeId);
+	        if(probeChecked)
+	        	probeSwitch.setText(Html.fromHtml("<b> <font color=\"blue\">ON</font> </b>"));
+	        else 
+	        	probeSwitch.setText(Html.fromHtml("<b> <font color=\"gray\">OFF</font> </b>"));
 			
 			probeSettings.put(probe, probeChecked);
+			tableRow.addView(probeSwitch);
 			
-			tableRow.addView(probeButton, 400, 200);
 			
 			TableRow.LayoutParams layoutPurpose = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 			TextView probePurpose = new TextView(this);
@@ -179,7 +218,7 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 				probe_name.append(probe_name_parts[i].substring(0,1).toUpperCase() + probe_name_parts[i].substring(1) + " ");
 			}
 			
-	        probePurpose.setText(Html.fromHtml("<b>" + probe_name.toString() +"</b>"));
+	        probePurpose.setText(Html.fromHtml(probe_name.toString()));
 	        probePurpose.setLayoutParams(layoutPurpose);
 	        probePurpose.setGravity(Gravity.CENTER);
 	        tableRow.setGravity(Gravity.CENTER);
@@ -206,19 +245,19 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 	    
         
         Button deselectAllButton = new Button(this);
-        deselectAllButton.setText("De-select all data");
+        deselectAllButton.setText("Turn off all");
         deselectAllButton.setId(deselectAllButtonId);
         deselectAllButton.setOnClickListener(this);
         deselectAllButton.setLayoutParams(buttonLayoutParams);
         
         Button selectAllRequiredButton = new Button(this);
-        selectAllRequiredButton.setText("Select required data");
+        selectAllRequiredButton.setText("Turn on required");
         selectAllRequiredButton.setId(selectAllRequiredButtonId);
         selectAllRequiredButton.setOnClickListener(this);
         selectAllRequiredButton.setLayoutParams(buttonLayoutParams);
         
         Button selectAllButton = new Button(this);
-        selectAllButton.setText("Select all data");
+        selectAllButton.setText("Turn on all");
         selectAllButton.setId(selectAllButtonId);
         selectAllButton.setOnClickListener(this);
         selectAllButton.setLayoutParams(buttonLayoutParams);
@@ -232,9 +271,9 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 	    buttonsLayout.addView(buttonsRow);
 	    ll.addView(buttonsLayout);
         
-	    ScrollView sv = new ScrollView(this);
-	    sv.addView(ll);
-	    setContentView(sv);
+//	    ScrollView sv = new ScrollView(this);
+//	    sv.addView(ll);
+//	    setContentView(sv);
 	    
 	    View textIdView = findViewById(textId);
 	    View rootView = textIdView.getRootView();
@@ -247,10 +286,10 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 		if(v.getId() == deselectAllButtonId){
 			
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-			alertDialogBuilder.setTitle("De-Selecting Global Settings");
+			alertDialogBuilder.setTitle("Turn off all");
 
 			alertDialogBuilder
-			    .setMessage("You will not be collecting any data for the app. Continue or Cancel?")
+			    .setMessage("Turn off all will stop collection and use of all data for all labs.")
 			    .setCancelable(false)
 			    .setPositiveButton("Continue",new DialogInterface.OnClickListener() {
 				    public void onClick(DialogInterface dialog,int id) {
@@ -289,22 +328,33 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 		} else if(v.getId() == selectAllRequiredButtonId){
 			
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-			alertDialogBuilder.setTitle("Selecting all required Global Settings");
+			alertDialogBuilder.setTitle("Turn on required");
 
 			alertDialogBuilder
-			    .setMessage("You will be collecting only data required by the labs installed on your app. Continue or Cancel?")
+			    .setMessage("Turn on required will allow collection and use of only the data required by labs installed on your device.")
 			    .setCancelable(false)
 			    .setPositiveButton("Continue",new DialogInterface.OnClickListener() {
 				    public void onClick(DialogInterface dialog,int id) {
 						try{
 							Iterator<String> keys = probesMap.keys();
+							
+							JSONObject probesInDatabase = LivingLabsAccessControlDB.retrieveLivingLabProbeItem(null);
+							Log.v(TAG, "probesInDatabase: " + probesInDatabase);
 					        while(keys.hasNext()){
-					            JSONObject probeDetails = probesMap.getJSONObject(keys.next());
+					        	String probeKey = keys.next();
+					            JSONObject probeDetails = probesMap.getJSONObject(probeKey);
 					            
+					            Log.v(TAG, "Probe: " + probeKey + ", id: " + probeDetails);
 					            int probeIdValue = probeDetails.getInt("id");
+					            
+					            
 					            //need to select only the required probes
-					            if(probesIds.contains(probeIdValue))
-					            	selectProbe(probeIdValue, false);
+					            if(probesIds.contains(probeIdValue)){
+					            	if(probesInDatabase.getInt(probeKey) == 1)
+					            		selectProbe(probeIdValue, true);
+					            	else
+					            		selectProbe(probeIdValue, false);
+					            }
 					        }
 					        mllpiValues = LivingLabsAccessControlDB.saveLivingLabProbeItem(null); //akin to settings
 					        
@@ -331,10 +381,10 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 		} else if(v.getId() == selectAllButtonId){
 			
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-			alertDialogBuilder.setTitle("Selecting All Global Settings");
+			alertDialogBuilder.setTitle("Turn on all");
 
 			alertDialogBuilder
-			    .setMessage("You will be collecting all data (even if not required by any installed lab). Continue or cancel?")
+			    .setMessage("Turn on all will allow collection and use of all data for all labs.")
 			    .setCancelable(false)
 			    .setPositiveButton("Continue",new DialogInterface.OnClickListener() {
 				    public void onClick(DialogInterface dialog,int id) {
@@ -373,12 +423,19 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 	}
 	
 	public void selectProbe(int probeId, boolean flag){
-		Switch probeButton = (Switch) findViewById(probeId);
+//		Switch probeButton = (Switch) findViewById(probeId);
+//		
+//		if(flag)
+//			probeButton.setChecked(true);
+//		else
+//			probeButton.setChecked(false);
+		
+		TextView probeSwitch = (TextView) findViewById(probeId);
 		
 		if(flag)
-			probeButton.setChecked(true);
-		else
-			probeButton.setChecked(false);
+			probeSwitch.setText(Html.fromHtml("<b> <font color=\"blue\">ON</font> </b>"));
+        else 
+        	probeSwitch.setText(Html.fromHtml("<b> <font color=\"gray\">OFF</font> </b>"));
 	}
 	
 	private class Connection extends AsyncTask<JSONObject, Object, Object> {
@@ -463,5 +520,29 @@ public class LivingLabGlobalSettingsActivity extends Activity implements OnClick
 		} catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	protected NewModule getNewModule() {
+		return new LivingLabsModule();
+	}
+
+	@Override
+	protected boolean isScrollable() {
+		return false;
+	}
+
+	@Override
+	protected void onOptionSelected(String optionId) {
+		
+	}
+
+	@Override
+	protected boolean isModuleHomeActivity() {
+		return false;
+	}
+	
+	public void livingLabSettings(){
+		Log.v(TAG, "LivingLabSettings");
 	}
 }

@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.mit.media.openpds.client.PreferencesWrapper;
+import edu.mit.mitmobile2.NewModule;
+import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 import android.app.Activity;
@@ -42,7 +44,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
  
-public class LivingLabSettingsContextActivity extends Activity implements OnClickListener, OnCheckedChangeListener {
+public class LivingLabSettingsContextActivity extends NewModuleActivity implements OnClickListener, OnCheckedChangeListener {
 	private static final String TAG = "LLSettingsContextActivity";
     String settings_context_label = null;
     private JSONObject llsiJson;
@@ -93,6 +95,10 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 			return;
 		}
         
+		setContentView(R.layout.living_lab_scrollview);
+	    LinearLayout ll = (LinearLayout)findViewById(R.id.livinglabLinearLayout);
+	    
+	    
 		mLivingLabAccessControlDB = LivingLabsAccessControlDB.getInstance(this);
 		
         app_id = "Living Lab"; 
@@ -115,14 +121,15 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
         ArrayList<LivingLabVisualizationItem> visualization = labItem.getVisualizations();
         lab_id = labItem.getName();
         
-        LinearLayout ll = new LinearLayout(this);
+//        LinearLayout ll = new LinearLayout(this);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setPadding(0, 60, 0, 0);//60dp at top
-        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+//        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
+        ll.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.FILL_PARENT, ScrollView.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText(Html.fromHtml("<h4>" + lab_id + ": Context</h4>"+ "<b>Context</b> is a combination of time span and location. " +
-        "Choose a pre-defined context as-is, edit them, or create your own to specify when, where, and what data <b> " + lab_id + "</b> can use."));
+        labText.setText(Html.fromHtml("<h4>" + lab_id + ": Context</h4>"+ "<b>Context</b> is when and where collected data can be used " +
+        		"by " + lab_id + "Choose a pre-defined context, edit the available contexts, or create a new one."));
         labText.setTextSize(14);
         labText.setId(textId);
         ll.addView(labText);
@@ -212,9 +219,9 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 	    buttonsLayout.addView(buttonsRow);
 	    ll.addView(buttonsLayout);
         
-	    ScrollView sv = new ScrollView(this);
-	    sv.addView(ll);
-	    setContentView(sv);
+//	    ScrollView sv = new ScrollView(this);
+//	    sv.addView(ll);
+//	    setContentView(sv);
 	    
 	    View textIdView = findViewById(textId);
 	    View rootView = textIdView.getRootView();
@@ -242,6 +249,9 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 					TextView contextError = (TextView) findViewById(contextErrorId);
 					contextError.setVisibility(View.VISIBLE);
 				} else {
+					Log.v(TAG, "llsiJson: " + llsiJson);
+					mLivingLabAccessControlDB.loadLivingLabProbeItem(llsiJson);
+					
 					llsiJson.put("settings_context_label", settings_context_label);
 					
 					connection = new Connection(this);
@@ -337,4 +347,27 @@ public class LivingLabSettingsContextActivity extends Activity implements OnClic
 		settings_context_label = ((RadioButton) findViewById(arg1)).getText().toString();
 	}
 	
+	@Override
+	protected NewModule getNewModule() {
+		return new LivingLabsModule();
+	}
+
+	@Override
+	protected boolean isScrollable() {
+		return false;
+	}
+
+	@Override
+	protected void onOptionSelected(String optionId) {
+		
+	}
+
+	@Override
+	protected boolean isModuleHomeActivity() {
+		return false;
+	}
+	
+	public void livingLabSettings(){
+		Log.v(TAG, "LivingLabSettings");
+	}
 }

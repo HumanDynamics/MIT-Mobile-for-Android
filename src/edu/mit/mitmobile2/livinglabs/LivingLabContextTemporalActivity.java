@@ -2,6 +2,7 @@ package edu.mit.mitmobile2.livinglabs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
@@ -10,12 +11,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.mit.media.openpds.client.PreferencesWrapper;
+import edu.mit.mitmobile2.NewModule;
+import edu.mit.mitmobile2.NewModuleActivity;
 import edu.mit.mitmobile2.objs.LivingLabItem;
 import edu.mit.mitmobile2.objs.LivingLabVisualizationItem;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -26,18 +31,23 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 
-public class LivingLabContextTemporalActivity extends Activity implements OnClickListener, OnTouchListener, OnCheckedChangeListener {
+public class LivingLabContextTemporalActivity extends NewModuleActivity implements OnClickListener, OnTouchListener, OnCheckedChangeListener{
+	//, OnItemClickListener 
 	private static final String TAG = "LLContextTemporalActivity";
 	private JSONObject llciJson, llsiJson;
 
@@ -105,9 +115,14 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		
 		TextView progressText = (TextView) findViewById(R.id.livinglabContextHeaderTextView);
 		if(context_label != null)
-			progressText.setText(Html.fromHtml("<h4>" + lab_id + ": Edit Context</h4>"));
+			progressText.setText(Html.fromHtml("<h4>" + lab_id + ": Edit Context</h4> You can edit " +
+					"the pre-defined time and location. Any data that is collected outside of the " +
+					"context cannot be used by " + lab_id + "."));
 		else{
-			progressText.setText(Html.fromHtml("<h4>" + lab_id + ": Create Context</h4>"));
+			progressText.setText(Html.fromHtml("<h4>" + lab_id + ": Create Context</h4> A custom " + 
+					"context lets you define a time and location at which " + lab_id + "can use " +
+					"your data. Any data that is collected outside of the context " + 
+					"cannot be used by " + lab_id + "."));
 		}
 		progressText.setId(textId);
 		
@@ -268,6 +283,15 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 		
 		TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextDurationDayError);
 		durationDaysError.setTextColor(Color.parseColor("#0000FF"));
+		
+		
+		String[] additionalListButtons = new String[] { "Define Location on Map" };
+		
+//		ArrayAdapter<String> additionalButtonsAdapter =new ArrayAdapter<String>(this, R.layout.living_labs_location_list, R.id.livinglabContextLocationTextView, additionalListButtons);
+//		ListView additionalButtonsListView = (ListView)findViewById(R.id.livingLabContextLocationListView);
+//		additionalButtonsListView.setAdapter(additionalButtonsAdapter);
+//		additionalButtonsListView.setOnItemClickListener(this);
+		
 
 		Button setLocationButton = (Button) findViewById(R.id.livinglabContextSetLocationButton);
 		setLocationButton.setOnClickListener(this);
@@ -319,41 +343,65 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 			}
 			break;
 		case R.id.livinglabContextDeleteButton:
-			try {
-				llciJson.put("context_label", contextLabelString);
-				
-				accesscontrolObject.put("setting_object", null);
-				accesscontrolObject.put("context_object", llciJson);
-				
-				connection = new Connection(this);
-				deleteFlag = true;
-				connection.execute(accesscontrolObject).get(1000, TimeUnit.MILLISECONDS);
-				deleteFlag = false;
+			
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			alertDialogBuilder.setTitle("Selecting All Global Settings");
 
-				JSONArray updatedContextsArray = new JSONArray();
-				try {
-		            JSONArray contextsArray = new JSONArray(contextsFromServer);
-		            for(int i=0; i<contextsArray.length(); i++){
-		            	if(contextLabelString.equalsIgnoreCase(contextsArray.getJSONObject(i).getString("context_label"))){
-		            		context_label = null;
-		            	} else {
-		            		updatedContextsArray.put(contextsArray.getJSONObject(i));
-		            	}
-		            }
-		        } catch (JSONException e) {
-		            e.printStackTrace();
-		        }
-	            
-				Intent labIntent = new Intent(LivingLabContextTemporalActivity.this, LivingLabSettingsContextActivity.class);
-				labIntent.putExtra("lab", labItem);
-				labIntent.putExtra("probeSettings", probeSettings);
-				labIntent.putExtra("context_label", context_label);
-				labIntent.putExtra("contextsFromServer", updatedContextsArray.toString());
-				startActivity(labIntent);
+			alertDialogBuilder
+			    .setMessage("Do you want to permanently delete this context?")
+			    .setCancelable(false)
+			    .setPositiveButton("Continue",new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog,int id) {
+						try {
+							llciJson.put("context_label", contextLabelString);
+							
+							accesscontrolObject.put("setting_object", null);
+							accesscontrolObject.put("context_object", llciJson);
+							
+							connection = new Connection(LivingLabContextTemporalActivity.this);
+							deleteFlag = true;
+							connection.execute(accesscontrolObject).get(1000, TimeUnit.MILLISECONDS);
+							deleteFlag = false;
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+							JSONArray updatedContextsArray = new JSONArray();
+							try {
+					            JSONArray contextsArray = new JSONArray(contextsFromServer);
+					            for(int i=0; i<contextsArray.length(); i++){
+					            	if(contextLabelString.equalsIgnoreCase(contextsArray.getJSONObject(i).getString("context_label"))){
+					            		context_label = null;
+					            	} else {
+					            		updatedContextsArray.put(contextsArray.getJSONObject(i));
+					            	}
+					            }
+					        } catch (JSONException e) {
+					            e.printStackTrace();
+					        }
+				            
+							Intent labIntent = new Intent(LivingLabContextTemporalActivity.this, LivingLabSettingsContextActivity.class);
+							labIntent.putExtra("lab", labItem);
+							labIntent.putExtra("probeSettings", probeSettings);
+							labIntent.putExtra("context_label", context_label);
+							labIntent.putExtra("contextsFromServer", updatedContextsArray.toString());
+							startActivity(labIntent);
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+			    })
+				.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						dialog.cancel();
+					}
+				});
+	 
+				AlertDialog alertDialog = alertDialogBuilder.create();
+	 
+				alertDialog.show();
+				
+				
+				
+
 			break;
 		case R.id.livinglabContextSetLocationButton:	
 			
@@ -595,6 +643,63 @@ public class LivingLabContextTemporalActivity extends Activity implements OnClic
 			e.printStackTrace();
 		}
 	}
+
+
+	@Override
+	protected NewModule getNewModule() {
+		return new LivingLabsModule();
+	}
+
+
+	@Override
+	protected boolean isScrollable() {
+		return false;
+	}
+
+
+	@Override
+	protected void onOptionSelected(String optionId) {
+		
+	}
+
+
+	@Override
+	protected boolean isModuleHomeActivity() {
+		return false;
+	}
+	
+	public void livingLabSettings(){
+		Log.v(TAG, "LivingLabSettings");
+	}
+
+
+//	@Override
+//	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+//		formLlciJson();
+//		if(duration_days_value_flag && !contextLabelString.isEmpty() && !contextLabelString.equalsIgnoreCase("Create a new context") && !contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){					
+//			Intent intent = new Intent(this, LivingLabContextSpatialActivity.class);
+//			LivingLabItem labItem = (LivingLabItem) getIntent().getSerializableExtra("lab");
+//			intent.putExtra("lab", labItem);
+//			intent.putExtra("llsiJson", llsiJson.toString());
+//			intent.putExtra("llciJson", llciJson.toString());
+//			intent.putExtra("contextsFromServer", contextsFromServer);
+//			intent.putExtra("context_label", contextLabelString);
+//			
+//			startActivity(intent);
+//		} else{
+//
+//			if(!duration_days_value_flag){
+//				TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextDurationDayError);
+//				durationDaysError.setText("Select at least one day.");
+//				durationDaysError.setTextColor(Color.parseColor("#FF0000"));
+//			} else if (contextLabelString.isEmpty() || contextLabelString.equalsIgnoreCase("Create a new context") || contextLabelString.equalsIgnoreCase("MIT") || contextLabelString.equalsIgnoreCase("NULL_CONTEXT")){
+//				TextView durationDaysError  = (TextView)findViewById(R.id.livinglabContextLabelError);
+//				durationDaysError.setText("Provide a valid label.");
+//				durationDaysError.setTextColor(Color.parseColor("#FF0000"));
+//			}
+//		}
+//		
+//	}
 	
 //	@Override
 //	public void onBackPressed() {

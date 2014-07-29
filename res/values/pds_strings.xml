@@ -64,16 +64,15 @@
 				'name': 'MIT-FIT',
 				'visualizations': [
 					{'title': 'High-activity Locations', 'key': 'mitfit/userlocation', 'answers': ['activeLocations'] },
-					{'title': 'High-activity Times', 'key': 'mitfit/usertimedemo', 'answers': ['activeLocations'] },					
-					{'title': 'Activity Leaderboard', 'key': 'mitfit/statsuserdemo', 'answers': ['activityStats'] },
-					{'title': 'Your Recommendations', 'key': 'mitfit/recosactivities', 'answers': ['activityStats'] }				
+					{'title': 'High-activity Times', 'key': 'mitfit/usertime', 'answers': ['activeLocations'] },
+					{'title': 'Your Recommendations', 'key': 'mitfit/recos', 'answers': ['activityStats'] }				
 				],
 				'answers': [ 
 					{ 'key': 'activeLocations', 'data': ['Activity Probe', 'Simple Location Probe'], 'purpose': ['Heatmaps'] }, 
-					{ 'key': 'activityStats', 'data': ['Activity Probe', 'Simple Location Probe'], 'purpose': ['Heatmaps', 'Leaderboard', 'Recommendations'] }
+					{ 'key': 'activityStats', 'data': ['Activity Probe', 'Simple Location Probe'], 'purpose': ['Heatmaps', 'Recommendations'] }
 				],
-				'about': 'MIT-FIT is an application to inform individual users and the MIT community of their fitness levels and encourage them to maintain active lifestyles.',
-				'credits': 'The development of this project was supported by the MIT Big Data Initiative at CSAIL led by Prof. Sam Madden and Elizabeth Bruce. The MIT-FIT lab was developed by Sharon Paradesi, along with Brian Sweatt and Dr. Lalana Kagal. The user experience and design was facilitated by Myra Hope Eskridge and Laura Watts.'				
+				'about': 'MIT-FIT enables users to track personal and aggregate high-activity regions and times, as well as view personalized fitness-related event recommendations.',
+				'credits': 'This lab was developed as part of the big data initiative at MIT led by Prof. Sam Madden and Elizabeth Bruce. The MIT-FIT lab was developed by Sharon Paradesi under the guidance of Dr. Lalana Kagal and with the help of Brian Sweatt. User experience and design suggestions were provided by Myra Hope Eskridge and Laura Watts.'				
 			}    
 		]"
     </string>

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -299,6 +300,36 @@ public class LivingLabsAccessControlDB {
 		
 	}	
 	
+	synchronized static JSONObject retrieveLivingLabProbeItem(String global_type) throws JSONException {
+		JSONObject llpiValuesReturn = new JSONObject();
+		
+		String[] probes = {"activity_probe", "sms_probe", "call_log_probe", "bluetooth_probe", "wifi_probe", "simple_location_probe",
+				"screen_probe", "running_applications_probe", "hardware_info_probe", "app_usage_probe"};
+		if(global_type == null){
+			ArrayList<String> searchDataInput = new ArrayList<String>();
+			searchDataInput.add("Living Lab");
+			searchDataInput.add("all");
+			
+			LivingLabSettingItem llsi = retrieveLivingLabSettingItem(searchDataInput);
+			
+			
+			llpiValuesReturn.put(probes[0], llsi.getActivityProbe());
+			llpiValuesReturn.put(probes[1], llsi.getSMSProbe());
+			llpiValuesReturn.put(probes[2], llsi.getCallLogProbe());
+			llpiValuesReturn.put(probes[3], llsi.getBluetoothProbe());
+			llpiValuesReturn.put(probes[4], llsi.getWifiProbe());
+			llpiValuesReturn.put(probes[5], llsi.getSimpleLocationProbe());
+			llpiValuesReturn.put(probes[6], llsi.getScreenProbe());
+			llpiValuesReturn.put(probes[7], llsi.getRunningApplicationsProbe());
+			llpiValuesReturn.put(probes[8], llsi.getHardwareInfoProbe());
+			llpiValuesReturn.put(probes[9], llsi.getAppUsageProbe());			
+			
+		}
+		
+		return llpiValuesReturn;
+		
+	}	
+	
 	synchronized static void loadLivingLabProbeItem(JSONObject llpi) throws JSONException {
 
 		SQLiteDatabase db = mLLSettingsDBHelper.getWritableDatabase();
@@ -312,8 +343,14 @@ public class LivingLabsAccessControlDB {
 		for(int i=0; i<probes.length; i++){
 			int value = 0;
 			if(llpi.has(probes[i])){
-				if(llpi.getBoolean(probes[i]))
-					value = 1;
+				Object probeValue = llpi.get(probes[i]);
+				if(probeValue instanceof Integer) {
+					value = (Integer) probeValue;
+				} else if(probeValue instanceof Boolean){
+					//if(llpi.getBoolean(probes[i]))
+					if((Boolean) probeValue)
+						value = 1;
+				}
 			}
 			llpiValues.put(probes[i], value);
 		}

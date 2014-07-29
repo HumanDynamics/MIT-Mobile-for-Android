@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fillViewport="true" >
+    android:fillViewport="true" 
+    tools:context=".LivingLabAppListActivity" >
         
 	<LinearLayout 
 		android:id="@+id/livingLabContextLinearLayout"
@@ -16,17 +18,17 @@
 			android:layout_height="wrap_content"
 			android:text="" />
 
-		<TextView
+		<!--  <TextView
 			android:id="@+id/livinglabContextLocationMessage"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text=""/>  
+			android:text=""/> --> 
 
 		<fragment
 			android:id="@+id/livinglabContextMap"
 			android:name="com.google.android.gms.maps.MapFragment"
 			android:layout_width="fill_parent" 
-			android:layout_height="380dip"
+			android:layout_height="370dip"
 			android:layout_gravity="center_horizontal"/>
     
 		<TextView

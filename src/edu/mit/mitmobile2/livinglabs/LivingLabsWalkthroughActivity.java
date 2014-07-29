@@ -43,15 +43,18 @@ public class LivingLabsWalkthroughActivity extends Activity implements OnClickLi
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT));
         
         TextView labText = new TextView(this);
-        labText.setText(Html.fromHtml("<h4>Welcome to " + labItem.getName() + "!</h4>" +  labItem.getName() + 
-        		" is going to collect data from your phone and display visualizations based on the data. <br/><br/>" +
-        		"In this walkthrough, you will be able to specify what data can be collected."));
+        String labName = labItem.getName();
+        labText.setText(Html.fromHtml("<h4>Welcome to " + labName + "!</h4>" +  labName + 
+        		" uses data from your phone to create visualizations. <br/><br/>" +
+        		"To create the visualiztions, you need to allow " + labName + " to collect this data. " +
+        		"Then you define a time and location where the collected data can be used. " +
+        		"<br/> <br/> Let's get started!"));
         labText.setTextSize(14);
         labText.setId(textId);
         ll.addView(labText);
         
         Button nextButton = new Button(this);
-	    nextButton.setText( "Next");
+	    nextButton.setText( "Continue");
 	    nextButton.setId(nextButtonId);
 	    nextButton.setOnClickListener(this);
 	    
