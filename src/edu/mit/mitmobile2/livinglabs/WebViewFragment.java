@@ -122,16 +122,28 @@ public class WebViewFragment extends Fragment {
 	}
 	
 	public void showLoadingScreen() {
-		mWebView.setVisibility(View.GONE);
-		mLoadingStatusView.setVisibility(View.VISIBLE);
+		try {
+			mWebView.setVisibility(View.GONE);
+			mLoadingStatusView.setVisibility(View.VISIBLE);
+		} catch (Exception ex) {
+			Log.w("WebViewFragment", ex.getMessage());
+		}
 	}
 	
 	public void hideLoadingScreen() {
-		mWebView.setVisibility(View.VISIBLE);
-		mLoadingStatusView.setVisibility(View.GONE);
+		try {
+			mWebView.setVisibility(View.VISIBLE);
+			mLoadingStatusView.setVisibility(View.GONE);
+		} catch (Exception ex) {
+			Log.w("WebViewFragment", ex.getMessage());
+		}
 	}
 	
 	public void showErrorScreen() {
-		mWebView.loadData(getString(R.string.problem_contacting_server), "text/html", "UTF-8");
+		try {
+			mWebView.loadData(getString(R.string.problem_contacting_server), "text/html", "UTF-8");
+		} catch (Exception ex) {
+			Log.w("WebViewFragment", ex.getMessage());
+		}
 	}
 }
