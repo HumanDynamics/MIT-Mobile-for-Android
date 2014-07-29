@@ -40,11 +40,22 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 	private static final String TAG = "LivingLabAppListActivity";
 	private ListView mLivingLabsListView, mLivingLabsGlobalSettingsListView;
 	//private Map<LivingLabItem, Boolean> labFirstVisit = new HashMap<LivingLabItem, Boolean>();
-	SharedPreferences isFirstVisitOfLab;
+	SharedPreferences isFirstVisitOfLab, mPreferences;
+	
+	private static final String ACCESS_TOKEN_KEY = "accessToken";
+	private static final String PDS_LOCATION_KEY = "pds_location";
+	private static final String UUID_KEY = "uuid";
+	private static final String PREFS_FILE = "TokenPrefs";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
+		//http://pds.linkedpersonaldata.org/visualization/mitfit/userlocation?bearer_token=733a4cfedd&datastore_owner=341cc5cd-0f42-45f1-9f66-273ac3ed8b2e
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		mPreferences = this.getSharedPreferences(PREFS_FILE, this.MODE_PRIVATE);
+
 		
 		isFirstVisitOfLab = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		setContentView(R.layout.living_labs_list);
@@ -111,7 +122,7 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 		}
 		
 		List<String> global_settings = new ArrayList<String>();
-		global_settings.add("Data Collection");
+		global_settings.add("Data Collection & Use");
 		
 		mLivingLabsGlobalSettingsListView = (ListView) findViewById(R.id.livingLabsGlobalSettingsListView);
 		mLivingLabsGlobalSettingsListView.setAdapter(new ArrayAdapter(this, R.layout.living_lab_global_settings_row, R.id.livingLabGlobalSettingsRowTitle, global_settings));	
@@ -122,7 +133,7 @@ public class LivingLabAppListActivity extends NewModuleActivity {
 			public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
 				String global_setting = listView.getItemAtPosition(position).toString();
 				Intent labIntent = null;
-				if(global_setting.equalsIgnoreCase("Data Collection")){
+				if(global_setting.equalsIgnoreCase("Data Collection & Use")){
 					labIntent = new Intent(LivingLabAppListActivity.this, LivingLabGlobalSettingsActivity.class);
 					startActivity(labIntent);
 				}
