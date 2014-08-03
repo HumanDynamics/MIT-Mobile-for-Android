@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.mit.mitmobile2.livinglabs"
     android:installLocation="auto"
-    android:versionCode="20"
+    android:versionCode="21"
     android:versionName="2.5" >
 
     <!-- targetSdkVersion must remain < 11 in order for the menu to work correctly on 4.0+ devices -->
@@ -97,7 +97,7 @@
                  
         
         <!-- Put your Google Maps V2 API Key here. -->
-        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="" />
+        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyByCTA8KsNetc7tYPHQwtdYuPapynwC51s" />
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 
         <activity android:name="edu.mit.mitmobile2.HomeScreenActivity"
