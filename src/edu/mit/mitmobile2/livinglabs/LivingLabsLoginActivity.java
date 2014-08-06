@@ -21,7 +21,7 @@ import android.webkit.WebView;
 import android.os.Build;
 
 public class LivingLabsLoginActivity extends NewModuleFragmentActivity {
-	private static final String REDIRECT_URI = "https://linkedpersonaldata.mit.edu/redirect_uri";
+	private static final String REDIRECT_URI = "https://celldata.media.mit.edu/redirect_uri";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

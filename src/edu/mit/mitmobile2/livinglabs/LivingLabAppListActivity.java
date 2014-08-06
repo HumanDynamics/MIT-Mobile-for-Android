@@ -39,23 +39,11 @@ import android.widget.TextView;
 public class LivingLabAppListActivity extends NewModuleActivity {
 	private static final String TAG = "LivingLabAppListActivity";
 	private ListView mLivingLabsListView, mLivingLabsGlobalSettingsListView;
-	//private Map<LivingLabItem, Boolean> labFirstVisit = new HashMap<LivingLabItem, Boolean>();
-	SharedPreferences isFirstVisitOfLab, mPreferences;
-	
-	private static final String ACCESS_TOKEN_KEY = "accessToken";
-	private static final String PDS_LOCATION_KEY = "pds_location";
-	private static final String UUID_KEY = "uuid";
-	private static final String PREFS_FILE = "TokenPrefs";
+	SharedPreferences isFirstVisitOfLab;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		
-		//http://pds.linkedpersonaldata.org/visualization/mitfit/userlocation?bearer_token=733a4cfedd&datastore_owner=341cc5cd-0f42-45f1-9f66-273ac3ed8b2e
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		mPreferences = this.getSharedPreferences(PREFS_FILE, this.MODE_PRIVATE);
-
 		
 		isFirstVisitOfLab = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		setContentView(R.layout.living_labs_list);
