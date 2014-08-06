@@ -55,7 +55,7 @@ public class LivingLabsAccessControlDB {
 	}
 	
 	private static final String TAG = "LivingLabsAccessControlDB";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 	private static final String DATABASE_NAME = "livinglabsaccesscontrol.db";
 	private static final String LIVINGLABS_SETTINGS_TABLE = "livinglabs_settings";
 	private static final String LIVINGLABS_CONTEXT_TABLE = "livinglabs_context";
@@ -691,7 +691,7 @@ public class LivingLabsAccessControlDB {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
 			
-			if(newVersion == 2){
+			if(newVersion == 3){
 				probesTableHandling(db);
 			}
 		}
@@ -701,6 +701,9 @@ public class LivingLabsAccessControlDB {
 		return null;
 	}
 	private static void probesTableHandling(SQLiteDatabase db){
+		
+		db.execSQL("DROP TABLE IF EXISTS " + LIVINGLABS_PROBES_TABLE);
+		
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + LIVINGLABS_PROBES_TABLE + " ("
 				+ ACTIVITY_PROBE + " INTEGER, "
 				+ SMS_PROBE + " INTEGER, "
