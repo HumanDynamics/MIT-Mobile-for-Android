@@ -14,17 +14,12 @@ import android.util.Log;
 import android.webkit.WebView;
 
 public class LivingLabsLoginActivity extends NewModuleFragmentActivity {
-	private static final String REDIRECT_URI = "https://linkedpersonaldata.mit.edu/redirect_uri";
+	private static final String REDIRECT_URI = "https://celldata.media.mit.edu/redirect_uri";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.living_labs_login_activity);
-		
-		// NOTE: HACK TO GET THIGNS WORKING (SORTA) FOR GFSA
-		Intent touchstoneIntent = new Intent(this, TouchstonePrefsActivity.class);
-		startActivity(touchstoneIntent);
-		finish();
 
 		if (savedInstanceState == null) {
 			final RegistryClient registry = new RegistryClient(getString(R.string.registry_url), getString(R.string.pds_client_key), getString(R.string.pds_client_secret), getString(R.string.pds_client_scope), getString(R.string.pds_client_basic_auth));

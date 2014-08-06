@@ -10,7 +10,7 @@
     <string name="default_funf_password">changeme</string>
     <string name="login_relative_url">/account/login</string>
     <string name="signup_relative_url">/account/signup</string>
-    <string name="registry_url">http://linkedpersonaldata.org</string>
+    <string name="registry_url">https://celldata.media.mit.edu</string>
     <string name="clients_relative_url">/account/clients</string>
     <string name="token_relative_url">/oauth2/token/</string>
     <string name="userinfo_relative_url">/oauth2/userinfo</string>
