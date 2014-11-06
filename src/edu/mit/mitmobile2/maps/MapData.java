@@ -12,7 +12,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.esri.android.map.LocationService;
+import com.esri.android.map.LocationDisplayManager;
 import com.esri.core.geometry.SpatialReference;
 
 import edu.mit.mitmobile2.objs.MapItem;

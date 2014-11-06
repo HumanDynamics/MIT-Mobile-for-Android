@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.DefaultHeaderTransformer;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.EnvironmentDelegate;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.OnRefreshListener;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.Options;
+import uk.co.senab.actionbarpulltorefresh.library.DefaultHeaderTransformer;
+import uk.co.senab.actionbarpulltorefresh.library.EnvironmentDelegate;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
+import uk.co.senab.actionbarpulltorefresh.library.Options;
 
 import android.app.Activity;
 import android.content.Context;
@@ -104,7 +104,7 @@ public class DiningHomeActivity extends NewModuleActivity implements OnRefreshLi
 		
 	    ScrollView scrollView = (ScrollView) findViewById(R.id.diningHomeMainScrollView);
 
-        // Create new PullToRefreshAttacher
+        /*/ Create new PullToRefreshAttacher 
 	    PullToRefreshAttacher.Options options = new Options();
 	    options.environmentDelegate = new EnvironmentDelegate() {
 	    	@Override
@@ -117,7 +117,7 @@ public class DiningHomeActivity extends NewModuleActivity implements OnRefreshLi
         DefaultHeaderTransformer ht = (DefaultHeaderTransformer) mPullToRefreshAttacher
                 .getHeaderTransformer();
         ht.setPullText("Swipe to refresh");
-        ht.setRefreshingText("Refreshing...");
+        ht.setRefreshingText("Refreshing..."); */
         
 	}
 	
@@ -379,7 +379,7 @@ public class DiningHomeActivity extends NewModuleActivity implements OnRefreshLi
 				if (msg.arg1 == MobileWebApi.SUCCESS) {
 					updateDiningData();
 				}
-				mPullToRefreshAttacher.setRefreshComplete();
+				//mPullToRefreshAttacher.setRefreshComplete();
 				mRefreshInProgress = false;
 			}
 		});	

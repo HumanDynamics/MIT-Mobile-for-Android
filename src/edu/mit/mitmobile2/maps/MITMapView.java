@@ -26,7 +26,7 @@ import android.widget.FrameLayout;
 import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
-import com.esri.android.map.LocationService;
+import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnSingleTapListener;
@@ -63,7 +63,7 @@ public class MITMapView extends MapView  {
 	private static Double WGS84_PADDING = 0.0005; // use to padd wgs84 map points before they are projected to webmercator
 	private GraphicsLayer gl;
 	private Context mContext;
-	protected LocationService ls;
+	protected LocationDisplayManager ls;
 	protected boolean baseLayersLoaded = false;
 	public static final String MAP_ITEMS_KEY = "map_items";
 	public static final String MAP_ITEM_INDEX_KEY = "map_item_index";	
@@ -629,10 +629,9 @@ public class MITMapView extends MapView  {
         		};
 
         		// Initialize location service
-        		ls = getLocationService();
+        		ls = getLocationDisplayManager();
     			Log.d(TAG,"new Locationistener");
         		ls.setLocationListener(locationListener);
-        		ls.setAutoPan(false);
         		ls.setAllowNetworkLocation(true);
         		ls.start();
         		
